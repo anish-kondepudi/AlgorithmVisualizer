@@ -1,0 +1,2 @@
+We will keep the different components in here.
+Basically anything we will reuse often such as navigation bars.
