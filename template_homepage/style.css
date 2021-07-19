@@ -1,6 +1,6 @@
 @font-face {
-  font-family: titillium;
-  src: url("https://fonts.googleapis.com/css2?family=Titillium+Web:wght@600&display=swap");
+  font-family: Lato;
+  src: url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
 }
 
 html, body {
@@ -54,7 +54,7 @@ html, body {
   font-size: 1.3rem;
   border-width: 2px;
   font-weight: bold;
-  font-family: titillium;
+  font-family: Lato;
   margin-right:15px;
   margin-left: 15px;
   color: white;
