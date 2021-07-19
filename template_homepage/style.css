@@ -57,9 +57,9 @@ html, body {
   font-family: Lato;
   margin-right:15px;
   margin-left: 15px;
-  color: white;
+  color: black;
   background: transparent;
-  border-color: white;
+  border-color: black;
   border-radius: 150px;
   padding: 20px;
   width: 200px;
@@ -67,7 +67,7 @@ html, body {
 }
 
 .btn:hover {
-    color: black;
-    background: white;
-    border-color: black;
+    color: white;
+    background: black;
+    border-color: white;
 }
