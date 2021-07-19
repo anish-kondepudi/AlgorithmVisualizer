@@ -1,14 +1,14 @@
 import {Route, BrowserRouter as Router} from "react-router-dom";
-import {landingPage} from "./pages/landingPage.js";
-import {sortingPage} from "./pages/sortingPage.js";
-import {graphPage} from "./pages/graphPage.js";
+import {LandingPage} from "./pages/LandingPage.js";
+import {SortingPage} from "./pages/SortingPage.js";
+import {GraphPage} from "./pages/GraphPage.js";
 
 const App = () => {
   return (
     <Router>
-      <Route path="/" exact component={landingPage}/>
-      <Route path="/sorting" component={sortingPage}/>
-      <Route path="/graph" component={graphPage}/>
+      <Route path="/" exact component={LandingPage}/>
+      <Route path="/sorting" component={SortingPage}/>
+      <Route path="/graph" component={GraphPage}/>
     </Router>
   );
 }

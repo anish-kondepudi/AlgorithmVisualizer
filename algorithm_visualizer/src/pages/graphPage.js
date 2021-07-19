@@ -1,5 +1,6 @@
+import "./GraphPage.css";
 
-export const graphPage = () => {
+export const GraphPage = () => {
   return (
     <h1> Graph Algorithms </h1>
   );
