@@ -11,7 +11,7 @@ html, body {
   overflow: hidden;
   position: absolute;
   z-index: -1;
-  background-color: darkcyan; /*Remove once particle system added*/
+  background-color: black; /*Remove once particle system added*/
 }
 #particle-canvas {
   width: 100%;

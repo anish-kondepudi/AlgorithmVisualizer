@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import "./SortingPage.css";
 
-const NUM_BARS = 20;
+const NUM_BARS = 50;
 
 export const SortingPage = () => {
 
@@ -46,6 +46,7 @@ export const SortingPage = () => {
         <button className="btn">Merge Sort</button>
       </div>
 
+      {/*Not Working - bar heights not dynamically being set*/}
       <div className="bars">
         {arr.map((value,id) => 
           <div className="bar" key={id} style={{height: `${value}px`}}>
