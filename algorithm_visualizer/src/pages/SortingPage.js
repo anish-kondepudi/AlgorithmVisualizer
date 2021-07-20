@@ -29,7 +29,7 @@ export const SortingPage = () => {
 
   // Resets array with randomized values
   const resetArray = () => {
-    setArr(randomArray())
+    setArr(randomArray());
   }
 
   return (
@@ -46,7 +46,7 @@ export const SortingPage = () => {
         <button className="btn">Merge Sort</button>
       </div>
 
-      {/*Not Working - bar heights not dynamically being set*/}
+      {/* Dynamically sets bar heights */}
       <div className="bars-container">
         {arr.map((value,index) => 
           <div className="bar" key={index} style={{'height': `${value}px` }}>
