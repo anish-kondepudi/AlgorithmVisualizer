@@ -11,8 +11,8 @@ export const LandingPage = () => {
       <div id="particle-canvas"></div>
 
       <div id="navigation">
-        <button className="btnHome" onClick={event =>  window.location.href='/sorting'}>Sorting</button>
-        <button className="btnHome" onClick={event =>  window.location.href='/graph'}>Graphs</button>
+        <button className="btn" onClick={event =>  window.location.href='/sorting'}>Sorting</button>
+        <button className="btn" onClick={event =>  window.location.href='/graph'}>Graphs</button>
       </div>
 
       <div id="title">

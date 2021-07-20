@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import "./SortingPage.css";
 
-const NUM_BARS = 50;
+const NUM_BARS = 75;
 
 export const SortingPage = () => {
 
@@ -47,13 +47,13 @@ export const SortingPage = () => {
       </div>
 
       {/*Not Working - bar heights not dynamically being set*/}
-      <div className="bars">
-        {arr.map((value,id) => 
-          <div className="bar" key={id} style={{height: `${value}px`}}>
-          {value}
+      <div className="bars-container">
+        {arr.map((value,index) => 
+          <div className="bar" key={index} style={{'height': `${value}px` }}>
           </div>)} 
       </div>
 
     </div>
   );
 }
+// style={{height: `${value}px`}}

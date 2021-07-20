@@ -1,23 +1,23 @@
-h1 {
-	color: black;
+.sortingPage h1 {
+	color: white;
 	text-align: center;
 	padding-top: 1%;
 }
 
-.nav-bar {
+.sortingPage .nav-bar {
 	padding-top: 1.5%;
 	text-align: center;
 	align-content: center;
 	align-self: center;
 }
 
-.divider {
+.sortingPage .divider {
   	border-left: 5px solid white;
 	margin-left: 0.75%;
 	margin-right: 0.75%;
 }
 
-.btn {
+.sortingPage .btn {
 	color: white;
 	background-color: transparent;
 	border-color: white;
@@ -30,22 +30,22 @@ h1 {
 	font-size: 140%;
 }
 
-.btn:hover {
+.sortingPage .btn:hover {
 	color: black;
 	background-color: white;
 	border-color: black;
 }
 
-.bars {
-	padding-top: 680px;
+.sortingPage .bars-container {
+	position: relative;
+	margin-top: 2%;
 	text-align: center;
-	align-content: center;
-	align-self: center;
 }
 
-.bar {
-	width: 2px;
-	background-color: white;
-	display: inline;
+.sortingPage .bar {
+	background-color: darkcyan;
+	width: 10px;
+	border-radius: 10px;
 	margin: 0 1px;
+	display: inline-block;
 }
