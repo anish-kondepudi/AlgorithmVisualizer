@@ -56,4 +56,3 @@ export const SortingPage = () => {
     </div>
   );
 }
-// style={{height: `${value}px`}}
