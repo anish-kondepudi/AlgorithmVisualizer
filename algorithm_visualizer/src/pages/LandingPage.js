@@ -5,37 +5,33 @@ export const LandingPage = () => {
   return (
     
     <div className="landingPage">
+    <div className="bubbles">
 
-      <script src="https://rawgit.com/JulianLaval/canvas-particle-network/master/particle-network.min.js"></script>
+        {/* Navigation Buttons to Algorithms Visualizers */}
+        <div id="navigation">
+          <button className="btn" onClick={event =>  window.location.href='/sorting'}>Sorting</button>
+          <button className="btn" onClick={event =>  window.location.href='/graph'}>Graphs</button>
+        </div>
 
-      <div id="particle-canvas"></div>
+        {/* Title*/}
+        <div id="title">
+          <span><b>ALGORITHM</b></span><br/>
+          <span><b>VISUALIZER</b></span>
+        </div>
 
-      <div id="navigation">
-        <button className="btn" onClick={event =>  window.location.href='/sorting'}>Sorting</button>
-        <button className="btn" onClick={event =>  window.location.href='/graph'}>Graphs</button>
-      </div>
+        {/* Bubbles*/}
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
 
-      <div id="title">
-        <span>
-          <b>ALGORITHM</b>
-        </span>
-        <br/>
-        <span>
-          <b>VISUALIZER</b>
-        </span>
-      </div>
-
-      {() => {
-        var canvasDiv = document.getElementById('particle-canvas');
-        var options = {
-          particleColor: '#e37575',
-          interactive: true,
-          speed: 'medium',
-          density: 'high'
-        };
-        /*var particleCanvas = new ParticleNetwork(canvasDiv, options);*/
-      }}
-
+    </div>
     </div>
   );
 }
