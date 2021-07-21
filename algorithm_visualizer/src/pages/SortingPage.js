@@ -1,14 +1,15 @@
 import { useState } from "react"
 import "./SortingPage.css";
-import { insertionSortAnimation } from "./sort_components/sortingAlgorithms.js"
+import { bubbleSortAnimation, insertionSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
 const NUM_BARS = 75;
 
 const DEFAULT_COLOR = "DarkCyan";
-const SORTED_COLOR = "green";
+const SORTED_COLOR = "Green";
+const SWAP_COLOR = "Red";
 const COMPARE_COLOR = "FloralWhite";
 
-const DELAY_TIME = 5;
+const DELAY_TIME = 10;
 
 export const SortingPage = () => {
 
@@ -49,7 +50,43 @@ export const SortingPage = () => {
 
   // Bubble Sort
   const bubbleSort = () => {
+    const animations = bubbleSortAnimation(arr);
 
+    for (let i=0; i<animations.length; i++) {
+      const arrayBars = document.getElementsByClassName('bar');
+      const [action, bar1_id, bar2_id] = animations[i];
+
+      const bar1_style = arrayBars[bar1_id].style;
+      const bar2_style = arrayBars[bar2_id].style;
+
+      // Performs corresponding animation for each action
+      if (action === 'compare') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = COMPARE_COLOR;
+          bar2_style.backgroundColor = COMPARE_COLOR;
+        }, i * DELAY_TIME);
+      } else if (action === 'swap') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = SWAP_COLOR;
+          bar2_style.backgroundColor = SWAP_COLOR;
+          // Swap Bars
+          let temp = bar1_style.height;
+          bar1_style.height = bar2_style.height;
+          bar2_style.height = temp;
+        }, i * DELAY_TIME);
+      } else if (action === 'clear') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = DEFAULT_COLOR;
+          bar2_style.backgroundColor = DEFAULT_COLOR;
+        }, i * DELAY_TIME);
+      } else if (action === 'sorted') {
+        setTimeout(() => {
+          const bar = arrayBars[bar1_id];
+          bar.style.backgroundColor = SORTED_COLOR;
+        }, i * DELAY_TIME);
+      }
+
+    }
   }
 
   // Merge Sort
@@ -57,20 +94,22 @@ export const SortingPage = () => {
 
   }
 
-  // Insertion Sort
+  // Insertion Sort (Performs Animation for Insertion Sort)
   const insertionSort = () => {
     const animations = insertionSortAnimation(arr);
-    const arrayBars = document.getElementsByClassName('bar');
+    
+    // Array of size 1 is sorted
+    const firstBar = document.getElementsByClassName('bar')[0];
+    firstBar.style.backgroundColor = SORTED_COLOR;
 
+    // Performs Animation
     for (let i = 0; i < animations.length; i++) {
+
       const arrayBars = document.getElementsByClassName('bar');
-      const [bar1_id, bar2_id] = animations[i];
+      const [action, bar1_id, bar2_id] = animations[i];
 
-      //Array of size 1 is sorted
-      arrayBars[0].style.backgroundColor = SORTED_COLOR;
-
-      // Swaps bars (-1 indicates end of iteration)
-      if (bar1_id !== -1) {
+      // Performs corresponding animation for each action
+      if (action === 'swap') {
         const bar1_style = arrayBars[bar1_id].style;
         const bar2_style = arrayBars[bar2_id].style;
 
@@ -83,10 +122,10 @@ export const SortingPage = () => {
           bar2_style.height = temp;
 
         }, i * DELAY_TIME);
-      } else {
+      } else if (action === 'startIter' || action === 'endIter') {
         setTimeout(() => {
-          const bar2_style = arrayBars[bar2_id].style;
-          bar2_style.backgroundColor = SORTED_COLOR;
+          const bar = arrayBars[bar1_id];
+          bar.style.backgroundColor = SORTED_COLOR;
         }, i * DELAY_TIME);
       }
 
