@@ -53,6 +53,25 @@
 	transition: max-height 0.8s;
 }
 
+.sortingPage .sliders {
+	margin-top: 2%;
+	text-align: center;
+	align-content: center;
+	align-self: center;
+}
+
+.sortingPage .slider {
+	margin-top: 1%;
+}
+
+.sortingPage label {
+	color: white;
+
+}
+.sortingPage input {
+	width: 500px;
+}
+
 @keyframes transitionIn {
   from {
     opacity: 0;

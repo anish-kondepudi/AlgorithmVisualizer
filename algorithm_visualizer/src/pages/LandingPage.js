@@ -18,7 +18,7 @@ export const LandingPage = () => {
         </div>
 
         {/* Bubbles*/}
-        {[...Array(10)].map((e, i) => <div class="bubble" key={i}></div>)}
+        {[...Array(10)].map((e, i) => <div className="bubble" key={i}></div>)}
         
     </div>
   );
