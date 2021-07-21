@@ -4,17 +4,25 @@ export const bubbleSortAnimation = (array) => {
     const n = array.length
     let i, j;
 
-    for (i=0; i<n-1; i++) {
-        for (j=0; j<n-i-1; j++) {
+    // n-1 runs of bubble sort
+    for (i = 0; i < n-1; i++) {
+        // runs 1 less from the end each time
+        for (j = 0; j < n-i-1; j++) {
+
             animations.push(['compare',j,j+1]);
+
+            // Swap array[j] and array[j-1] if it's larger
             if (array[j] > array[j+1]) {
-                // Swap array[j] and array[j-1]
+
                 let temp = array[j];
                 array[j] = array[j+1];
                 array[j+1] = temp;
+
                 animations.push(['swap',j,j+1]);
             }
+
             animations.push(['clear',j,j+1]);
+
             if (j+1 === n-i-1) {
                 animations.push(['sorted',j+1,j+1]);
             }
@@ -48,9 +56,9 @@ export const insertionSortAnimation = (array) => {
 }
 
 export const quickSortAnimation = (array) => {
-    let animations = [];
+    const animations = [];
 
-    let partition = (arr, start, end) => {
+    const partition = (arr, start, end) => {
         // Taking the last element as the pivot
         const pivotValue = arr[end];
         let pivotIndex = start; 
@@ -70,19 +78,17 @@ export const quickSortAnimation = (array) => {
         animations.push(['swap', end, pivotIndex]);
         animations.push(['clear', end, pivotIndex]);
 
-        //animations.push(['sorted', pivotIndex]);
-
         return pivotIndex;
     };
 
-    let quickSort = (arr, start, end) => {
+    const quickSort = (arr, start, end) => {
         // Base case or terminating case
         if (start > end) {
             return;
         }
         
         // Returns pivotIndex
-        let index = partition(arr, start, end);
+        const index = partition(arr, start, end);
 
         animations.push(['sorted', index, index]);
         

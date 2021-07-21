@@ -43,7 +43,6 @@ export const SortingPage = () => {
   // Quick Sort
   const quickSort = () => {
     const animations = quickSortAnimation(arr);
-    const arrayBars = document.getElementsByClassName('bar');
     
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
