@@ -37,7 +37,7 @@ export const SortingPage = () => {
 
   // Create randomized array upon launch of page
   const [arr, setArr] = useState(randomArray());
-  
+
   // Resets array with default color and randomized values 
   const resetArray = () => {
     setArr(randomArray());

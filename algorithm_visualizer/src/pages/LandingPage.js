@@ -4,9 +4,7 @@ export const LandingPage = () => {
 
   return (
     
-    <div className="landingPage">
-    <div className="bubbles">
-
+    <div className="landingPage bubbles">
         {/* Navigation Buttons to Algorithms Visualizers */}
         <div id="navigation">
           <button className="btn" onClick={event =>  window.location.href='/sorting'}>Sorting</button>
@@ -21,8 +19,7 @@ export const LandingPage = () => {
 
         {/* Bubbles*/}
         {[...Array(10)].map((e, i) => <div class="bubble" key={i}></div>)}
-
-    </div>
+        
     </div>
   );
 }
