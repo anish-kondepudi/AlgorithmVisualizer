@@ -22,16 +22,21 @@ export const SortingPage = () => {
   // Returns randomized array
   const randomArray = () => {
     const array = [];
-    for (let i=0; i<NUM_BARS; i++) {
-      array.push(getRandomInt(5,500));
+    for (let i=1; i<=NUM_BARS; i++) {
+      array.push(i);
     }
-    return array;
+
+    for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array.map(x => x*5);
   }
 
   // Create randomized array upon launch of page
-  const [arr, setArr] = useState(() => {
-      return randomArray();
-  })
+  const [arr, setArr] = useState(randomArray());
 
   // Resets array with default color and randomized values 
   const resetArray = () => {
