@@ -4,8 +4,8 @@ export const bubbleSortAnimation = (array) => {
     const n = array.length
     let i, j;
 
-    for (let i=0; i<n-1; i++) {
-        for (let j=0; j<n-i-1; j++) {
+    for (i=0; i<n-1; i++) {
+        for (j=0; j<n-i-1; j++) {
             animations.push(['compare',j,j+1]);
             if (array[j] > array[j+1]) {
                 // Swap array[j] and array[j-1]
@@ -25,16 +25,12 @@ export const bubbleSortAnimation = (array) => {
 
 export const insertionSortAnimation = (array) => {
     const animations = [];
-    let i, j, key;
+    let i, j;
  
     for (i = 1; i < array.length; i++) {
         j = i;
         // Insert array[i] into list 0..i-1
         while (j >= 0 && array[j] < array[j-1]) {
-            // Add start of iteration to animation
-            // if (i === j) {
-            //     animations.push(['compare',j,j])
-            // }   
             // Swap array[j] and array[j-1]
             let temp = array[j];
             array[j] = array[j-1];

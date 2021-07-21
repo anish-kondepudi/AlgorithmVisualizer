@@ -2,23 +2,16 @@ import { useState } from "react"
 import "./SortingPage.css";
 import { bubbleSortAnimation, insertionSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
-const NUM_BARS = 75;
+let NUM_BARS = 75;
+let DELAY_TIME = 10;
+
 
 const DEFAULT_COLOR = "DarkCyan";
 const SORTED_COLOR = "Green";
 const SWAP_COLOR = "Red";
 const COMPARE_COLOR = "FloralWhite";
 
-const DELAY_TIME = 10;
-
 export const SortingPage = () => {
-
-  // Returns a random number between min (inclusive) and max (inclusive)
-  const getRandomInt = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
 
   // Returns randomized array
   const randomArray = () => {
@@ -42,7 +35,7 @@ export const SortingPage = () => {
   const resetArray = () => {
     setArr(randomArray());
     const arrayBars = [...document.getElementsByClassName('bar')];
-    arrayBars.map((bar) => {
+    arrayBars.forEach((bar) => {
       bar.style.backgroundColor = DEFAULT_COLOR;
     })
   }
@@ -88,7 +81,6 @@ export const SortingPage = () => {
           bar1_style.backgroundColor = SORTED_COLOR;
         }, i * DELAY_TIME);
       }
-
     }
   }
 
@@ -136,10 +128,7 @@ export const SortingPage = () => {
           bar1_style.backgroundColor = SORTED_COLOR;
         }, i * DELAY_TIME);
       }
-
     }
-
-
   }
 
   return (
@@ -147,9 +136,10 @@ export const SortingPage = () => {
       
       <h1> Sorting Algorithms </h1>
       
+      {/* Buttons to Start/Reset Sorting Visualizer */}
       <div className="nav-bar">
         <button className="btn" onClick={() => resetArray()}>Reset</button>
-        <span class="divider"></span>
+        <span className="divider"></span>
         <button className="btn" onClick={() => quickSort()}>Quick Sort</button>
         <button className="btn" onClick={() => bubbleSort()}>Bubble Sort</button>
         <button className="btn" onClick={() => mergeSort()}>Merge Sort</button>
@@ -162,6 +152,19 @@ export const SortingPage = () => {
           <div className="bar" key={index} style={{'height': `${value}px` }}>
           </div>)} 
       </div>
+
+    {/* Sliders to Adjust Sorting Visualizer */}
+      <div className="sliders">
+        <div className="slider">
+          <label htmlFor="speedSlider" className="form-label">Animation Speed</label><br></br>
+          <input type="range" className="form-range" min="1" max="500" id="speedSlider"></input>
+        </div>
+        <div className="slider">
+          <label htmlFor="numBarsSlider" className="form-label">Number of Bars</label><br></br>
+          <input type="range" className="form-range"  min="10" max="150" id="numBarsSlider"></input>
+        </div>
+      </div>
+
 
     </div>
   );
