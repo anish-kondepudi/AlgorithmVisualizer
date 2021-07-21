@@ -43,6 +43,7 @@ export const SortingPage = () => {
   // Quick Sort
   const quickSort = () => {
     const animations = quickSortAnimation(arr);
+    const QSORT_DELAY_TIME = DELAY_TIME;
     
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -56,7 +57,7 @@ export const SortingPage = () => {
         setTimeout(() => {
           bar1_style.backgroundColor = COMPARE_COLOR;
           bar2_style.backgroundColor = COMPARE_COLOR;
-        }, i * DELAY_TIME);
+        }, i * QSORT_DELAY_TIME);
       } else if (action === 'swap') {
         setTimeout(() => {
           bar1_style.backgroundColor = SWAP_COLOR;
@@ -65,25 +66,27 @@ export const SortingPage = () => {
           let temp = bar1_style.height;
           bar1_style.height = bar2_style.height;
           bar2_style.height = temp;
-        }, i * DELAY_TIME);
+        }, i * QSORT_DELAY_TIME);
       } else if (action === 'clear') {
         setTimeout(() => {
           bar1_style.backgroundColor = DEFAULT_COLOR;
           bar2_style.backgroundColor = DEFAULT_COLOR;
-        }, i * DELAY_TIME);
+        }, i * QSORT_DELAY_TIME);
       } else if (action === 'sorted') {
         setTimeout(() => {
           bar1_style.backgroundColor = SORTED_COLOR;
-        }, i * DELAY_TIME);
+        }, i * QSORT_DELAY_TIME);
       }
 
     }
     
   }
 
+
   // Bubble Sort
   const bubbleSort = () => {
     const animations = bubbleSortAnimation(arr);
+    const BUBBLE_DELAY_TIME = DELAY_TIME/2;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -97,7 +100,7 @@ export const SortingPage = () => {
         setTimeout(() => {
           bar1_style.backgroundColor = COMPARE_COLOR;
           bar2_style.backgroundColor = COMPARE_COLOR;
-        }, i * DELAY_TIME);
+        }, i * BUBBLE_DELAY_TIME);
       } else if (action === 'swap') {
         setTimeout(() => {
           bar1_style.backgroundColor = SWAP_COLOR;
@@ -106,16 +109,16 @@ export const SortingPage = () => {
           let temp = bar1_style.height;
           bar1_style.height = bar2_style.height;
           bar2_style.height = temp;
-        }, i * DELAY_TIME);
+        }, i * BUBBLE_DELAY_TIME);
       } else if (action === 'clear') {
         setTimeout(() => {
           bar1_style.backgroundColor = DEFAULT_COLOR;
           bar2_style.backgroundColor = DEFAULT_COLOR;
-        }, i * DELAY_TIME);
+        }, i * BUBBLE_DELAY_TIME);
       } else if (action === 'sorted') {
         setTimeout(() => {
           bar1_style.backgroundColor = SORTED_COLOR;
-        }, i * DELAY_TIME);
+        }, i * BUBBLE_DELAY_TIME);
       }
     }
   }
@@ -128,6 +131,7 @@ export const SortingPage = () => {
   // Insertion Sort (Performs Animation for Insertion Sort)
   const insertionSort = () => {
     const animations = insertionSortAnimation(arr);
+    const ISORT_DELAY_TIME = DELAY_TIME/1.5;
     
     // Array of size 1 is sorted
     const firstBar = document.getElementsByClassName('bar')[0];
@@ -153,16 +157,16 @@ export const SortingPage = () => {
           bar1_style.height = bar2_style.height;
           bar2_style.height = temp;
 
-        }, i * DELAY_TIME);
+        }, i * ISORT_DELAY_TIME);
       } else if (action === 'clear') {
         setTimeout(() => {
           bar1_style.backgroundColor = SORTED_COLOR;
           bar2_style.backgroundColor = SORTED_COLOR;
-        }, i * DELAY_TIME);
+        }, i * ISORT_DELAY_TIME);
       } else if (action === 'sorted') {
         setTimeout(() => {
           bar1_style.backgroundColor = SORTED_COLOR;
-        }, i * DELAY_TIME);
+        }, i * ISORT_DELAY_TIME);
       }
     }
   }

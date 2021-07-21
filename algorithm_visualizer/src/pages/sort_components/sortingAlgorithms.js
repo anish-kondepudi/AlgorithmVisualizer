@@ -11,13 +11,9 @@ export const bubbleSortAnimation = (array) => {
 
             animations.push(['compare',j,j+1]);
 
-            // Swap array[j] and array[j-1] if it's larger
             if (array[j] > array[j+1]) {
-
-                let temp = array[j];
-                array[j] = array[j+1];
-                array[j+1] = temp;
-
+                // Swap array[j] and array[j+1]
+                [array[j],  array[j+1]] = [ array[j+1], array[j]];
                 animations.push(['swap',j,j+1]);
             }
 
@@ -28,6 +24,7 @@ export const bubbleSortAnimation = (array) => {
             }
         }
     }
+    animations.push(['sorted',0,0]);
     return animations;
 }
 
@@ -40,9 +37,7 @@ export const insertionSortAnimation = (array) => {
         // Insert array[i] into list 0..i-1
         while (j >= 0 && array[j] < array[j-1]) {
             // Swap array[j] and array[j-1]
-            let temp = array[j];
-            array[j] = array[j-1];
-            array[j-1] = temp;
+            [array[j],  array[j-1]] = [ array[j-1], array[j]];
             // Add swapping to animation
             animations.push(['swap',j,j-1])
             animations.push(['clear',j,j-1]);
@@ -60,7 +55,7 @@ export const quickSortAnimation = (array) => {
 
     const partition = (arr, start, end) => {
         // Taking the last element as the pivot
-        const pivotValue = arr[end];
+        let pivotValue = arr[end];
         let pivotIndex = start; 
         for (let i = start; i < end; i++) {
             if (arr[i] < pivotValue) {
