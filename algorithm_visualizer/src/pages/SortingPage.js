@@ -1,6 +1,6 @@
 import { useState } from "react"
 import "./SortingPage.css";
-import { bubbleSortAnimation, insertionSortAnimation } from "./sort_components/sortingAlgorithms.js"
+import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
 const NUM_BARS = 75;
 
@@ -9,7 +9,7 @@ const SORTED_COLOR = "Green";
 const SWAP_COLOR = "Red";
 const COMPARE_COLOR = "FloralWhite";
 
-const DELAY_TIME = 10;
+const DELAY_TIME = 30;
 
 export const SortingPage = () => {
 
@@ -49,7 +49,44 @@ export const SortingPage = () => {
 
   // Quick Sort
   const quickSort = () => {
+    const animations = quickSortAnimation(arr);
+    const arrayBars = document.getElementsByClassName('bar');
+    
+    for (let i=0; i<animations.length; i++) {
+      const arrayBars = document.getElementsByClassName('bar');
+      const [action, bar1_id, bar2_id] = animations[i];
 
+      const bar1_style = arrayBars[bar1_id].style;
+      const bar2_style = arrayBars[bar2_id].style;
+
+      // Performs corresponding animation for each action
+      if (action === 'compare') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = COMPARE_COLOR;
+          bar2_style.backgroundColor = COMPARE_COLOR;
+        }, i * DELAY_TIME);
+      } else if (action === 'swap') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = SWAP_COLOR;
+          bar2_style.backgroundColor = SWAP_COLOR;
+          // Swap Bars
+          let temp = bar1_style.height;
+          bar1_style.height = bar2_style.height;
+          bar2_style.height = temp;
+        }, i * DELAY_TIME);
+      } else if (action === 'clear') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = DEFAULT_COLOR;
+          bar2_style.backgroundColor = DEFAULT_COLOR;
+        }, i * DELAY_TIME);
+      } else if (action === 'sorted') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = SORTED_COLOR;
+        }, i * DELAY_TIME);
+      }
+
+    }
+    
   }
 
   // Bubble Sort
@@ -148,7 +185,7 @@ export const SortingPage = () => {
       <h1> Sorting Algorithms </h1>
       
       <div className="nav-bar">
-        <button className="btn" onClick={() => resetArray()}>Reset</button>
+        <button className="btn" onClick={resetArray}>Reset</button>
         <span class="divider"></span>
         <button className="btn" onClick={() => quickSort()}>Quick Sort</button>
         <button className="btn" onClick={() => bubbleSort()}>Bubble Sort</button>
