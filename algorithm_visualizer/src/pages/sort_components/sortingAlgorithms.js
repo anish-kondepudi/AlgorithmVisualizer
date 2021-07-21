@@ -32,20 +32,21 @@ export const insertionSortAnimation = (array) => {
         // Insert array[i] into list 0..i-1
         while (j >= 0 && array[j] < array[j-1]) {
             // Add start of iteration to animation
-            if (i === j) {
-                animations.push(['startIter',j,j])
-            }   
+            // if (i === j) {
+            //     animations.push(['compare',j,j])
+            // }   
             // Swap array[j] and array[j-1]
             let temp = array[j];
             array[j] = array[j-1];
             array[j-1] = temp;
             // Add swapping to animation
             animations.push(['swap',j,j-1])
+            animations.push(['clear',j,j-1]);
             // Decrement j by 1
             j -= 1;
         }
         // Add end of iteration to animation
-        animations.push(['endIter',j,j])
+        animations.push(['sorted',j,j])
     }
     return animations;
 }

@@ -20,16 +20,7 @@ export const LandingPage = () => {
         </div>
 
         {/* Bubbles*/}
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
+        {[...Array(10)].map((e, i) => <div class="bubble" key={i}></div>)}
 
     </div>
     </div>

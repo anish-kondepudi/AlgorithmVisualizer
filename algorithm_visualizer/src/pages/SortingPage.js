@@ -23,17 +23,21 @@ export const SortingPage = () => {
   // Returns randomized array
   const randomArray = () => {
     const array = [];
-    for (let i=0; i<NUM_BARS; i++) {
-      array.push(getRandomInt(5,500));
+    for (let i=1; i<=NUM_BARS; i++) {
+      array.push(i);
     }
-    return array;
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      let temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array.map(x => x*5);
   }
 
   // Create randomized array upon launch of page
-  const [arr, setArr] = useState(() => {
-      return randomArray();
-  })
-
+  const [arr, setArr] = useState(randomArray());
+  
   // Resets array with default color and randomized values 
   const resetArray = () => {
     setArr(randomArray());
@@ -81,8 +85,7 @@ export const SortingPage = () => {
         }, i * DELAY_TIME);
       } else if (action === 'sorted') {
         setTimeout(() => {
-          const bar = arrayBars[bar1_id];
-          bar.style.backgroundColor = SORTED_COLOR;
+          bar1_style.backgroundColor = SORTED_COLOR;
         }, i * DELAY_TIME);
       }
 
@@ -108,24 +111,29 @@ export const SortingPage = () => {
       const arrayBars = document.getElementsByClassName('bar');
       const [action, bar1_id, bar2_id] = animations[i];
 
+      const bar1_style = arrayBars[bar1_id].style;
+      const bar2_style = arrayBars[bar2_id].style;
+
       // Performs corresponding animation for each action
       if (action === 'swap') {
-        const bar1_style = arrayBars[bar1_id].style;
-        const bar2_style = arrayBars[bar2_id].style;
 
         setTimeout(() => {
-          bar1_style.backgroundColor = SORTED_COLOR;
-          bar2_style.backgroundColor = COMPARE_COLOR;
+          bar1_style.backgroundColor = SWAP_COLOR;
+          bar2_style.backgroundColor = SWAP_COLOR;
 
           let temp = bar1_style.height;
           bar1_style.height = bar2_style.height;
           bar2_style.height = temp;
 
         }, i * DELAY_TIME);
-      } else if (action === 'startIter' || action === 'endIter') {
+      } else if (action === 'clear') {
         setTimeout(() => {
-          const bar = arrayBars[bar1_id];
-          bar.style.backgroundColor = SORTED_COLOR;
+          bar1_style.backgroundColor = SORTED_COLOR;
+          bar2_style.backgroundColor = SORTED_COLOR;
+        }, i * DELAY_TIME);
+      } else if (action === 'sorted') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = SORTED_COLOR;
         }, i * DELAY_TIME);
       }
 
