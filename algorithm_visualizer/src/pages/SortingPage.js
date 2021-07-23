@@ -39,11 +39,6 @@ export const SortingPage = () => {
     })
   }
 
-  // Returns RGB value as a string
-  const rgb = (r, g, b) => {
-  return "rgb("+r+","+g+","+b+")";
-  }
-
   // Quick Sort
   const quickSort = () => {
     
@@ -90,7 +85,7 @@ export const SortingPage = () => {
   // Bubble Sort
   const bubbleSort = () => {
     const animations = bubbleSortAnimation(arr);
-    const BUBBLE_DELAY_TIME = DELAY_TIME/5;
+    const BUBBLE_DELAY_TIME = DELAY_TIME/4;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -156,19 +151,15 @@ export const SortingPage = () => {
   // Shell Sort
   const shellSort = () => {
     const animations = shellSortAnimation(arr);
-    const iterations = animations[animations.length-1][0];
 
-    const SHELL_SORT_DELAY_TIME = DELAY_TIME;
+    const SHELL_SORT_DELAY_TIME = DELAY_TIME*1.2;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
-      const [iteration, action, bar1_id, bar2_id] = animations[i];
+      const [action, bar1_id, bar2_id] = animations[i];
 
       const bar1_style = arrayBars[bar1_id].style;
       const bar2_style = arrayBars[bar2_id].style;
-
-      let rgb_shift = 24*(iterations-iteration);
-      let iterationColor = rgb(0,128,rgb_shift);
 
       // Performs corresponding animation for each action
       if (action === 'compare') {
@@ -185,16 +176,10 @@ export const SortingPage = () => {
           bar1_style.height = bar2_style.height;
           bar2_style.height = temp;
         }, i * SHELL_SORT_DELAY_TIME);
-      } else if (action === 'semi_sorted') {
-        setTimeout(() => {
-          // 0,128,0
-          bar1_style.backgroundColor = iterationColor;
-          bar2_style.backgroundColor = iterationColor;
-        }, i * SHELL_SORT_DELAY_TIME);
       } else if (action === 'sorted') {
         setTimeout(() => {
-          bar1_style.backgroundColor = iterationColor;
-          bar2_style.backgroundColor = iterationColor;
+          bar1_style.backgroundColor = SORTED_COLOR;
+          bar2_style.backgroundColor = SORTED_COLOR;
         }, i * SHELL_SORT_DELAY_TIME);
       }
     }
