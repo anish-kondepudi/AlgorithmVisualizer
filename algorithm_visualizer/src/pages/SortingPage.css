@@ -1,5 +1,5 @@
 
-.sortingPage h1 {
+.sortingPage .title {
 	color: white;
 	text-align: center;
 	padding-top: 1%;
@@ -81,4 +81,38 @@
     opacity: 1;
     transform: rotateY(0deg);
   }
+}
+
+.center-container {
+	display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top:  40px;
+}
+
+.algorithm-name {
+	margin-right: 30px;
+}
+
+.algorithm-name h1 {
+	color: white;
+	text-align: center;
+}
+
+.bigO-container {
+	margin-left: 30px;
+}
+
+.bigO-container h1 {
+	color: white;
+	display: inline-block;
+	margin-right: 10px;
+}
+
+.separator {
+  border-left: 6px solid white;
+  height: 200px;
+  left: 50%;
+  margin: ;
+  top: 0;
 }

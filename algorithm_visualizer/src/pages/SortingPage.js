@@ -2,7 +2,7 @@ import { useState } from "react"
 import "./SortingPage.css";
 import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
-let NUM_BARS = 75;
+let NUM_BARS = 90;
 let DELAY_TIME = 10;
 
 const DEFAULT_COLOR = "DarkCyan";
@@ -46,8 +46,9 @@ export const SortingPage = () => {
 
   // Quick Sort
   const quickSort = () => {
+    
     const animations = quickSortAnimation(arr);
-    const QSORT_DELAY_TIME = DELAY_TIME*1.2;
+    const QSORT_DELAY_TIME = DELAY_TIME;
     
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -81,7 +82,6 @@ export const SortingPage = () => {
           bar1_style.backgroundColor = SORTED_COLOR;
         }, i * QSORT_DELAY_TIME);
       }
-
     }
     
   }
@@ -90,7 +90,7 @@ export const SortingPage = () => {
   // Bubble Sort
   const bubbleSort = () => {
     const animations = bubbleSortAnimation(arr);
-    const BUBBLE_DELAY_TIME = DELAY_TIME/10;
+    const BUBBLE_DELAY_TIME = DELAY_TIME/5;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -137,7 +137,7 @@ export const SortingPage = () => {
     const animations = shellSortAnimation(arr);
     const iterations = animations[animations.length-1][0];
 
-    const SHELL_SORT_DELAY_TIME = DELAY_TIME/1.5;
+    const SHELL_SORT_DELAY_TIME = DELAY_TIME;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -183,7 +183,7 @@ export const SortingPage = () => {
   // Insertion Sort (Performs Animation for Insertion Sort)
   const insertionSort = () => {
     const animations = insertionSortAnimation(arr);
-    const ISORT_DELAY_TIME = DELAY_TIME/4;  
+    const ISORT_DELAY_TIME = DELAY_TIME/2.5;  
     
     // Array of size 1 is sorted
     const firstBar = document.getElementsByClassName('bar')[0];
@@ -223,22 +223,51 @@ export const SortingPage = () => {
     }
   }
 
+  const updateTimeComplexity = (algo, best, avg, worst) => {
+
+    let algorithm = document.querySelector("#root>div>div.center-container>div.algorithm-name>h1:nth-child(1)");
+    let best_time = document.querySelector("#root>div>div.center-container>div.bigO-container>div.best-bigO>h1:nth-child(2)"); 
+    let avg_time = document.querySelector("#root>div>div.center-container>div.bigO-container>div.average-bigO>h1:nth-child(2)");
+    let worst_time = document.querySelector("#root>div>div.center-container>div.bigO-container>div.worst-bigO>h1:nth-child(2)");
+
+    algorithm.textContent = algo;
+    best_time.textContent = best;
+    avg_time.textContent = avg;
+    worst_time.textContent = worst;
+
+  }
+
   return (
     <div className="sortingPage">
       
-      <h1> Sorting Algorithms </h1>
-      
+      <h1 className="title"> Sorting Algorithms </h1>
+
       {/* Buttons to Start/Reset Sorting Visualizer */}
       <div className="nav-bar">
         <button className="btn" onClick={() => resetArray()}>Reset</button>
         <span className="divider"></span>
-        <button className="btn" onClick={() => quickSort()}>Quick Sort</button>
-        <button className="btn" onClick={() => shellSort()}>Shell Sort</button>
-        <button className="btn" onClick={() => bubbleSort()}>Bubble Sort</button>
-        <button className="btn" onClick={() => mergeSort()}>Merge Sort</button>
-        <button className="btn" onClick={() => insertionSort()}>Insertion Sort</button>
+        <button className="btn" onClick={() => {
+          quickSort();
+          updateTimeComplexity('Quick Sort','Ω(nlogn)','θ(nlogn)','O(n^2)');}
+        }>Quick Sort</button>
+        <button className="btn" onClick={() => {
+          shellSort();
+          updateTimeComplexity('Shell Sort','Ω(nlogn)','θ(nlogn)','O(n^2)');}
+        }>Shell Sort</button>
+        <button className="btn" onClick={() => {
+          bubbleSort();
+          updateTimeComplexity('Bubble Sort','Ω(n)','θ(n^2)','O(n^2)');}
+        }>Bubble Sort</button>
+        <button className="btn" onClick={() => {
+          mergeSort();
+          updateTimeComplexity('Merge Sort','Ω(nlogn)','θ(nlogn)','O(nlogn)');}
+        }>Merge Sort</button>
+        <button className="btn" onClick={() => {
+          insertionSort();
+          updateTimeComplexity('Insertion Sort','Ω(n)','θ(n^2)','O(n^2)');}
+        }>Insertion Sort</button>
       </div>
-
+      
       {/* Dynamically sets bar heights */}
       <div className="bars-container">
         {arr.map((value,index) => 
@@ -246,18 +275,28 @@ export const SortingPage = () => {
           </div>)} 
       </div>
 
-    {/* Sliders to Adjust Sorting Visualizer */}
-      <div className="sliders">
-        <div className="slider">
-          <label htmlFor="speedSlider" className="form-label">Animation Speed</label><br></br>
-          <input type="range" className="form-range" min="1" max="500" id="speedSlider"></input>
+      {/* Dynamically sets bar heights */}
+      <div className="center-container">
+        <div className="algorithm-name">
+          <h1> Insertion Sort </h1>
+          <h1> Time Complexity </h1>
         </div>
-        <div className="slider">
-          <label htmlFor="numBarsSlider" className="form-label">Number of Bars</label><br></br>
-          <input type="range" className="form-range"  min="10" max="150" id="numBarsSlider"></input>
+        <div className="separator"></div>
+        <div className="bigO-container">
+          <div className="best-bigO">
+              <h1> Best: </h1>
+              <h1> Ω(n) </h1>
+          </div>
+          <div className="average-bigO">
+            <h1> Average: </h1>
+            <h1> θ(n^2) </h1>
+          </div>
+          <div className="worst-bigO">
+            <h1> Worst: </h1>
+            <h1> O(n^2) </h1>
+          </div>
         </div>
       </div>
-
 
     </div>
   );
