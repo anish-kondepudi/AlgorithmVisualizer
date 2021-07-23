@@ -6,7 +6,7 @@ let NUM_BARS = 90;
 let DELAY_TIME = 10;
 
 const DEFAULT_COLOR = "DarkCyan";
-const SORTED_COLOR = "Green"; // This must be manually updated for Shell Sort
+const SORTED_COLOR = "Green";
 const SWAP_COLOR = "Red";
 const COMPARE_COLOR = "FloralWhite";
 
