@@ -152,7 +152,7 @@ export const SortingPage = () => {
   const shellSort = () => {
     const animations = shellSortAnimation(arr);
 
-    const SHELL_SORT_DELAY_TIME = DELAY_TIME*1.2;
+    const SHELL_SORT_DELAY_TIME = DELAY_TIME*1.5;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
