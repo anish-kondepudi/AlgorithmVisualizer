@@ -1,6 +1,6 @@
 import { useState } from "react"
 import "./SortingPage.css";
-import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation } from "./sort_components/sortingAlgorithms.js"
+import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation, mergeSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
 let NUM_BARS = 90;
 let DELAY_TIME = 10;
@@ -48,7 +48,7 @@ export const SortingPage = () => {
   const quickSort = () => {
     
     const animations = quickSortAnimation(arr);
-    const QSORT_DELAY_TIME = DELAY_TIME;
+    const QSORT_DELAY_TIME = DELAY_TIME*1.5;
     
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -127,9 +127,30 @@ export const SortingPage = () => {
     }
   }
 
-  // Merge Sort
+  // Merge Sort (Credit to Clément Mihailescu for Merge Sort Implementation)
   const mergeSort = () => {
-
+    const MERGE_SORT_DELAY = DELAY_TIME/2;
+    const animations = mergeSortAnimation(arr);
+    for (let i = 0; i < animations.length; i++) {
+      const arrayBars = document.getElementsByClassName('bar');
+      const isColorChange = i % 3 !== 2;
+      if (isColorChange) {
+        const [barOneIdx, barTwoIdx] = animations[i];
+        const barOneStyle = arrayBars[barOneIdx].style;
+        const barTwoStyle = arrayBars[barTwoIdx].style;
+        const color = i % 3 === 0 ? SWAP_COLOR : SORTED_COLOR;
+        setTimeout(() => {
+          barOneStyle.backgroundColor = color;
+          barTwoStyle.backgroundColor = color;
+        }, i * MERGE_SORT_DELAY);
+      } else {
+        setTimeout(() => {
+          const [barOneIdx, newHeight] = animations[i];
+          const barOneStyle = arrayBars[barOneIdx].style;
+          barOneStyle.height = `${newHeight}px`;
+        }, i * MERGE_SORT_DELAY);
+      }
+    }
   }
 
   // Shell Sort
