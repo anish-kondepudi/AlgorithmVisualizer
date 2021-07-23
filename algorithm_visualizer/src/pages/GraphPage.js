@@ -56,7 +56,6 @@ export const GraphPage = () => {
                 const {row, col} = node;
                   return (
                     <Node
-                      key={nodeIdx}
                       row={row}
                       col={col}>
                     </Node>

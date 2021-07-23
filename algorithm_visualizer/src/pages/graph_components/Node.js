@@ -1,12 +1,11 @@
 import "./Node.css";
 
-export const Node = ({key,row,col}) => {
+export const Node = ({row,col,id}) => {
 
   return (
     <div
-    	key={key}
-        id={`node-${row}-${col}`}
-        className={`node`}>
+      id={`node-${row}-${col}`}
+      className={`node`}>
     </div>
   );
 }
