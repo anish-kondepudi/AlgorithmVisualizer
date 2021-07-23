@@ -12,6 +12,15 @@ const COMPARE_COLOR = "FloralWhite";
 
 export const SortingPage = () => {
 
+  // Clears all setTimeout()'s [Hack]
+  const clearAllTimeouts = () => {
+    // Set a fake timeout to get the highest timeout id
+    var highestTimeoutId = setTimeout(";");
+    for (var i = 0 ; i < highestTimeoutId ; i++) {
+        clearTimeout(i); 
+    }
+  }
+
   // Returns randomized array
   const randomArray = () => {
     const array = [];
@@ -32,6 +41,7 @@ export const SortingPage = () => {
 
   // Resets array with default color and randomized values 
   const resetArray = () => {
+    clearAllTimeouts();
     setArr(randomArray());
     const arrayBars = [...document.getElementsByClassName('bar')];
     
@@ -47,7 +57,8 @@ export const SortingPage = () => {
 
   // Quick Sort
   const quickSort = () => {
-    
+    clearAllTimeouts();
+
     const animations = quickSortAnimation(arr);
     const QSORT_DELAY_TIME = DELAY_TIME*1.5;
     
