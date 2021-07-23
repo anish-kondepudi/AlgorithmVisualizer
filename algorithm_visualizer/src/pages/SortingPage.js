@@ -1,13 +1,12 @@
 import { useState } from "react"
 import "./SortingPage.css";
-import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation } from "./sort_components/sortingAlgorithms.js"
+import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
 let NUM_BARS = 75;
 let DELAY_TIME = 10;
 
-
 const DEFAULT_COLOR = "DarkCyan";
-const SORTED_COLOR = "Green";
+const SORTED_COLOR = "Green"; // This must be manually updated for Shell Sort
 const SWAP_COLOR = "Red";
 const COMPARE_COLOR = "FloralWhite";
 
@@ -40,10 +39,15 @@ export const SortingPage = () => {
     })
   }
 
+  // Returns RGB value as a string
+  const rgb = (r, g, b) => {
+  return "rgb("+r+","+g+","+b+")";
+  }
+
   // Quick Sort
   const quickSort = () => {
     const animations = quickSortAnimation(arr);
-    const QSORT_DELAY_TIME = DELAY_TIME;
+    const QSORT_DELAY_TIME = DELAY_TIME*1.2;
     
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -86,7 +90,7 @@ export const SortingPage = () => {
   // Bubble Sort
   const bubbleSort = () => {
     const animations = bubbleSortAnimation(arr);
-    const BUBBLE_DELAY_TIME = DELAY_TIME/2;
+    const BUBBLE_DELAY_TIME = DELAY_TIME/10;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');
@@ -128,10 +132,58 @@ export const SortingPage = () => {
 
   }
 
+  // Shell Sort
+  const shellSort = () => {
+    const animations = shellSortAnimation(arr);
+    const iterations = animations[animations.length-1][0];
+
+    const SHELL_SORT_DELAY_TIME = DELAY_TIME/1.5;
+
+    for (let i=0; i<animations.length; i++) {
+      const arrayBars = document.getElementsByClassName('bar');
+      const [iteration, action, bar1_id, bar2_id] = animations[i];
+
+      const bar1_style = arrayBars[bar1_id].style;
+      const bar2_style = arrayBars[bar2_id].style;
+
+      let rgb_shift = 24*(iterations-iteration);
+      let iterationColor = rgb(0,128,rgb_shift);
+
+      // Performs corresponding animation for each action
+      if (action === 'compare') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = COMPARE_COLOR;
+          bar2_style.backgroundColor = COMPARE_COLOR;
+        }, i * SHELL_SORT_DELAY_TIME);
+      } else if (action === 'swap') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = SWAP_COLOR;
+          bar2_style.backgroundColor = SWAP_COLOR;
+          // Swap Bars
+          let temp = bar1_style.height;
+          bar1_style.height = bar2_style.height;
+          bar2_style.height = temp;
+        }, i * SHELL_SORT_DELAY_TIME);
+      } else if (action === 'semi_sorted') {
+        setTimeout(() => {
+          // 0,128,0
+          bar1_style.backgroundColor = iterationColor;
+          bar2_style.backgroundColor = iterationColor;
+        }, i * SHELL_SORT_DELAY_TIME);
+      } else if (action === 'sorted') {
+        setTimeout(() => {
+          bar1_style.backgroundColor = iterationColor;
+          bar2_style.backgroundColor = iterationColor;
+        }, i * SHELL_SORT_DELAY_TIME);
+      }
+    }
+
+  }
+
   // Insertion Sort (Performs Animation for Insertion Sort)
   const insertionSort = () => {
     const animations = insertionSortAnimation(arr);
-    const ISORT_DELAY_TIME = DELAY_TIME/1.5;
+    const ISORT_DELAY_TIME = DELAY_TIME/4;  
     
     // Array of size 1 is sorted
     const firstBar = document.getElementsByClassName('bar')[0];
@@ -181,6 +233,7 @@ export const SortingPage = () => {
         <button className="btn" onClick={() => resetArray()}>Reset</button>
         <span className="divider"></span>
         <button className="btn" onClick={() => quickSort()}>Quick Sort</button>
+        <button className="btn" onClick={() => shellSort()}>Shell Sort</button>
         <button className="btn" onClick={() => bubbleSort()}>Bubble Sort</button>
         <button className="btn" onClick={() => mergeSort()}>Merge Sort</button>
         <button className="btn" onClick={() => insertionSort()}>Insertion Sort</button>
