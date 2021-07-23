@@ -91,7 +91,7 @@ export const SortingPage = () => {
   // Bubble Sort
   const bubbleSort = () => {
     const animations = bubbleSortAnimation(arr);
-    const BUBBLE_DELAY_TIME = DELAY_TIME/4;
+    const BUBBLE_DELAY_TIME = DELAY_TIME/3;
 
     for (let i=0; i<animations.length; i++) {
       const arrayBars = document.getElementsByClassName('bar');

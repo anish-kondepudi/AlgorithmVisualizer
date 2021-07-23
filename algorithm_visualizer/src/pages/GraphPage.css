@@ -3,3 +3,34 @@
   text-align: center;
   padding-top: 1%;
 }
+
+.graphPage .nav-bar {
+  padding-top: 1.5%;
+  text-align: center;
+  align-content: center;
+  align-self: center;
+}
+
+.graphPage .divider {
+  border-left: 5px solid white;
+  margin-left: 0.75%;
+  margin-right: 0.75%;
+}
+
+.graphPage .btn {
+  color: white;
+  background-color: transparent;
+  border-color: white;
+  border-radius: 12px;
+  padding-left: 2%;
+  padding-right: 2%;
+  margin-left: 0.35%;
+  margin-right: 0.35%;
+  border-width: 1.8px;
+  font-size: 140%;
+}
+
+.graphPage .grid {
+  text-align: center;
+  padding-top: 2%;
+}
