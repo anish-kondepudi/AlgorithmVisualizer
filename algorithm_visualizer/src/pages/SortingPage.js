@@ -34,8 +34,14 @@ export const SortingPage = () => {
   const resetArray = () => {
     setArr(randomArray());
     const arrayBars = [...document.getElementsByClassName('bar')];
+    
     arrayBars.forEach((bar) => {
-      bar.style.backgroundColor = DEFAULT_COLOR;
+      bar.style.backgroundColor = "black";
+    })
+    arrayBars.forEach((bar, index) => {
+      setTimeout(() => {
+        bar.style.backgroundColor = DEFAULT_COLOR;
+      }, index * 4);
     })
   }
 
