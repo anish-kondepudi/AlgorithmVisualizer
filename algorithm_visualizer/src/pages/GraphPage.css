@@ -30,6 +30,12 @@
   font-size: 140%;
 }
 
+.graphPage .btn:hover {
+  color: black;
+  background-color: white;
+  border-color: black;
+}
+
 .graphPage .grid {
   text-align: center;
   padding-top: 2%;
