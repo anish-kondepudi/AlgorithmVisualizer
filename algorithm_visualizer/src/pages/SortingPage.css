@@ -7,9 +7,10 @@
 	margin-bottom: 1.5em;
 }
 
-.sortingPage .nav-bar {
+.sortingPage .buttons-bar {
 	text-align: center;
 	margin-bottom: 2em;
+	margin-top: 2%;
 }
 
 .sortingPage .divider {
@@ -58,14 +59,22 @@
 	
 }
 
-.sortingPage .sliders {
-	text-align: center;
-	align-content: center;
-	align-self: center;
+.sortingPage .sliders-container {
+	display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -1%;
 }
 
-.sortingPage .slider {
+.sortingPage .slider-container {
+	display: inline-block;
+	margin: 0 2%; 
+}
 
+.sortingPage .sliders-container h4 {
+	margin-bottom: 2%;
+	color:  white;
+	text-align: center;
 }
 
 .sortingPage label {
@@ -87,18 +96,18 @@
   }
 }
 
-.center-container {
+.sorting-info-container {
 	display: flex;
   justify-content: center;
   align-items: center;
-  margin-top:  40px;
+  margin-top:  30px;
 }
 
 .algorithm-name {
 	margin-right: 30px;
 }
 
-.algorithm-name h1 {
+.algorithm-name h2 {
 	color: white;
 	text-align: center;
 }
@@ -107,7 +116,7 @@
 	margin-left: 30px;
 }
 
-.bigO-container h1 {
+.bigO-container h2 {
 	color: white;
 	display: inline-block;
 	margin-right: 10px;
@@ -115,7 +124,7 @@
 
 .separator {
   border-left: 6px solid white;
-  height: 200px;
+  height: 140px;
   left: 50%;
   top: 0;
 }

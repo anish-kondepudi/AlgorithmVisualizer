@@ -5,7 +5,6 @@ import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellS
 const DEFAULT_COLOR = "DarkCyan";
 const SORTED_COLOR = "Green";
 const SWAP_COLOR = "Red";
-const COMPARE_COLOR = "FloralWhite";
 
 export const SortingPage = () => {
   
@@ -39,8 +38,6 @@ export const SortingPage = () => {
       array[i] = array[j];
       array[j] = temp;
     }
-    console.log(array);
-    console.log(numberOfBars);
     return array;
   }
 
@@ -145,7 +142,7 @@ export const SortingPage = () => {
     animate(shellSortAnimation(arr));
   }
 
-  // Insertion Sort (Performs Animation for Insertion Sort)
+  // Insertion Sort
   const insertionSort = () => {
     setTimeComplexity({
       algo: 'Insertion Sort',
@@ -172,7 +169,7 @@ export const SortingPage = () => {
       </div>
 
       {/* Buttons to Start/Reset Sorting Visualizer */}
-      <div className="nav-bar">
+      <div className="buttons-bar">
         <button className="btn" onClick={() => resetArray()}>Reset</button>
         <span className="divider"></span>
         <button className="btn" onClick={() => {quickSort();}}>Quick Sort</button>
@@ -182,36 +179,42 @@ export const SortingPage = () => {
         <button className="btn" onClick={() => {insertionSort();}}>Insertion Sort</button>
       </div>
 
-      <input onInput={(e) => {
-        setNumberOfBars(Math.round(e.target.value));
-        setArr(randomArray(numberOfBars));
-      }} type="range" class="form-range" step="1" min="5" max="300" className="numberOfBars"></input>
-
-      <input onInput={(e) => {
-        setDelay(31 - e.target.value);
-      }} type="range" class="form-range" step="1" min="1" max="30" className="speed"></input>
+      {/* Sliders to Adjust Number of Bars and Animation Speed */}
+      <div className="sliders-container">
+        <div className="slider-container">
+          <h4> Number of Bars </h4>
+          <input onInput={(e) => {
+            setNumberOfBars(Math.round(e.target.value));
+            setArr(randomArray(numberOfBars));
+          }} type="range" step="1" min="5" max="300" className="form-range numberOfBars slider"></input>
+        </div>
+        <div className="slider-container">
+          <h4> Animation Speed </h4>
+          <input onInput={(e) => {
+            setDelay(31 - e.target.value);
+          }} type="range" step="1" min="1" max="30" className="form-range speed slider"></input>
+        </div>
+      </div>    
       
-      
-
-      {/* Dynamically sets bar heights */}
-      {timeComplexity && <div className="center-container">
+      {/* Dynamically Time Complexities */}
+      {timeComplexity && <div className="sorting-info-container">
         <div className="algorithm-name">
-          <h1>{ timeComplexity.algo }</h1>
-          <h1> Time Complexity </h1>
+          <h2>{ timeComplexity.algo }</h2>
+          <h2> Time Complexity </h2>
         </div>
         <div className="separator"></div>
         <div className="bigO-container">
           <div className="best-bigO">
-              <h1> Best: </h1>
-              <h1> { timeComplexity.best } </h1>
+              <h2> Best: </h2>
+              <h2> { timeComplexity.best } </h2>
           </div>
           <div className="average-bigO">
-            <h1> Average: </h1>
-            <h1> { timeComplexity.avg } </h1>
+            <h2> Average: </h2>
+            <h2> { timeComplexity.avg } </h2>
           </div>
           <div className="worst-bigO">
-            <h1> Worst: </h1>
-            <h1> { timeComplexity.worst } </h1>
+            <h2> Worst: </h2>
+            <h2> { timeComplexity.worst } </h2>
           </div>
         </div>
       </div> }
