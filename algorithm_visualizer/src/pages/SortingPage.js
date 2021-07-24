@@ -10,7 +10,7 @@ export const SortingPage = () => {
   
   const [timeComplexity, setTimeComplexity] = useState();
   const [numberOfBars, setNumberOfBars] = useState(100);
-  const [delay, setDelay] = useState(5);
+  const [delay, setDelay] = useState(10);
 
   useEffect(() => {
     resetArray();
@@ -46,10 +46,7 @@ export const SortingPage = () => {
 
   // Resets array with default color and randomized values 
   const resetArray = () => {
-    const delay = 4;
-
     clearAllTimeouts();
-    setArr(randomArray());
 
     const arrayBars = [...document.getElementsByClassName('bar')];
     
@@ -57,11 +54,13 @@ export const SortingPage = () => {
       bar.style.opacity = 0;
     })
 
+    setArr(randomArray());
+
     arrayBars.forEach((bar, index) => {
       setTimeout(() => {
         bar.style.backgroundColor = DEFAULT_COLOR;
         bar.style.opacity = 1;
-      }, index * delay);
+      }, (index+1) * 500 / numberOfBars);
     })
   }
 
@@ -182,17 +181,17 @@ export const SortingPage = () => {
       {/* Sliders to Adjust Number of Bars and Animation Speed */}
       <div className="sliders-container">
         <div className="slider-container">
-          <h4> Number of Bars </h4>
-          <input onInput={(e) => {
+          <h4> Number of Bars : {numberOfBars} </h4>
+          <input onChange={(e) => {
             setNumberOfBars(Math.round(e.target.value));
             setArr(randomArray(numberOfBars));
-          }} type="range" step="1" min="5" max="300" className="form-range numberOfBars slider"></input>
+          }} type="range" step="1" min="5" max="300" value={numberOfBars} className="form-range numberOfBars slider"></input>
         </div>
         <div className="slider-container">
-          <h4> Animation Speed </h4>
-          <input onInput={(e) => {
+          <h4> Animation Speed : {Math.round((31-delay)/30 * 100)}% </h4>
+          <input onChange={(e) => {
             setDelay(31 - e.target.value);
-          }} type="range" step="1" min="1" max="30" className="form-range speed slider"></input>
+          }} type="range" step="1" min="1" max="30" value={31-delay} className="form-range speed slider"></input>
         </div>
       </div>    
       
