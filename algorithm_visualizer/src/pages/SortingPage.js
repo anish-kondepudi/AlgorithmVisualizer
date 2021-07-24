@@ -2,9 +2,6 @@ import { useState, useEffect } from "react"
 import "./SortingPage.css";
 import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation, mergeSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
-let NUM_BARS = 90;
-let DELAY_TIME = 5;
-
 const DEFAULT_COLOR = "DarkCyan";
 const SORTED_COLOR = "Green";
 const SWAP_COLOR = "Red";
@@ -13,6 +10,8 @@ const COMPARE_COLOR = "FloralWhite";
 export const SortingPage = () => {
   
   const [timeComplexity, setTimeComplexity] = useState();
+  const [numberOfBars, setNumberOfBars] = useState(100);
+  const [delay, setDelay] = useState(5);
 
   useEffect(() => {
     resetArray();
@@ -30,8 +29,9 @@ export const SortingPage = () => {
   // Returns randomized array
   const randomArray = () => {
     const array = [];
-    for (let i=5; i<=NUM_BARS*5; i+=5) {
-      array.push(i);
+    var step = (500) / (numberOfBars - 1);
+    for (var i = 0; i < numberOfBars; i++) {
+      array.push(5 + (step * i));
     }
     for (let i = array.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
@@ -39,6 +39,8 @@ export const SortingPage = () => {
       array[i] = array[j];
       array[j] = temp;
     }
+    console.log(array);
+    console.log(numberOfBars);
     return array;
   }
 
@@ -91,7 +93,7 @@ export const SortingPage = () => {
           if (color === 'clear') barStyle.backgroundColor = DEFAULT_COLOR;
           if (color === 'sorted') barStyle.backgroundColor = SORTED_COLOR;
         }
-      }, i * DELAY_TIME);
+      }, i * delay);
     }
   }
 
@@ -129,42 +131,6 @@ export const SortingPage = () => {
     });
 
     animate(mergeSortAnimation(arr));
-
-    /*
-    setTimeComplexity({
-      algo: 'Merge Sort',
-      best: 'Ω(nlogn)',
-      avg: 'θ(nlogn)',
-      worst: 'O(nlogn)'
-    });
-    
-
-    clearAllTimeouts();
-
-    const MERGE_SORT_DELAY = DELAY_TIME/2;
-    const animations = mergeSortAnimation(arr);
-    for (let i = 0; i < animations.length; i++) {
-      const arrayBars = document.getElementsByClassName('bar');
-      const isColorChange = i % 3 !== 2;
-      if (isColorChange) {
-        const [barOneIdx, barTwoIdx] = animations[i];
-        const barOneStyle = arrayBars[barOneIdx].style;
-        const barTwoStyle = arrayBars[barTwoIdx].style;
-        const color = i % 3 === 0 ? SWAP_COLOR : SORTED_COLOR;
-        setTimeout(() => {
-          barOneStyle.backgroundColor = color;
-          barTwoStyle.backgroundColor = color;
-        }, i * MERGE_SORT_DELAY);
-      } else {
-        setTimeout(() => {
-          const [barOneIdx, newHeight] = animations[i];
-          const barOneStyle = arrayBars[barOneIdx].style;
-          barOneStyle.height = `${newHeight}px`;
-        }, i * MERGE_SORT_DELAY);
-      }
-    }
-
-    */
   }
 
   // Shell Sort
@@ -194,9 +160,16 @@ export const SortingPage = () => {
   
 
   return (
-    <div className="sortingPage">
+    <div className="container sortingPage">
       
       <h1 className="title"> Sorting Algorithms </h1>
+
+      {/* Dynamically sets bar heights */}
+      <div className="bars-container">
+        {arr.map((value,index) => 
+            <div className="bar" key={index} style={{'height': `${value}px` }}></div>
+        )} 
+      </div>
 
       {/* Buttons to Start/Reset Sorting Visualizer */}
       <div className="nav-bar">
@@ -208,13 +181,17 @@ export const SortingPage = () => {
         <button className="btn" onClick={() => {mergeSort();}}>Merge Sort</button>
         <button className="btn" onClick={() => {insertionSort();}}>Insertion Sort</button>
       </div>
+
+      <input onInput={(e) => {
+        setNumberOfBars(Math.round(e.target.value));
+        setArr(randomArray(numberOfBars));
+      }} type="range" class="form-range" step="1" min="5" max="300" className="numberOfBars"></input>
+
+      <input onInput={(e) => {
+        setDelay(31 - e.target.value);
+      }} type="range" class="form-range" step="1" min="1" max="30" className="speed"></input>
       
-      {/* Dynamically sets bar heights */}
-      <div className="bars-container">
-        {arr.map((value,index) => 
-          <div className="bar" key={index} style={{'height': `${value}px` }}>
-          </div>)} 
-      </div>
+      
 
       {/* Dynamically sets bar heights */}
       {timeComplexity && <div className="center-container">

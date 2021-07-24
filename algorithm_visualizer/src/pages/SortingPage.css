@@ -2,20 +2,20 @@
 .sortingPage .title {
 	color: white;
 	text-align: center;
-	padding-top: 1%;
+	font-size: 2em;
+	margin-top: 1em;
+	margin-bottom: 1.5em;
 }
 
 .sortingPage .nav-bar {
-	padding-top: 1.5%;
 	text-align: center;
-	align-content: center;
-	align-self: center;
+	margin-bottom: 2em;
 }
 
 .sortingPage .divider {
-  	border-left: 5px solid white;
-	margin-left: 0.75%;
-	margin-right: 0.75%;
+  	border-left: .3em solid white;
+	margin-left: .3em;
+	margin-right: .3em;
 }
 
 .sortingPage .btn {
@@ -23,12 +23,10 @@
 	background-color: transparent;
 	border-color: white;
 	border-radius: 12px;
-	padding-left: 2%;
-	padding-right: 2%;
-	margin-left: 0.35%;
-	margin-right: 0.35%;
+	padding: .4em 1em;
+	margin: .3em .3em;
 	border-width: 1.8px;
-	font-size: 140%;
+	font-size: 1.25em;
 }
 
 .sortingPage .btn:hover {
@@ -38,36 +36,42 @@
 }
 
 .sortingPage .bars-container {
+	margin-bottom: .5em;
 	animation: transitionIn 0.75s;
-	position: relative;
-	margin-top: 2%;
 	text-align: center;
+	width: 100%;
+
+
+	display: flex;
+	align-items: flex-end;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	height: 500px;
 }
 
 .sortingPage .bar {
 	background-color: DarkCyan;
-	width: 10px;
-	border-radius: 10px;
-	margin: 0 1px;
-	display: inline-block;
+	border-radius: 10px 10px 0 0;
+	margin-right:1px;
 	transition: max-height 0.8s;
+	width: 100%;
+	
 }
 
 .sortingPage .sliders {
-	margin-top: 2%;
 	text-align: center;
 	align-content: center;
 	align-self: center;
 }
 
 .sortingPage .slider {
-	margin-top: 1%;
+
 }
 
 .sortingPage label {
 	color: white;
-
 }
+
 .sortingPage input {
 	width: 500px;
 }
@@ -113,6 +117,5 @@
   border-left: 6px solid white;
   height: 200px;
   left: 50%;
-  margin: ;
   top: 0;
 }
