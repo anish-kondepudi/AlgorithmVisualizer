@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "./SortingPage.css";
 import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation, mergeSortAnimation } from "./sort_components/sortingAlgorithms.js"
 
 let NUM_BARS = 90;
-let DELAY_TIME = 10;
+let DELAY_TIME = 5;
 
 const DEFAULT_COLOR = "DarkCyan";
 const SORTED_COLOR = "Green";
@@ -11,6 +11,12 @@ const SWAP_COLOR = "Red";
 const COMPARE_COLOR = "FloralWhite";
 
 export const SortingPage = () => {
+  
+  const [timeComplexity, setTimeComplexity] = useState();
+
+  useEffect(() => {
+    resetArray();
+  }, []);
 
   // Clears all setTimeout()'s [Hack]
   const clearAllTimeouts = () => {
@@ -24,7 +30,7 @@ export const SortingPage = () => {
   // Returns randomized array
   const randomArray = () => {
     const array = [];
-    for (let i=1; i<=NUM_BARS; i++) {
+    for (let i=5; i<=NUM_BARS*5; i+=5) {
       array.push(i);
     }
     for (let i = array.length - 1; i > 0; i--) {
@@ -33,7 +39,7 @@ export const SortingPage = () => {
       array[i] = array[j];
       array[j] = temp;
     }
-    return array.map(x => x*5);
+    return array;
   }
 
   // Create randomized array upon launch of page
@@ -41,106 +47,100 @@ export const SortingPage = () => {
 
   // Resets array with default color and randomized values 
   const resetArray = () => {
+    const delay = 4;
+
     clearAllTimeouts();
     setArr(randomArray());
+
     const arrayBars = [...document.getElementsByClassName('bar')];
     
     arrayBars.forEach((bar) => {
-      bar.style.backgroundColor = "black";
+      bar.style.opacity = 0;
     })
+
     arrayBars.forEach((bar, index) => {
       setTimeout(() => {
         bar.style.backgroundColor = DEFAULT_COLOR;
-      }, index * 4);
+        bar.style.opacity = 1;
+      }, index * delay);
     })
+  }
+
+  const animate = (animations) => {
+    clearAllTimeouts();
+
+    const arrayBars = Array.from(document.getElementsByClassName('bar'));
+
+    arrayBars.forEach((bar) => {
+      bar.style.backgroundColor = DEFAULT_COLOR;
+    })
+
+    for (let i = 0; i < animations.length; i++) {
+      setTimeout(() => {     
+        for (let j = 0; j < animations[i].length; j++) {
+          const [color, id, height] = animations[i][j];
+          const barStyle = arrayBars[id].style;
+
+          if (height !== -1) {
+            arr[id] = height;
+            barStyle.height = `${height}px`;
+          }
+          
+
+          if (color === 'swap') barStyle.backgroundColor = SWAP_COLOR;
+          if (color === 'clear') barStyle.backgroundColor = DEFAULT_COLOR;
+          if (color === 'sorted') barStyle.backgroundColor = SORTED_COLOR;
+        }
+      }, i * DELAY_TIME);
+    }
   }
 
   // Quick Sort
   const quickSort = () => {
-    clearAllTimeouts();
+    setTimeComplexity({
+      algo: 'Quick Sort',
+      best: 'Ω(nlogn)',
+      avg: 'θ(nlogn)',
+      worst: 'O(n^2)'
+    });
 
-    const animations = quickSortAnimation(arr);
-    const QSORT_DELAY_TIME = DELAY_TIME*1.5;
-    
-    for (let i=0; i<animations.length; i++) {
-      const arrayBars = document.getElementsByClassName('bar');
-      const [action, bar1_id, bar2_id] = animations[i];
-
-      const bar1_style = arrayBars[bar1_id].style;
-      const bar2_style = arrayBars[bar2_id].style;
-
-      // Performs corresponding animation for each action
-      if (action === 'compare') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = COMPARE_COLOR;
-          bar2_style.backgroundColor = COMPARE_COLOR;
-        }, i * QSORT_DELAY_TIME);
-      } else if (action === 'swap') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SWAP_COLOR;
-          bar2_style.backgroundColor = SWAP_COLOR;
-          // Swap Bars
-          let temp = bar1_style.height;
-          bar1_style.height = bar2_style.height;
-          bar2_style.height = temp;
-        }, i * QSORT_DELAY_TIME);
-      } else if (action === 'clear') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = DEFAULT_COLOR;
-          bar2_style.backgroundColor = DEFAULT_COLOR;
-        }, i * QSORT_DELAY_TIME);
-      } else if (action === 'sorted') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SORTED_COLOR;
-        }, i * QSORT_DELAY_TIME);
-      }
-    }
-    
+    animate(quickSortAnimation(arr));
   }
-
 
   // Bubble Sort
   const bubbleSort = () => {
-    const animations = bubbleSortAnimation(arr);
-    const BUBBLE_DELAY_TIME = DELAY_TIME/3;
+    setTimeComplexity({
+      algo: 'Bubble Sort',
+      best: 'Ω(n)',
+      avg: 'θ(n^2)',
+      worst: 'O(n^2)'
+    });
 
-    for (let i=0; i<animations.length; i++) {
-      const arrayBars = document.getElementsByClassName('bar');
-      const [action, bar1_id, bar2_id] = animations[i];
-
-      const bar1_style = arrayBars[bar1_id].style;
-      const bar2_style = arrayBars[bar2_id].style;
-
-      // Performs corresponding animation for each action
-      if (action === 'compare') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = COMPARE_COLOR;
-          bar2_style.backgroundColor = COMPARE_COLOR;
-        }, i * BUBBLE_DELAY_TIME);
-      } else if (action === 'swap') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SWAP_COLOR;
-          bar2_style.backgroundColor = SWAP_COLOR;
-          // Swap Bars
-          let temp = bar1_style.height;
-          bar1_style.height = bar2_style.height;
-          bar2_style.height = temp;
-        }, i * BUBBLE_DELAY_TIME);
-      } else if (action === 'clear') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = DEFAULT_COLOR;
-          bar2_style.backgroundColor = DEFAULT_COLOR;
-        }, i * BUBBLE_DELAY_TIME);
-      } else if (action === 'sorted') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SORTED_COLOR;
-        }, i * BUBBLE_DELAY_TIME);
-      }
-    }
+    animate(bubbleSortAnimation(arr));
   }
 
   // Merge Sort (Credit to Clément Mihailescu for Merge Sort Implementation)
   const mergeSort = () => {
+    setTimeComplexity({
+      algo: 'Merge Sort',
+      best: 'Ω(nlogn)',
+      avg: 'θ(nlogn)',
+      worst: 'O(nlogn)'
+    });
+
+    animate(mergeSortAnimation(arr));
+
+    /*
+    setTimeComplexity({
+      algo: 'Merge Sort',
+      best: 'Ω(nlogn)',
+      avg: 'θ(nlogn)',
+      worst: 'O(nlogn)'
+    });
+    
+
+    clearAllTimeouts();
+
     const MERGE_SORT_DELAY = DELAY_TIME/2;
     const animations = mergeSortAnimation(arr);
     for (let i = 0; i < animations.length; i++) {
@@ -163,102 +163,35 @@ export const SortingPage = () => {
         }, i * MERGE_SORT_DELAY);
       }
     }
+
+    */
   }
 
   // Shell Sort
   const shellSort = () => {
-    const animations = shellSortAnimation(arr);
+    setTimeComplexity({
+      algo: 'Shell Sort',
+      best: 'Ω(nlogn)',
+      avg: 'θ(nlogn)',
+      worst: 'O(n^2)'
+    });
 
-    const SHELL_SORT_DELAY_TIME = DELAY_TIME*1.5;
-
-    for (let i=0; i<animations.length; i++) {
-      const arrayBars = document.getElementsByClassName('bar');
-      const [action, bar1_id, bar2_id] = animations[i];
-
-      const bar1_style = arrayBars[bar1_id].style;
-      const bar2_style = arrayBars[bar2_id].style;
-
-      // Performs corresponding animation for each action
-      if (action === 'compare') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = COMPARE_COLOR;
-          bar2_style.backgroundColor = COMPARE_COLOR;
-        }, i * SHELL_SORT_DELAY_TIME);
-      } else if (action === 'swap') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SWAP_COLOR;
-          bar2_style.backgroundColor = SWAP_COLOR;
-          // Swap Bars
-          let temp = bar1_style.height;
-          bar1_style.height = bar2_style.height;
-          bar2_style.height = temp;
-        }, i * SHELL_SORT_DELAY_TIME);
-      } else if (action === 'sorted') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SORTED_COLOR;
-          bar2_style.backgroundColor = SORTED_COLOR;
-        }, i * SHELL_SORT_DELAY_TIME);
-      }
-    }
-
+    animate(shellSortAnimation(arr));
   }
 
   // Insertion Sort (Performs Animation for Insertion Sort)
   const insertionSort = () => {
-    const animations = insertionSortAnimation(arr);
-    const ISORT_DELAY_TIME = DELAY_TIME/2.5;  
-    
-    // Array of size 1 is sorted
-    const firstBar = document.getElementsByClassName('bar')[0];
-    firstBar.style.backgroundColor = SORTED_COLOR;
+    setTimeComplexity({
+      algo: 'Insertion Sort',
+      best: 'Ω(n)',
+      avg: 'θ(n^2)',
+      worst: 'O(n^2)'
+    });
 
-    // Performs Animation
-    for (let i = 0; i < animations.length; i++) {
-
-      const arrayBars = document.getElementsByClassName('bar');
-      const [action, bar1_id, bar2_id] = animations[i];
-
-      const bar1_style = arrayBars[bar1_id].style;
-      const bar2_style = arrayBars[bar2_id].style;
-
-      // Performs corresponding animation for each action
-      if (action === 'swap') {
-
-        setTimeout(() => {
-          bar1_style.backgroundColor = SWAP_COLOR;
-          bar2_style.backgroundColor = SWAP_COLOR;
-
-          let temp = bar1_style.height;
-          bar1_style.height = bar2_style.height;
-          bar2_style.height = temp;
-
-        }, i * ISORT_DELAY_TIME);
-      } else if (action === 'clear') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SORTED_COLOR;
-          bar2_style.backgroundColor = SORTED_COLOR;
-        }, i * ISORT_DELAY_TIME);
-      } else if (action === 'sorted') {
-        setTimeout(() => {
-          bar1_style.backgroundColor = SORTED_COLOR;
-        }, i * ISORT_DELAY_TIME);
-      }
-    }
+    animate(insertionSortAnimation(arr));
   }
 
-  const updateTimeComplexity = (algo, best, avg, worst) => {
-
-    let algorithm = document.querySelector("#root>div>div.center-container>div.algorithm-name>h1:nth-child(1)");
-    let best_time = document.querySelector("#root>div>div.center-container>div.bigO-container>div.best-bigO>h1:nth-child(2)"); 
-    let avg_time = document.querySelector("#root>div>div.center-container>div.bigO-container>div.average-bigO>h1:nth-child(2)");
-    let worst_time = document.querySelector("#root>div>div.center-container>div.bigO-container>div.worst-bigO>h1:nth-child(2)");
-
-    algorithm.textContent = algo;
-    best_time.textContent = best;
-    avg_time.textContent = avg;
-    worst_time.textContent = worst;
-
-  }
+  
 
   return (
     <div className="sortingPage">
@@ -269,26 +202,11 @@ export const SortingPage = () => {
       <div className="nav-bar">
         <button className="btn" onClick={() => resetArray()}>Reset</button>
         <span className="divider"></span>
-        <button className="btn" onClick={() => {
-          quickSort();
-          updateTimeComplexity('Quick Sort','Ω(nlogn)','θ(nlogn)','O(n^2)');}
-        }>Quick Sort</button>
-        <button className="btn" onClick={() => {
-          shellSort();
-          updateTimeComplexity('Shell Sort','Ω(nlogn)','θ(nlogn)','O(n^2)');}
-        }>Shell Sort</button>
-        <button className="btn" onClick={() => {
-          bubbleSort();
-          updateTimeComplexity('Bubble Sort','Ω(n)','θ(n^2)','O(n^2)');}
-        }>Bubble Sort</button>
-        <button className="btn" onClick={() => {
-          mergeSort();
-          updateTimeComplexity('Merge Sort','Ω(nlogn)','θ(nlogn)','O(nlogn)');}
-        }>Merge Sort</button>
-        <button className="btn" onClick={() => {
-          insertionSort();
-          updateTimeComplexity('Insertion Sort','Ω(n)','θ(n^2)','O(n^2)');}
-        }>Insertion Sort</button>
+        <button className="btn" onClick={() => {quickSort();}}>Quick Sort</button>
+        <button className="btn" onClick={() => {shellSort();}}>Shell Sort</button>
+        <button className="btn" onClick={() => {bubbleSort();}}>Bubble Sort</button>
+        <button className="btn" onClick={() => {mergeSort();}}>Merge Sort</button>
+        <button className="btn" onClick={() => {insertionSort();}}>Insertion Sort</button>
       </div>
       
       {/* Dynamically sets bar heights */}
@@ -299,28 +217,28 @@ export const SortingPage = () => {
       </div>
 
       {/* Dynamically sets bar heights */}
-      <div className="center-container">
+      {timeComplexity && <div className="center-container">
         <div className="algorithm-name">
-          <h1> Insertion Sort </h1>
+          <h1>{ timeComplexity.algo }</h1>
           <h1> Time Complexity </h1>
         </div>
         <div className="separator"></div>
         <div className="bigO-container">
           <div className="best-bigO">
               <h1> Best: </h1>
-              <h1> Ω(n) </h1>
+              <h1> { timeComplexity.best } </h1>
           </div>
           <div className="average-bigO">
             <h1> Average: </h1>
-            <h1> θ(n^2) </h1>
+            <h1> { timeComplexity.avg } </h1>
           </div>
           <div className="worst-bigO">
             <h1> Worst: </h1>
-            <h1> O(n^2) </h1>
+            <h1> { timeComplexity.worst } </h1>
           </div>
         </div>
-      </div>
-
+      </div> }
+      
     </div>
   );
 }
