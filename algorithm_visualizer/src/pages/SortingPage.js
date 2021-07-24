@@ -49,19 +49,26 @@ export const SortingPage = () => {
     clearAllTimeouts();
 
     const arrayBars = [...document.getElementsByClassName('bar')];
+
+    const array = randomArray();
     
-    arrayBars.forEach((bar) => {
-      bar.style.opacity = 0;
-    })
-
-    setArr(randomArray());
-
     arrayBars.forEach((bar, index) => {
-      setTimeout(() => {
-        bar.style.backgroundColor = DEFAULT_COLOR;
-        bar.style.opacity = 1;
-      }, (index+1) * 500 / numberOfBars);
-    })
+      const offsetDelay = 1500 * index / numberOfBars;
+      const duration = 500;
+
+      bar.style.backgroundColor = DEFAULT_COLOR;
+      bar.animate([
+        {height: '0px'},
+        {height: '0px', offset: offsetDelay / (offsetDelay + duration)},
+        {height: `${array[index]}px`}
+      ], {
+        // timing options
+        duration: offsetDelay + duration,
+        iterations: 1
+      });
+    });
+
+    setArr(array);
   }
 
   const animate = (animations) => {
