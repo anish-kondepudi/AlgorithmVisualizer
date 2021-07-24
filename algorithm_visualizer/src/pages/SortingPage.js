@@ -59,8 +59,8 @@ export const SortingPage = () => {
       bar.style.backgroundColor = DEFAULT_COLOR;
       bar.animate([
         {height: '0px'},
-        {height: '0px', offset: offsetDelay / (offsetDelay + duration)},
-        {height: `${array[index]}px`}
+        {opacity: .1, height: '0px', offset: offsetDelay / (offsetDelay + duration)},
+        {opacity: 1, height: `${array[index]}px`}
       ], {
         // timing options
         duration: offsetDelay + duration,
@@ -163,7 +163,7 @@ export const SortingPage = () => {
   
 
   return (
-    <div className="container sortingPage">
+    <div className="container-fluid sortingPage">
       
       <h1 className="title"> Sorting Algorithms </h1>
 
