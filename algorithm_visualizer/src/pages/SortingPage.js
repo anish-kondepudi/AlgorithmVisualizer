@@ -5,8 +5,11 @@ import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellS
 const DEFAULT_COLOR = "DarkCyan";
 const SORTED_COLOR = "Green";
 const SWAP_COLOR = "Red";
+const HEIGHT = 500;
 
 export const SortingPage = () => {
+
+  const [prevTimeout, setPrevTimeout] = useState(0);
   
   const [timeComplexity, setTimeComplexity] = useState();
   const [numberOfBars, setNumberOfBars] = useState(100);
@@ -20,17 +23,22 @@ export const SortingPage = () => {
   const clearAllTimeouts = () => {
     // Set a fake timeout to get the highest timeout id
     var highestTimeoutId = setTimeout(";");
-    for (var i = 0 ; i < highestTimeoutId ; i++) {
+    for (var i = prevTimeout ; i < highestTimeoutId ; i++) {
         clearTimeout(i); 
+        
     }
+
+    setPrevTimeout(highestTimeoutId);
   }
 
   // Returns randomized array
   const randomArray = () => {
+    let min = HEIGHT/numberOfBars;
+    let max = HEIGHT;
     const array = [];
-    var step = (500) / (numberOfBars - 1);
+    var step = (max-min) / (numberOfBars - 1);
     for (var i = 0; i < numberOfBars; i++) {
-      array.push(5 + (step * i));
+      array.push(500/numberOfBars + (step * i));
     }
     for (let i = array.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
@@ -204,16 +212,16 @@ export const SortingPage = () => {
           }} onInput={(e) => {
             setNumberOfBars(Math.round(e.target.value));
             setArr(randomArray(numberOfBars));
-          }} type="range" step="1" min="5" max="1000" value={numberOfBars} className="form-range numberOfBars slider"></input>
+          }} type="range" step="1" min="5" max="500" defaultValue={numberOfBars} className="form-range numberOfBars slider"></input>
         </div>
         <div className="slider-container">
-          <h4> Animation Speed : {Math.round((31-delay)/30 * 100)}% </h4>
+          <h4> Animation Speed : {Math.round((51-delay)/50 * 100)}% </h4>
           <input onInputCapture={()=>{
             clearAllTimeouts();
             resetColors();
           }} onInput={(e) => {
-            setDelay(31 - e.target.value);
-          }} onCan type="range" step="1" min="1" max="30" value={31-delay} className="form-range speed slider"></input>
+            setDelay(51 - e.target.value);
+          }} onCan type="range" step="1" min="1" max="50" defaultValue={51-delay} className="form-range speed slider"></input>
         </div>
       </div>    
       
