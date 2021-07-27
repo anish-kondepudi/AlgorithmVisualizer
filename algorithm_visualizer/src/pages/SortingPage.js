@@ -66,13 +66,15 @@ export const SortingPage = () => {
 
     setTimeComplexity(null);
 
-    const arrayBars = [...document.getElementsByClassName('bar')];
-
     const array = randomArray();
-    
+    console.log(array.length);
+
+    const arrayBars = [...document.getElementsByClassName('bar')]; // This is grabbing only the old bars
+    console.log(arrayBars.length);
+
     arrayBars.forEach((bar, index) => {
-      const offsetDelay = 1500 * index / numberOfBars;
-      const duration = 500;
+      const offsetDelay = 450 * index / numberOfBars;
+      const duration = 150;
 
       bar.style.backgroundColor = DEFAULT_COLOR;
       bar.animate([
@@ -87,6 +89,7 @@ export const SortingPage = () => {
     });
 
     setArr(array);
+    
   }
 
   const animate = (animations) => {
@@ -193,7 +196,7 @@ export const SortingPage = () => {
 
       {/* Buttons to Start/Reset Sorting Visualizer */}
       <div className="buttons-bar">
-        <button className="btn" onClick={() => resetArray()}>Reset</button>
+        <button className="btn" onClick={() => {resetArray();}}>Reset</button>
         <span className="divider"></span>
         <button className="btn" onClick={() => {quickSort();}}>Quick Sort</button>
         <button className="btn" onClick={() => {shellSort();}}>Shell Sort</button>
@@ -221,9 +224,9 @@ export const SortingPage = () => {
             resetColors();
           }} onInput={(e) => {
             setDelay(51 - e.target.value);
-          }} onCan type="range" step="1" min="1" max="50" defaultValue={51-delay} className="form-range speed slider"></input>
+          }} type="range" step="1" min="1" max="50" defaultValue={51-delay} className="form-range speed slider"></input>
         </div>
-      </div>    
+      </div>
       
       {/* Dynamically Time Complexities */}
       {timeComplexity && <div className="sorting-info-container">
