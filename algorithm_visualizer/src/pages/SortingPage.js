@@ -65,14 +65,13 @@ export const SortingPage = () => {
     setTimeComplexity(null);
 
     const array = randomArray();
-    setArr(array);
 
     const arrayBars = [...document.getElementsByClassName('bar')];
 
     arrayBars.forEach((bar, index) => {
       const offsetDelay = 750 * index / numberOfBars;
       const duration = 200;
-
+      bar.style.height = `${array[index]}vh`;
       bar.style.backgroundColor = DEFAULT_COLOR;
       bar.animate([
         {height: '0vh'},
@@ -85,8 +84,7 @@ export const SortingPage = () => {
       });
     });
 
-    
-    
+    setArr(array);
   }
 
   const animate = (animations) => {
@@ -221,7 +219,7 @@ export const SortingPage = () => {
             resetColors();
           }} onChange={(e) => {
             setSpeed(e.target.value);
-          }} type="range" step="1" min="0" max="100" defaultValue={speed} className="form-range speed slider"></input>
+          }} type="range" step="1" min="1" max="100" defaultValue={speed} className="form-range speed slider"></input>
         </div>
       </div>
       
