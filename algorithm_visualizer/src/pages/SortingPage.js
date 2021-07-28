@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
-import "./SortingPage.css";
 import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation, mergeSortAnimation } from "./sort_components/sortingAlgorithms.js"
+import "./SortingPage.css";
 
 const DEFAULT_COLOR = "DarkCyan";
 const SORTED_COLOR = "Green";
 const SWAP_COLOR = "Red";
-const HEIGHT = 500;
+const HEIGHT = 50;
 
 export const SortingPage = () => {
 
@@ -27,18 +27,17 @@ export const SortingPage = () => {
         clearTimeout(i); 
         
     }
-
     setPrevTimeout(highestTimeoutId);
   }
 
   // Returns randomized array
-  const randomArray = () => {
-    let min = HEIGHT/numberOfBars;
+  const randomArray = (num = numberOfBars) => {
+    let min = HEIGHT/num;
     let max = HEIGHT;
     const array = [];
-    var step = (max-min) / (numberOfBars - 1);
-    for (var i = 0; i < numberOfBars; i++) {
-      array.push(500/numberOfBars + (step * i));
+    var step = (max-min) / (num - 1);
+    for (var i = 0; i < num; i++) {
+      array.push(HEIGHT/num + (step * i));
     }
     for (let i = array.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
@@ -67,20 +66,18 @@ export const SortingPage = () => {
     setTimeComplexity(null);
 
     const array = randomArray();
-    console.log(array.length);
 
     const arrayBars = [...document.getElementsByClassName('bar')]; // This is grabbing only the old bars
-    console.log(arrayBars.length);
 
     arrayBars.forEach((bar, index) => {
-      const offsetDelay = 450 * index / numberOfBars;
-      const duration = 150;
+      const offsetDelay = 750 * index / numberOfBars;
+      const duration = 200;
 
       bar.style.backgroundColor = DEFAULT_COLOR;
       bar.animate([
-        {height: '0px'},
-        {opacity: .1, height: '0px', offset: offsetDelay / (offsetDelay + duration)},
-        {opacity: 1, height: `${array[index]}px`}
+        {height: '0vh'},
+        {opacity: .1, height: '0vh', offset: offsetDelay / (offsetDelay + duration)},
+        {opacity: 1, height: `${array[index]}vh`}
       ], {
         // timing options
         duration: offsetDelay + duration,
@@ -96,10 +93,8 @@ export const SortingPage = () => {
     clearAllTimeouts();
 
     const arrayBars = Array.from(document.getElementsByClassName('bar'));
-
-    arrayBars.forEach((bar) => {
-      bar.style.backgroundColor = DEFAULT_COLOR;
-    })
+    
+    resetColors();
 
     for (let i = 0; i < animations.length; i++) {
       setTimeout(() => {     
@@ -109,7 +104,7 @@ export const SortingPage = () => {
 
           if (height !== -1) {
             arr[id] = height;
-            barStyle.height = `${height}px`;
+            barStyle.height = `${height}vh`;
           }
 
           if (color === 'swap') barStyle.backgroundColor = SWAP_COLOR;
@@ -183,14 +178,14 @@ export const SortingPage = () => {
   
 
   return (
-    <div className="container-fluid sortingPage">
+    <div className="container sortingPage">
       
       <h1 className="title"> Sorting Algorithms </h1>
 
       {/* Dynamically sets bar heights */}
-      <div className="bars-container">
+      <div className="bars-container" style={{'height': `${HEIGHT}vh`}}>
         {arr.map((value,index) => 
-            <div className="bar" key={index} style={{'height': `${value}px` }}></div>
+            <div className="bar" key={index} style={{'height': `${value}vh` }}></div>
         )} 
       </div>
 
@@ -209,20 +204,20 @@ export const SortingPage = () => {
       <div className="sliders-container">
         <div className="slider-container">
           <h4> Number of Bars : {numberOfBars} </h4>
-          <input onInputCapture={()=>{
+          <input onMouseDown={() => {
             clearAllTimeouts();
             resetColors();
-          }} onInput={(e) => {
-            setNumberOfBars(Math.round(e.target.value));
-            setArr(randomArray(numberOfBars));
+          }} onChange={(e) => {
+            setNumberOfBars(e.target.value);
+            setArr(randomArray(e.target.value));
           }} type="range" step="1" min="5" max="500" defaultValue={numberOfBars} className="form-range numberOfBars slider"></input>
         </div>
         <div className="slider-container">
           <h4> Animation Speed : {Math.round((51-delay)/50 * 100)}% </h4>
-          <input onInputCapture={()=>{
+          <input onMouseDown={() => {
             clearAllTimeouts();
             resetColors();
-          }} onInput={(e) => {
+          }} onChange={(e) => {
             setDelay(51 - e.target.value);
           }} type="range" step="1" min="1" max="50" defaultValue={51-delay} className="form-range speed slider"></input>
         </div>
@@ -249,8 +244,7 @@ export const SortingPage = () => {
             <h2> { timeComplexity.worst } </h2>
           </div>
         </div>
-      </div> }
-      
+      </div> }      
     </div>
   );
 }
