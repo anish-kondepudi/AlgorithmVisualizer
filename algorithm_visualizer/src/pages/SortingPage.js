@@ -10,10 +10,9 @@ const HEIGHT = 50;
 export const SortingPage = () => {
 
   const [prevTimeout, setPrevTimeout] = useState(0);
-  
   const [timeComplexity, setTimeComplexity] = useState();
   const [numberOfBars, setNumberOfBars] = useState(100);
-  const [delay, setDelay] = useState(10);
+  const [speed, setSpeed] = useState(50);
 
   useEffect(() => {
     resetArray();
@@ -66,8 +65,9 @@ export const SortingPage = () => {
     setTimeComplexity(null);
 
     const array = randomArray();
+    setArr(array);
 
-    const arrayBars = [...document.getElementsByClassName('bar')]; // This is grabbing only the old bars
+    const arrayBars = [...document.getElementsByClassName('bar')];
 
     arrayBars.forEach((bar, index) => {
       const offsetDelay = 750 * index / numberOfBars;
@@ -85,11 +85,13 @@ export const SortingPage = () => {
       });
     });
 
-    setArr(array);
+    
     
   }
 
   const animate = (animations) => {
+    const delay = 1000/numberOfBars * 3 * Math.pow(1/3,speed/50)
+
     clearAllTimeouts();
 
     const arrayBars = Array.from(document.getElementsByClassName('bar'));
@@ -213,13 +215,13 @@ export const SortingPage = () => {
           }} type="range" step="1" min="5" max="500" defaultValue={numberOfBars} className="form-range numberOfBars slider"></input>
         </div>
         <div className="slider-container">
-          <h4> Animation Speed : {Math.round((51-delay)/50 * 100)}% </h4>
+          <h4> Animation Speed : {speed}%</h4>
           <input onMouseDown={() => {
             clearAllTimeouts();
             resetColors();
           }} onChange={(e) => {
-            setDelay(51 - e.target.value);
-          }} type="range" step="1" min="1" max="50" defaultValue={51-delay} className="form-range speed slider"></input>
+            setSpeed(e.target.value);
+          }} type="range" step="1" min="0" max="100" defaultValue={speed} className="form-range speed slider"></input>
         </div>
       </div>
       
