@@ -1,12 +1,37 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import "./GraphPage.css";
 import { Node } from './graph_components/Node.js';
 
-const NUM_ROWS = 16;
-const NUM_COLS = 40;
+
+const CELL_SIZE = 2;
+const GRID_HEIGHT = 70;
+const PX_TO_REM = 1 / parseFloat(getComputedStyle(document.documentElement).fontSize);
 
 
 export const GraphPage = () => {
+
+  // Initializes Grid
+  const [grid, setGrid] = useState([]);
+
+  // for later use currently useless
+  useEffect(() => {
+    updateGrid();
+    window.addEventListener('resize', updateGrid);
+  }, []);
+
+
+  const updateGrid = () => {
+    console.log("hello");
+    const gridElement = document.getElementById('grid');
+    setGrid(createGrid(
+      Math.floor(gridElement.offsetHeight*PX_TO_REM/CELL_SIZE), 
+      Math.floor(gridElement.offsetWidth*PX_TO_REM/CELL_SIZE)
+    ));
+  }
+
+
+
+  
 
     // Creates a Grid with Row x Col Nodes
   const createGrid = (rows,cols) => {
@@ -14,7 +39,7 @@ export const GraphPage = () => {
     for (let row=0; row<rows; row++) {
       const currentRow = [];
       for (let col=0; col<cols; col++) {
-        currentRow.push(createNode)
+        currentRow.push(createNode(col, row))
       }
       grid.push(currentRow);
     }
@@ -29,33 +54,23 @@ export const GraphPage = () => {
     };
   };
 
-  // Initializes Grid
-  const [grid, setGrid] = useState(createGrid(NUM_ROWS,NUM_COLS));
+  
 
   return (
-    <div className="graphPage">
+    <div className="graphPage container">
 
       {/* Title */}
-      <h1> Graph Algorithms </h1>
-
-      {/* Graph Buttons */}
-      <div className="nav-bar">
-        <button className="btn">Clear</button>
-        <span className="divider"></span>
-        <button className="btn">Dijkstra</button>
-        <button className="btn">Depth First Search</button>
-        <button className="btn">Breadth First Seaarch</button>
-      </div>
+      <h1 className="my-4"> Graph Algorithms </h1>
 
       {/* Graph Algorithm Grid */}
-      <div className="grid">
+      <div className="grid d-flex flex-column mb-3" id="grid" style={{height: `${GRID_HEIGHT}vh`}}>
         {grid.map((row, rowIdx) => {
           return (
-            <div key={rowIdx}>
+            <div className="grid-row d-flex flex-row" key={rowIdx}>
               {row.map((node, nodeIdx) => {
                 const {row, col} = node;
                   return (
-                    <Node
+                    <Node key={nodeIdx}
                       row={row}
                       col={col}>
                     </Node>
@@ -64,6 +79,15 @@ export const GraphPage = () => {
             </div>
           );
         })}
+      </div>
+
+
+      {/* Graph Buttons */}
+      <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
+        <button className="btn btn-info" >Reset</button>
+        <button className="btn btn-outline-light" >Dijkstra</button>
+        <button className="btn btn-outline-light" >Depth First Search</button>
+        <button className="btn btn-outline-light" >Breadth First Search</button>
       </div>
 
     </div>

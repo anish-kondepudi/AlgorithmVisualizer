@@ -187,7 +187,7 @@ export const SortingPage = () => {
         )} 
       </div>
       
-      <div className="row gap-2">
+      <div className="row gap-3 mb-3">
         <div className="col-md-12 col-lg-9">
           <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
             <button className="btn btn-info" onClick={resetArray}>Reset</button>
@@ -226,7 +226,7 @@ export const SortingPage = () => {
         </div>
 
         <div className="col">
-          <table className="table table-sm table-borderless text-white w-auto">
+          <table className="table table-sm table-borderless text-white w-auto mb-0">
             <tbody>
               <tr>
                 <th className="pe-3 pt-0" scope="row">Algorithm</th>
