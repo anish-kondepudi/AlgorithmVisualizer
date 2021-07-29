@@ -2,21 +2,17 @@ import { useState, useEffect } from "react"
 import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation, mergeSortAnimation } from "./sort_components/sortingAlgorithms.js"
 import "./SortingPage.css";
 
-const DEFAULT_COLOR = "DarkCyan";
-const SORTED_COLOR = "Green";
-const SWAP_COLOR = "Red";
+const DEFAULT_COLOR = "#0dcaf0";
+const SORTED_COLOR = "#28a745";
+const SWAP_COLOR = "#dc3545";
 const HEIGHT = 50;
 
 export const SortingPage = () => {
 
   const [prevTimeout, setPrevTimeout] = useState(0);
-  const [timeComplexity, setTimeComplexity] = useState();
+  const [timeComplexity, setTimeComplexity] = useState({algo: '', best: '', avg: '', worst: ''});
   const [numberOfBars, setNumberOfBars] = useState(100);
   const [speed, setSpeed] = useState(50);
-
-  useEffect(() => {
-    resetArray();
-  }, []);
 
   // Clears all setTimeout()'s [Hack]
   const clearAllTimeouts = () => {
@@ -62,7 +58,7 @@ export const SortingPage = () => {
   const resetArray = () => {
     clearAllTimeouts();
 
-    setTimeComplexity(null);
+    setTimeComplexity({algo: '', best: '', avg: '', worst: ''});
 
     const array = randomArray();
 
@@ -86,6 +82,10 @@ export const SortingPage = () => {
 
     setArr(array);
   }
+
+  useEffect(() => {
+    resetArray();
+  }, []);
 
   const animate = (animations) => {
     const delay = 1000/numberOfBars * 3 * Math.pow(1/3,speed/50)
@@ -175,76 +175,79 @@ export const SortingPage = () => {
     animate(insertionSortAnimation(arr));
   }
 
-  
-
   return (
     <div className="container sortingPage">
       
       <h1 className="title"> Sorting Algorithms </h1>
 
       {/* Dynamically sets bar heights */}
-      <div className="bars-container" style={{'height': `${HEIGHT}vh`}}>
+      <div className="bars-container mb-3" style={{'height': `${HEIGHT}vh`}}>
         {arr.map((value,index) => 
             <div className="bar" key={index} style={{'height': `${value}vh` }}></div>
         )} 
       </div>
-
-      {/* Buttons to Start/Reset Sorting Visualizer */}
-      <div className="buttons-bar">
-        <button className="btn" onClick={() => {resetArray();}}>Reset</button>
-        <span className="divider"></span>
-        <button className="btn" onClick={() => {quickSort();}}>Quick Sort</button>
-        <button className="btn" onClick={() => {shellSort();}}>Shell Sort</button>
-        <button className="btn" onClick={() => {bubbleSort();}}>Bubble Sort</button>
-        <button className="btn" onClick={() => {mergeSort();}}>Merge Sort</button>
-        <button className="btn" onClick={() => {insertionSort();}}>Insertion Sort</button>
-      </div>
-
-      {/* Sliders to Adjust Number of Bars and Animation Speed */}
-      <div className="sliders-container">
-        <div className="slider-container">
-          <h4> Number of Bars : {numberOfBars} </h4>
-          <input onMouseDown={() => {
-            clearAllTimeouts();
-            resetColors();
-          }} onChange={(e) => {
-            setNumberOfBars(e.target.value);
-            setArr(randomArray(e.target.value));
-          }} type="range" step="1" min="5" max="500" defaultValue={numberOfBars} className="form-range numberOfBars slider"></input>
-        </div>
-        <div className="slider-container">
-          <h4> Animation Speed : {speed}%</h4>
-          <input onMouseDown={() => {
-            clearAllTimeouts();
-            resetColors();
-          }} onChange={(e) => {
-            setSpeed(e.target.value);
-          }} type="range" step="1" min="1" max="100" defaultValue={speed} className="form-range speed slider"></input>
-        </div>
-      </div>
       
-      {/* Dynamically Time Complexities */}
-      {timeComplexity && <div className="sorting-info-container">
-        <div className="algorithm-name">
-          <h2>{ timeComplexity.algo }</h2>
-          <h2> Time Complexity </h2>
+      <div className="row gap-2">
+        <div className="col-md-12 col-lg-9">
+          <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
+            <button className="btn btn-info" onClick={resetArray}>Reset</button>
+            <button className="btn btn-outline-light" onClick={quickSort}>Quick Sort</button>
+            <button className="btn btn-outline-light" onClick={shellSort}>Shell Sort</button>
+            <button className="btn btn-outline-light" onClick={bubbleSort}>Bubble Sort</button>
+            <button className="btn btn-outline-light" onClick={mergeSort}>Merge Sort</button>
+            <button className="btn btn-outline-light" onClick={insertionSort}>Insertion Sort</button>
+          </div>
+
+          <div className="row">
+            <div className="col-sm-12 col-md-6">
+              <label className="form-label"> Number of Bars : {numberOfBars} </label>
+              <input type="range" step="1" min="5" max="500" defaultValue={numberOfBars} className="form-range"
+                onMouseDown={() => {
+                  clearAllTimeouts();
+                  resetColors();
+                }} 
+                onChange={(e) => {
+                  setNumberOfBars(e.target.value);
+                  setArr(randomArray(e.target.value));
+                }} />
+            </div>
+            <div className="col-sm-12 col-md-6">
+              <label className="form-label"> Animation Speed : {speed}% </label>
+              <input type="range" step="1" min="1" max="100" defaultValue={speed} className="form-range"
+                onMouseDown={() => {
+                  clearAllTimeouts();
+                  resetColors();
+                }} 
+                onChange={(e) => {
+                  setSpeed(e.target.value);
+                }} />
+            </div>
+          </div>
         </div>
-        <div className="separator"></div>
-        <div className="bigO-container">
-          <div className="best-bigO">
-              <h2> Best: </h2>
-              <h2> { timeComplexity.best } </h2>
-          </div>
-          <div className="average-bigO">
-            <h2> Average: </h2>
-            <h2> { timeComplexity.avg } </h2>
-          </div>
-          <div className="worst-bigO">
-            <h2> Worst: </h2>
-            <h2> { timeComplexity.worst } </h2>
-          </div>
+
+        <div className="col">
+          <table className="table table-sm table-borderless text-white w-auto">
+            <tbody>
+              <tr>
+                <th className="pe-3 pt-0" scope="row">Algorithm</th>
+                <td className="pt-0">{ timeComplexity.algo }</td>
+              </tr>
+              <tr>
+                <th className="pe-3 pt-0" scope="row">Best</th>
+                <td className="pt-0">{ timeComplexity.best }</td>
+              </tr>
+              <tr>
+                <th className="pe-3 pt-0" scope="row">Average</th>
+                <td className="pt-0">{ timeComplexity.avg }</td>
+              </tr>
+              <tr>
+                <th className="pe-3 pt-0" scope="row">Worst</th>
+                <td className="pt-0">{ timeComplexity.worst }</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div> }      
+      </div>    
     </div>
   );
 }
