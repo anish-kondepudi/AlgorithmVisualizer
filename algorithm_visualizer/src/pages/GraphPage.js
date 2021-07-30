@@ -116,6 +116,8 @@ export const GraphPage = () => {
   // Returns New Grid with Walls
   const getNewGridWithWallToggled = (grid, row, col) => {
     const newGrid = grid.slice();
+    if (row === START_NODE_ROW && col === START_NODE_COL) return newGrid;
+    if (row === FINISH_NODE_ROW && col === FINISH_NODE_COL) return newGrid;
     const node = newGrid[row][col];
     const newNode = {
       ...node,
