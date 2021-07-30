@@ -15,15 +15,27 @@ const FINISH_NODE_COL = 35;
 
 export const GraphPage = () => {
 
-  // Initializes Grid
+  // Initializes States
   const [grid, setGrid] = useState([]);
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
+  const [prevTimeout, setPrevTimeout] = useState(0);
 
-  // for later use currently useless
+  // Updates Grid when Window Size Changes
   useEffect(() => {
     updateGrid();
     window.addEventListener('resize', updateGrid);
   }, []);
+
+  // Clears all setTimeout()'s [Hack]
+  const clearAllTimeouts = () => {
+    // Set a fake timeout to get the highest timeout id
+    const highestTimeoutId = setTimeout(";");
+    for (let i = 0 ; i < highestTimeoutId ; i++) {
+        clearTimeout(i); 
+        
+    }
+    setPrevTimeout(highestTimeoutId);
+  }
 
   const handleMouseDown = (row, col) => {
     const newGrid = getNewGridWithWallToggled(grid, row, col);
@@ -41,6 +53,7 @@ export const GraphPage = () => {
     setMouseIsPressed(false);
   }
 
+  // Animates Dijkstra
   const animateDijkstra = (visitedNodesInOrder, nodesInShortestPathOrder) => {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
@@ -57,6 +70,7 @@ export const GraphPage = () => {
     }
   }
 
+  // Animated Shortest Path
   const animateShortestPath = (nodesInShortestPathOrder) => {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
@@ -67,6 +81,7 @@ export const GraphPage = () => {
     }
   }
 
+  // Performs Dijkstra and Animates Grids
   const visualizeDijkstra = () => {
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
@@ -75,7 +90,7 @@ export const GraphPage = () => {
     animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
-
+  // Updates Grid based on Current Window Size
   const updateGrid = () => {
     const gridElement = document.getElementById('grid');
     setGrid(createGrid(
@@ -84,7 +99,7 @@ export const GraphPage = () => {
     ));
   }
 
-  // Creates a Grid with Row x Col Nodes
+  // Creates a New Grid given #Rows and #Columns
   const createGrid = (rows,cols) => {
     const grid = [];
     for (let row=0; row<rows; row++) {
@@ -97,6 +112,7 @@ export const GraphPage = () => {
     return grid;
   }
 
+  // Returns New Grid with Walls
   const getNewGridWithWallToggled = (grid, row, col) => {
     const newGrid = grid.slice();
     const node = newGrid[row][col];
@@ -121,6 +137,31 @@ export const GraphPage = () => {
       previousNode: null,
     };
   };
+
+  // Resets Grids
+  const resetGrid = () => {
+    clearAllTimeouts();
+
+    const gridElement = document.getElementById('grid');
+    const rows = Math.floor(gridElement.offsetHeight*PX_TO_REM/CELL_SIZE);
+    const cols = Math.floor(gridElement.offsetWidth*PX_TO_REM/CELL_SIZE);
+
+    const newGrid = createGrid(rows,cols);
+
+    for (let row=0; row<rows; row++) {
+      for (let col=0; col<cols; col++) {
+        const isEndNode = (row===FINISH_NODE_ROW && col===FINISH_NODE_COL);
+        const isStartNode = (row===START_NODE_ROW && col===START_NODE_COL);
+
+        const extraClassName = isEndNode ? 'node-finish' : isStartNode ? 'node-start' : '';
+
+        let node = document.getElementById(`node-${row}-${col}`);
+        node.className = `node ${extraClassName}`;
+      }
+    }
+
+    setGrid(newGrid);
+  }
 
   
 
@@ -160,7 +201,7 @@ export const GraphPage = () => {
 
       {/* Graph Buttons */}
       <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
-        <button className="btn btn-info" >Reset</button>
+        <button className="btn btn-info" onClick={resetGrid}>Reset</button>
         <button className="btn btn-outline-light" onClick={visualizeDijkstra}>Dijkstra</button>
         <button className="btn btn-outline-light" >Depth First Search</button>
         <button className="btn btn-outline-light" >Breadth First Search</button>
