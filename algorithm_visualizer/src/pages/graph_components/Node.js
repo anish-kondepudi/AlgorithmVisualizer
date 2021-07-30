@@ -9,5 +9,3 @@ export const Node = ({row,col,id}) => {
     </div>
   );
 }
-
-// className={`node ${extraClassName}`}
