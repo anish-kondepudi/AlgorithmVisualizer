@@ -25,15 +25,15 @@ export const GraphPage = () => {
   useEffect(() => {
     updateGrid();
     window.addEventListener('resize', updateGrid);
+    // eslint-disable-next-line
   }, []);
 
   // Clears all setTimeout()'s [Hack]
   const clearAllTimeouts = () => {
     // Set a fake timeout to get the highest timeout id
-    const highestTimeoutId = setTimeout(";");
-    for (let i = 0 ; i < highestTimeoutId ; i++) {
+    const highestTimeoutId = setTimeout(()=>{});
+    for (let i = prevTimeout ; i < highestTimeoutId ; i++) {
         clearTimeout(i); 
-        
     }
     setPrevTimeout(highestTimeoutId);
   }
@@ -47,6 +47,7 @@ export const GraphPage = () => {
   const handleMouseEnter = (row, col) => {
     if (!mouseIsPressed) return;
     const newGrid = getNewGridWithWallToggled(grid, row, col);
+    // document.getElementById(`node-${row}-${col}`).className = 'node node-wall';
     setGrid(newGrid);
   }
 

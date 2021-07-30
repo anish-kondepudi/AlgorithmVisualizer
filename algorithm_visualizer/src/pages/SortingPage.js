@@ -17,10 +17,9 @@ export const SortingPage = () => {
   // Clears all setTimeout()'s [Hack]
   const clearAllTimeouts = () => {
     // Set a fake timeout to get the highest timeout id
-    var highestTimeoutId = setTimeout(";");
-    for (var i = prevTimeout ; i < highestTimeoutId ; i++) {
+    let highestTimeoutId = setTimeout(()=>{});
+    for (let i = prevTimeout ; i < highestTimeoutId ; i++) {
         clearTimeout(i); 
-        
     }
     setPrevTimeout(highestTimeoutId);
   }
@@ -85,6 +84,7 @@ export const SortingPage = () => {
 
   useEffect(() => {
     resetArray();
+    // eslint-disable-next-line
   }, []);
 
   const animate = (animations) => {

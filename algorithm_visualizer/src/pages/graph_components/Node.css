@@ -49,10 +49,28 @@
 
 .node-wall {
   background-color: sandybrown;
+  /*animation-name: wallAnimation;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;*/
+}
+
+@keyframes wallAnimation {
+  0% {
+    transform: scale(0.3);
+    border-radius: 80%;
+  }
+
+  75% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .node-shortest-path {
-  background-color: whitesmoke;
+  background-color: indianred;
 }
 
 @keyframes shortestPath {
