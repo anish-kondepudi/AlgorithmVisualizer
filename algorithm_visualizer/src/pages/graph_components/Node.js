@@ -13,19 +13,14 @@ export default class Node extends Component {
   render() {
     const {
       row,
-      col,
-      onMouseDown,
-      onMouseEnter,
-      onMouseUp
+      col
     } = this.props;
 
     return (
       <div
-        id={`node-${row}-${col}`}
+        id={`${row}-${col}`}
         className={`node node-${this.state.type}`}
-        onMouseDown={() => onMouseDown(row, col)}
-        onMouseEnter={() => onMouseEnter(row, col)}
-        onMouseUp={() => onMouseUp()}></div>
+      />
     );
   }
 }

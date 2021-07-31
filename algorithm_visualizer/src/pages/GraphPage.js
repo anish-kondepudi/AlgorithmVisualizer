@@ -20,23 +20,22 @@ export const GraphPage = () => {
   const grid = useRef([]).current;
   const gridRef = useRef();
   const [dimensions, setDimensions] = useState({rows: 0, cols: 0});
-  const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [prevTimeout, setPrevTimeout] = useState(0);
+
+  let mouseIsPressed = false;
 
   
 
   // Updates Grid when Window Size Changes
   useEffect(() => {
-    setDimensions({
-      rows: Math.floor(gridRef.current.offsetHeight*PX_TO_REM/CELL_SIZE), 
-      cols: Math.floor(gridRef.current.offsetWidth*PX_TO_REM/CELL_SIZE)
-    });
+    resizeGrid();
     window.addEventListener('resize', () => {
-      setDimensions({
-        rows: Math.floor(gridRef.current.offsetHeight*PX_TO_REM/CELL_SIZE), 
-        cols: Math.floor(gridRef.current.offsetWidth*PX_TO_REM/CELL_SIZE)
-      });
+      resizeGrid();
     });
+    gridRef.current.addEventListener("mousedown", handleMouseDown);
+    gridRef.current.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mouseup", handleMouseUp);
+
 
   }, []);
 
@@ -50,18 +49,24 @@ export const GraphPage = () => {
     setPrevTimeout(highestTimeoutId);
   }
 
-  const handleMouseDown = (row, col) => {
+  const handleMouseDown = e => {
+    const [row, col] = e.target.id.split('-');
     grid[row][col].setState({type: 'wall'})
-    setMouseIsPressed(true);
+    mouseIsPressed = true;
+    console.log("down");
   }
 
-  const handleMouseEnter = (row, col) => {
+  const handleMouseOver = e => {
+    console.log("over")
     if (!mouseIsPressed) return;
-    grid[row][col].setState({type: 'wall'})
+    const [row, col] = e.target.id.split('-');
+    document.getElementById(`${row}-${col}`).className = 'node node-wall';
+    
   }
 
   const handleMouseUp = () => {
-    setMouseIsPressed(false);
+    mouseIsPressed = false;
+    console.log("up");
   }
 
   /*
@@ -136,7 +141,7 @@ export const GraphPage = () => {
 
     setDimensions({
       rows: rows, 
-      cols: Math.floor(gridRef.current.offsetWidth*PX_TO_REM/CELL_SIZE)
+      cols: cols
     });
   }
 
@@ -146,7 +151,7 @@ export const GraphPage = () => {
 
   const makeGridElement = () => {
     grid.length = 0;
-    console.log("hello")
+
     return (
       <div className="grid d-flex flex-column mb-3" id="grid" ref={gridRef} style={{height: `${GRID_HEIGHT}vh`}}>
         {
@@ -163,10 +168,6 @@ export const GraphPage = () => {
                         row={i}
                         col={j}
                         type={''}
-                        mouseIsPressed={mouseIsPressed}
-                        onMouseDown={(row, col) => handleMouseDown(row, col)}
-                        onMouseEnter={(row, col) => handleMouseEnter(row, col)}
-                        onMouseUp={() => handleMouseUp()}
                       />
                     );
                   })
