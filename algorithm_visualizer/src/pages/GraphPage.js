@@ -4,30 +4,42 @@ import { useState, useEffect, useRef } from "react"
 import Node from './graph_components/Node';
 
 
-const CELL_SIZE = 2;
+const CELL_SIZE = 1.5;
 const GRID_HEIGHT = 70;
-const PX_TO_REM = 1 / parseFloat(getComputedStyle(document.documentElement).fontSize);
+const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
-const START_NODE_ROW = 10;
-const START_NODE_COL = 15;
-const FINISH_NODE_ROW = 10;
-const FINISH_NODE_COL = 35;
+var prevTimeout = 0;
+var mouseIsPressed = false;
+var startRow, startCol, endRow, endCol = null;
+var selectedNode = null;
+  
 
 
 export const GraphPage = () => {
 
   // Initializes States
-  const [grid, setGrid] = useState([]);
-  const [mouseIsPressed, setMouseIsPressed] = useState(false);
-  const [prevTimeout, setPrevTimeout] = useState(0);
-
-  const nodeRefs = useRef([]);
+  const grid = useRef([]).current;
+  const gridRef = useRef();
+  const [dimensions, setDimensions] = useState(null);
 
   // Updates Grid when Window Size Changes
   useEffect(() => {
-    updateGrid();
-    window.addEventListener('resize', updateGrid);
-    // eslint-disable-next-line
+    requestAnimationFrame(() => {
+      resetGrid();
+    })
+  
+    resizeGrid();
+    window.addEventListener('resize', resizeGrid);
+    gridRef.current.addEventListener("mousedown", handleMouseDown);
+    gridRef.current.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      window.removeEventListener('resize', resizeGrid);
+      gridRef.current.removeEventListener("mousedown", handleMouseDown);
+      gridRef.current.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
   }, []);
 
   // Clears all setTimeout()'s [Hack]
@@ -37,26 +49,64 @@ export const GraphPage = () => {
     for (let i = prevTimeout ; i < highestTimeoutId ; i++) {
         clearTimeout(i); 
     }
-    setPrevTimeout(highestTimeoutId);
+    prevTimeout = highestTimeoutId;
   }
 
-  const handleMouseDown = (row, col) => {
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    setGrid(newGrid);
-    setMouseIsPressed(true);
+  const handleMouseDown = e => {
+    const [name, row, col] = e.target.id.split('-');
+    if (name === "node") {
+      mouseIsPressed = true;
+
+      const node = grid[row][col];
+
+      switch(node.state.type) {
+        case '':
+          grid[row][col].setState({type: 'wall'})
+          break;
+        case 'start':
+          selectedNode = 'start';
+          break;
+        case 'end':
+          selectedNode = 'end';
+          break;
+      }
+      
+    }
+    
   }
 
-  const handleMouseEnter = (row, col) => {
+  const handleMouseMove = e => {
     if (!mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    // document.getElementById(`node-${row}-${col}`).className = 'node node-wall';
-    setGrid(newGrid);
+
+    const [name, row, col] = e.target.id.split('-');
+
+    if (name !== 'node') return;
+
+    const node = grid[row][col];
+
+    if ((endRow != row || endCol != col) && (startRow != row || startCol != col)) {
+      if (selectedNode === 'start') {
+        node.setState({type: 'start'});
+        grid[startRow][startCol].setState({type: ''});
+        [startRow, startCol] = [row, col];
+      }
+      else if (selectedNode === 'end') {
+        node.setState({type: 'end'});
+        grid[endRow][endCol].setState({type: ''});
+        [endRow, endCol] = [row, col];
+      }
+      else {
+        node.setState({type: 'wall'})
+      }
+    }
   }
 
   const handleMouseUp = () => {
-    setMouseIsPressed(false);
+    mouseIsPressed = false;
+    selectedNode = null;
   }
 
+  
   // Animates Dijkstra
   const animateDijkstra = (visitedNodesInOrder, nodesInShortestPathOrder) => {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
@@ -67,9 +117,8 @@ export const GraphPage = () => {
         return;
       }
       setTimeout(() => {
-        const node = visitedNodesInOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          'node node-visited';
+        const {row, col} = visitedNodesInOrder[i];
+        grid[row][col].setState({type: 'visited'});
       }, 10 * i);
     }
   }
@@ -78,96 +127,62 @@ export const GraphPage = () => {
   const animateShortestPath = (nodesInShortestPathOrder) => {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
-        const node = nodesInShortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          'node node-shortest-path';
+        const {row, col} = nodesInShortestPathOrder[i];
+        grid[row][col].setState({type: 'shortest-path'});
       }, 50 * i);
     }
   }
 
   // Performs Dijkstra and Animates Grids
   const visualizeDijkstra = () => {
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+    const visitedNodesInOrder = dijkstra(grid, grid[startRow][startCol], grid[endRow][endCol]);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrder(grid[endRow][endCol]);
     animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   }
-
-  // Updates Grid based on Current Window Size
-  const updateGrid = () => {
-    const gridElement = document.getElementById('grid');
-    setGrid(createGrid(
-      Math.floor(gridElement.offsetHeight*PX_TO_REM/CELL_SIZE), 
-      Math.floor(gridElement.offsetWidth*PX_TO_REM/CELL_SIZE)
-    ));
-    console.log(nodeRefs.current)
-  }
-
-  // Creates a New Grid given #Rows and #Columns
-  const createGrid = (rows,cols) => {
-    const grid = [];
-    for (let row=0; row<rows; row++) {
-      const currentRow = [];
-      for (let col=0; col<cols; col++) {
-        currentRow.push(createNode(col, row))
-      }
-      grid.push(currentRow);
-    }
-    return grid;
-  }
-
-  // Returns New Grid with Walls
-  const getNewGridWithWallToggled = (grid, row, col) => {
-    const newGrid = grid.slice();
-    if (row === START_NODE_ROW && col === START_NODE_COL) return newGrid;
-    if (row === FINISH_NODE_ROW && col === FINISH_NODE_COL) return newGrid;
-    const node = newGrid[row][col];
-    const newNode = {
-      ...node,
-      isWall: !node.isWall,
-    };
-    newGrid[row][col] = newNode;
-    return newGrid;
-  };
-
-  // Creates a Node (Object Data)
-  const createNode = (col, row) => {
-    return {
-      col,
-      row,
-      isStart: row === START_NODE_ROW && col === START_NODE_COL,
-      isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
-      distance: Infinity,
-      isVisited: false,
-      isWall: false,
-      previousNode: null,
-    };
-  };
+  
 
   // Resets Grids
   const resetGrid = () => {
     clearAllTimeouts();
 
-    const gridElement = document.getElementById('grid');
-    const rows = Math.floor(gridElement.offsetHeight*PX_TO_REM/CELL_SIZE);
-    const cols = Math.floor(gridElement.offsetWidth*PX_TO_REM/CELL_SIZE);
-
-    const newGrid = createGrid(rows,cols);
-
-    for (let row=0; row<rows; row++) {
-      for (let col=0; col<cols; col++) {
-        const isEndNode = (row===FINISH_NODE_ROW && col===FINISH_NODE_COL);
-        const isStartNode = (row===START_NODE_ROW && col===START_NODE_COL);
-
-        const extraClassName = isEndNode ? 'node-finish' : isStartNode ? 'node-start' : '';
-
-        let node = document.getElementById(`node-${row}-${col}`);
-        node.className = `node ${extraClassName}`;
+    for (let row=0; row<grid.length; row++) {
+      for (let col=0; col<grid[0].length; col++) {
+        grid[row][col].setState({type: ''});
+        grid[row][col].reset();
       }
     }
 
-    setGrid(newGrid);
+    const rows = pxToNode(gridRef.current.offsetHeight);
+    const cols = pxToNode(gridRef.current.offsetWidth);
+
+    [startRow, startCol] = [2,2];
+    [endRow, endCol] = [rows-3, cols-3];
+    
+    grid[startRow][startCol].setState({type: 'start'});
+    grid[endRow][endCol].setState({type: 'end'});
+  }
+
+  const resizeGrid = () => {
+    clearAllTimeouts();
+
+    const rows = pxToNode(gridRef.current.offsetHeight);
+    const cols = pxToNode(gridRef.current.offsetWidth);
+
+    setDimensions({
+      rows: rows, 
+      cols: cols
+    });
+
+    if (startRow && startCol && endRow && endCol) {
+      if (startRow > rows - 1) startRow = rows - 1;
+      if (startCol > cols - 1) startCol = cols - 1;
+      if (endRow > rows - 1) endRow = rows - 1;
+      if (endCol > cols - 1) endCol = cols - 1;
+      grid[endRow][endCol].setState({type: 'end'});
+      grid[startRow][startCol].setState({type: 'start'});
+    }
+
+    
   }
 
 
@@ -175,35 +190,31 @@ export const GraphPage = () => {
  
 
   const makeGridElement = () => {
-    nodeRefs.current = [];
+    grid.length = 0;
+
     return (
-      <div className="grid d-flex flex-column mb-3" id="grid" style={{height: `${GRID_HEIGHT}vh`}}>
-        {
-          grid.map((row, rowIdx) => {
-            const refRow = [];
+      <div className="grid d-flex flex-column mb-3" id="grid" ref={gridRef} style={{width: '100%', height: `${GRID_HEIGHT}vh`}}>
+        { dimensions &&
+          [...Array(dimensions.rows)].map((e1,i) => {
+            const currentRow = [];
             const elementRow = (
-              <div className="grid-row d-flex flex-row" key={rowIdx}>
-                {row.map((node, nodeIdx) => {
-                  const {row, col, isFinish, isStart, isWall} = node;
-                  return (
-                    <Node 
-                      ref={ref=>refRow.push(ref)}
-                      key={nodeIdx}
-                      row={row}
-                      col={col}
-                      isFinish={isFinish}
-                      isStart={isStart}
-                      isWall={isWall}
-                      mouseIsPressed={mouseIsPressed}
-                      onMouseDown={(row, col) => handleMouseDown(row, col)}
-                      onMouseEnter={(row, col) => handleMouseEnter(row, col)}
-                      onMouseUp={() => handleMouseUp()}
-                    />
-                  );
-                })}
+              <div className="grid-row d-flex flex-row" key={i}>
+                {
+                  [...Array(dimensions.cols)].map((e2,j) => {
+                    return (
+                      <Node 
+                        ref={ref=>currentRow.push(ref)}
+                        key={j}
+                        row={i}
+                        col={j}
+                        type={''}
+                      />
+                    );
+                  })
+                }
               </div>
             );
-            nodeRefs.current.push(refRow);
+            grid.push(currentRow);
             return elementRow;
           })
         }
@@ -218,9 +229,7 @@ export const GraphPage = () => {
       <h1 className="my-4"> Graph Algorithms </h1>
 
       {/* Graph Algorithm Grid */}
-      <div className="grid d-flex flex-column mb-3" id="grid" style={{height: `${GRID_HEIGHT}vh`}}>
-        {makeGridElement()}
-      </div>
+      {makeGridElement()}
 
 
       {/* Graph Buttons */}
@@ -229,9 +238,12 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={visualizeDijkstra}>Dijkstra</button>
         <button className="btn btn-outline-light" >Depth First Search</button>
         <button className="btn btn-outline-light" >Breadth First Search</button>
-        <button className="btn btn-outline-light" onClick={() => {console.log(nodeRefs.current)}}>test</button>
+        <button className="btn btn-outline-light" onClick={() => {
+          console.log(grid)}}>test</button>
       </div>
 
     </div>
   );
+
+  
 }

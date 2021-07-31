@@ -4,17 +4,17 @@
 // by backtracking from the finish node.
 export function dijkstra(grid, startNode, finishNode) {
     const visitedNodesInOrder = [];
-    startNode.distance = 0;
+    startNode.dv = 0;
     const unvisitedNodes = getAllNodes(grid);
     while (!!unvisitedNodes.length) {
       sortNodesByDistance(unvisitedNodes);
       const closestNode = unvisitedNodes.shift();
       // If we encounter a wall, we skip it.
-      if (closestNode.isWall) continue;
+      if (closestNode.state.type === 'wall') continue;
       // If the closest node is at a distance of infinity,
       // we must be trapped and should therefore stop.
-      if (closestNode.distance === Infinity) return visitedNodesInOrder;
-      closestNode.isVisited = true;
+      if (closestNode.dv === Infinity) return visitedNodesInOrder;
+      closestNode.known = true;
       visitedNodesInOrder.push(closestNode);
       if (closestNode === finishNode) return visitedNodesInOrder;
       updateUnvisitedNeighbors(closestNode, grid);
@@ -22,25 +22,25 @@ export function dijkstra(grid, startNode, finishNode) {
   }
   
   function sortNodesByDistance(unvisitedNodes) {
-    unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
+    unvisitedNodes.sort((nodeA, nodeB) => nodeA.dv - nodeB.dv);
   }
   
   function updateUnvisitedNeighbors(node, grid) {
     const unvisitedNeighbors = getUnvisitedNeighbors(node, grid);
     for (const neighbor of unvisitedNeighbors) {
-      neighbor.distance = node.distance + 1;
-      neighbor.previousNode = node;
+      neighbor.dv = node.dv + 1;
+      neighbor.pv = node;
     }
   }
   
   function getUnvisitedNeighbors(node, grid) {
     const neighbors = [];
-    const {col, row} = node;
+    const [row, col] = [node.row, node.col];
     if (row > 0) neighbors.push(grid[row - 1][col]);
     if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
     if (col > 0) neighbors.push(grid[row][col - 1]);
     if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
-    return neighbors.filter(neighbor => !neighbor.isVisited);
+    return neighbors.filter(neighbor => !neighbor.known);
   }
   
   function getAllNodes(grid) {
@@ -60,7 +60,7 @@ export function dijkstra(grid, startNode, finishNode) {
     let currentNode = finishNode;
     while (currentNode !== null) {
       nodesInShortestPathOrder.unshift(currentNode);
-      currentNode = currentNode.previousNode;
+      currentNode = currentNode.pv;
     }
     return nodesInShortestPathOrder;
   }
