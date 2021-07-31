@@ -29,14 +29,19 @@ export const GraphPage = () => {
   // Updates Grid when Window Size Changes
   useEffect(() => {
     resizeGrid();
-    window.addEventListener('resize', () => {
-      resizeGrid();
-    });
+    window.addEventListener('resize', resizeGrid);
     gridRef.current.addEventListener("mousedown", handleMouseDown);
     gridRef.current.addEventListener("mouseover", handleMouseOver);
-    window.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("drag", (e) => {e.preventDefault()});
 
 
+    return function cleanup() {
+      window.removeEventListener('resize', resizeGrid);
+      gridRef.current.removeEventListener("mousedown", handleMouseDown);
+      gridRef.current.removeEventListener("mouseover", handleMouseOver);
+      document.removeEventListener("mouseup", handleMouseUp);
+    }
   }, []);
 
   // Clears all setTimeout()'s [Hack]
@@ -50,18 +55,21 @@ export const GraphPage = () => {
   }
 
   const handleMouseDown = e => {
-    const [row, col] = e.target.id.split('-');
-    grid[row][col].setState({type: 'wall'})
-    mouseIsPressed = true;
-    console.log("down");
+    const [name, row, col] = e.target.id.split('-');
+    if (name === "node") {
+      grid[row][col].setState({type: 'wall'})
+      mouseIsPressed = true;
+      console.log("down");
+    }
   }
 
   const handleMouseOver = e => {
     console.log("over")
     if (!mouseIsPressed) return;
-    const [row, col] = e.target.id.split('-');
-    document.getElementById(`${row}-${col}`).className = 'node node-wall';
-    
+    const [name, row, col] = e.target.id.split('-');
+    if (name === "node") {
+      grid[row][col].setState({type: 'wall'})
+    }
   }
 
   const handleMouseUp = () => {

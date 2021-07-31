@@ -18,7 +18,7 @@ export default class Node extends Component {
 
     return (
       <div
-        id={`${row}-${col}`}
+        id={`node-${row}-${col}`}
         className={`node node-${this.state.type}`}
       />
     );
