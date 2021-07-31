@@ -7,6 +7,9 @@ import Node from './graph_components/Node';
 const CELL_SIZE = 2;
 const GRID_HEIGHT = 70;
 const PX_TO_REM = 1 / parseFloat(getComputedStyle(document.documentElement).fontSize);
+const pxToNode = (px) => {
+  return Math.floor(px*PX_TO_REM/CELL_SIZE);
+}
 
 const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
@@ -19,30 +22,38 @@ export const GraphPage = () => {
   // Initializes States
   const grid = useRef([]).current;
   const gridRef = useRef();
-  const [dimensions, setDimensions] = useState({rows: 0, cols: 0});
+  const [dimensions, setDimensions] = useState(null);
   const [prevTimeout, setPrevTimeout] = useState(0);
 
   let mouseIsPressed = false;
-
+  let startRow, startCol, endRow, endCol = null;
   
 
   // Updates Grid when Window Size Changes
   useEffect(() => {
+    onNextFrame(() => {
+      resetGrid();
+    })
+      
+
     resizeGrid();
     window.addEventListener('resize', resizeGrid);
     gridRef.current.addEventListener("mousedown", handleMouseDown);
-    gridRef.current.addEventListener("mouseover", handleMouseOver);
+    gridRef.current.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("drag", (e) => {e.preventDefault()});
 
 
     return function cleanup() {
       window.removeEventListener('resize', resizeGrid);
       gridRef.current.removeEventListener("mousedown", handleMouseDown);
-      gridRef.current.removeEventListener("mouseover", handleMouseOver);
+      gridRef.current.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     }
   }, []);
+
+  useEffect(() => {
+    console.log("hello")
+  }, [dimensions]);
 
   // Clears all setTimeout()'s [Hack]
   const clearAllTimeouts = () => {
@@ -54,17 +65,21 @@ export const GraphPage = () => {
     setPrevTimeout(highestTimeoutId);
   }
 
+  function onNextFrame(callback) {
+    setTimeout(function () {
+        requestAnimationFrame(callback)
+    })
+}
+
   const handleMouseDown = e => {
     const [name, row, col] = e.target.id.split('-');
     if (name === "node") {
       grid[row][col].setState({type: 'wall'})
       mouseIsPressed = true;
-      console.log("down");
     }
   }
 
-  const handleMouseOver = e => {
-    console.log("over")
+  const handleMouseMove = e => {
     if (!mouseIsPressed) return;
     const [name, row, col] = e.target.id.split('-');
     if (name === "node") {
@@ -74,7 +89,6 @@ export const GraphPage = () => {
 
   const handleMouseUp = () => {
     mouseIsPressed = false;
-    console.log("up");
   }
 
   /*
@@ -139,18 +153,35 @@ export const GraphPage = () => {
         grid[row][col].setState({type: ''});
       }
     }
+
+    const rows = pxToNode(gridRef.current.offsetHeight);
+    const cols = pxToNode(gridRef.current.offsetWidth);
+
+    [startRow, startCol] = [2,2];
+    [endRow, endCol] = [rows-3, cols-3];
     
-    
+    grid[startRow][startCol].setState({type: 'start'});
+    grid[endRow][endCol].setState({type: 'end'});
   }
 
   const resizeGrid = () => {
-    const rows = Math.floor(gridRef.current.offsetHeight*PX_TO_REM/CELL_SIZE);
-    const cols = Math.floor(gridRef.current.offsetWidth*PX_TO_REM/CELL_SIZE);
+    const rows = pxToNode(gridRef.current.offsetHeight);
+    const cols = pxToNode(gridRef.current.offsetWidth);
 
     setDimensions({
       rows: rows, 
       cols: cols
     });
+
+    if (startRow && startCol && endRow && endCol) {
+      if (startRow > rows - 1) startRow = rows - 1;
+      if (startCol > cols - 1) startCol = cols - 1;
+      if (endRow > rows - 1) endRow = rows - 1;
+      if (endCol > cols - 1) endCol = cols - 1;
+      grid[endRow][endCol].setState({type: 'end'});
+    }
+
+    
   }
 
 
@@ -161,8 +192,8 @@ export const GraphPage = () => {
     grid.length = 0;
 
     return (
-      <div className="grid d-flex flex-column mb-3" id="grid" ref={gridRef} style={{height: `${GRID_HEIGHT}vh`}}>
-        {
+      <div className="grid d-flex flex-column mb-3" id="grid" ref={gridRef} style={{width: '100%', height: `${GRID_HEIGHT}vh`}}>
+        { dimensions &&
           [...Array(dimensions.rows)].map((e1,i) => {
             const currentRow = [];
             const elementRow = (
@@ -212,4 +243,6 @@ export const GraphPage = () => {
 
     </div>
   );
+
+  
 }
