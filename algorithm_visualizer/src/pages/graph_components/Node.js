@@ -8,17 +8,24 @@ export default class Node extends Component {
     this.state = {
       type: this.props.type
     };
+
+    this.dv = Infinity;
+    this.known = false;
+    this.pv = null;
+    this.row = this.props.row;
+    this.col = this.props.col;
+  }
+
+  reset() {
+    this.dv = Infinity;
+    this.known = false;
+    this.pv = null;
   }
 
   render() {
-    const {
-      row,
-      col
-    } = this.props;
-
     return (
       <div
-        id={`node-${row}-${col}`}
+        id={`node-${this.row}-${this.col}`}
         className={`node node-${this.state.type}`}
       />
     );
