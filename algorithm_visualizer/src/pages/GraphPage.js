@@ -1,10 +1,10 @@
 import "./GraphPage.css";
 import { dijkstra, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
-import { useState, useEffect } from "react"
-import { Node } from './graph_components/Node.js';
+import { useState, useEffect, useRef } from "react"
+import Node from './graph_components/Node';
 
 
-const CELL_SIZE = 1.5;
+const CELL_SIZE = 2;
 const GRID_HEIGHT = 70;
 const PX_TO_REM = 1 / parseFloat(getComputedStyle(document.documentElement).fontSize);
 
@@ -20,6 +20,8 @@ export const GraphPage = () => {
   const [grid, setGrid] = useState([]);
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [prevTimeout, setPrevTimeout] = useState(0);
+
+  const nodeRefs = useRef([]);
 
   // Updates Grid when Window Size Changes
   useEffect(() => {
@@ -99,6 +101,7 @@ export const GraphPage = () => {
       Math.floor(gridElement.offsetHeight*PX_TO_REM/CELL_SIZE), 
       Math.floor(gridElement.offsetWidth*PX_TO_REM/CELL_SIZE)
     ));
+    console.log(nodeRefs.current)
   }
 
   // Creates a New Grid given #Rows and #Columns
@@ -167,7 +170,46 @@ export const GraphPage = () => {
     setGrid(newGrid);
   }
 
-  
+
+
+ 
+
+  const makeGridElement = () => {
+    nodeRefs.current = [];
+    return (
+      <div className="grid d-flex flex-column mb-3" id="grid" style={{height: `${GRID_HEIGHT}vh`}}>
+        {
+          grid.map((row, rowIdx) => {
+            const refRow = [];
+            const elementRow = (
+              <div className="grid-row d-flex flex-row" key={rowIdx}>
+                {row.map((node, nodeIdx) => {
+                  const {row, col, isFinish, isStart, isWall} = node;
+                  return (
+                    <Node 
+                      ref={ref=>refRow.push(ref)}
+                      key={nodeIdx}
+                      row={row}
+                      col={col}
+                      isFinish={isFinish}
+                      isStart={isStart}
+                      isWall={isWall}
+                      mouseIsPressed={mouseIsPressed}
+                      onMouseDown={(row, col) => handleMouseDown(row, col)}
+                      onMouseEnter={(row, col) => handleMouseEnter(row, col)}
+                      onMouseUp={() => handleMouseUp()}
+                    />
+                  );
+                })}
+              </div>
+            );
+            nodeRefs.current.push(refRow);
+            return elementRow;
+          })
+        }
+      </div>
+    );
+  }
 
   return (
     <div className="graphPage container">
@@ -177,29 +219,7 @@ export const GraphPage = () => {
 
       {/* Graph Algorithm Grid */}
       <div className="grid d-flex flex-column mb-3" id="grid" style={{height: `${GRID_HEIGHT}vh`}}>
-        {grid.map((row, rowIdx) => {
-          return (
-            <div className="grid-row d-flex flex-row" key={rowIdx}>
-              {row.map((node, nodeIdx) => {
-                const {row, col, isFinish, isStart, isWall} = node;
-                return (
-                  <Node 
-                    key={nodeIdx}
-                    row={row}
-                    col={col}
-                    isFinish={isFinish}
-                    isStart={isStart}
-                    isWall={isWall}
-                    mouseIsPressed={mouseIsPressed}
-                    onMouseDown={(row, col) => handleMouseDown(row, col)}
-                    onMouseEnter={(row, col) => handleMouseEnter(row, col)}
-                    onMouseUp={() => handleMouseUp()}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
+        {makeGridElement()}
       </div>
 
 
@@ -209,6 +229,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={visualizeDijkstra}>Dijkstra</button>
         <button className="btn btn-outline-light" >Depth First Search</button>
         <button className="btn btn-outline-light" >Breadth First Search</button>
+        <button className="btn btn-outline-light" onClick={() => {console.log(nodeRefs.current)}}>test</button>
       </div>
 
     </div>
