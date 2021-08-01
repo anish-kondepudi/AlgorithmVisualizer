@@ -13,10 +13,16 @@ export function dijkstra(grid, startNode, finishNode) {
       if (closestNode.state.type === 'wall') continue;
       // If the closest node is at a distance of infinity,
       // we must be trapped and should therefore stop.
-      if (closestNode.dv === Infinity) return visitedNodesInOrder;
+      if (closestNode.dv === Infinity){
+        visitedNodesInOrder.shift();
+        return visitedNodesInOrder;
+      }
       closestNode.known = true;
+      if (closestNode === finishNode) { 
+        visitedNodesInOrder.shift();
+        return visitedNodesInOrder;
+      }
       visitedNodesInOrder.push(closestNode);
-      if (closestNode === finishNode) return visitedNodesInOrder;
       updateUnvisitedNeighbors(closestNode, grid);
     }
   }
@@ -62,5 +68,7 @@ export function dijkstra(grid, startNode, finishNode) {
       nodesInShortestPathOrder.unshift(currentNode);
       currentNode = currentNode.pv;
     }
+    nodesInShortestPathOrder.shift();
+    nodesInShortestPathOrder.pop();
     return nodesInShortestPathOrder;
   }

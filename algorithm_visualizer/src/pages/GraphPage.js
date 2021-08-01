@@ -3,13 +3,15 @@ import { dijkstra, getNodesInShortestPathOrder } from "./graph_components/graphA
 import { useState, useEffect, useRef } from "react"
 import Node from './graph_components/Node';
 
-
-const CELL_SIZE = 1.5;
+const VISIT_DELAY = 1;
+const PATH_DELAY = 40;
+const CELL_SIZE = 2;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
 var prevTimeout = 0;
-var mouseIsPressed = false;
+var running = false;
+var mouseButton = -1;
 var startRow, startCol, endRow, endCol = null;
 var selectedNode = null;
   
@@ -25,19 +27,21 @@ export const GraphPage = () => {
   // Updates Grid when Window Size Changes
   useEffect(() => {
     requestAnimationFrame(() => {
+      [startRow, startCol] = [2,2];
+      [endRow, endCol] = [grid.length-3, grid[0].length-3];
       resetGrid();
     })
   
     resizeGrid();
     window.addEventListener('resize', resizeGrid);
-    gridRef.current.addEventListener("mousedown", handleMouseDown);
-    gridRef.current.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       window.removeEventListener('resize', resizeGrid);
-      gridRef.current.removeEventListener("mousedown", handleMouseDown);
-      gridRef.current.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
@@ -53,22 +57,28 @@ export const GraphPage = () => {
   }
 
   const handleMouseDown = e => {
+    mouseButton = e.button;
     const [name, row, col] = e.target.id.split('-');
     if (name === "node") {
-      mouseIsPressed = true;
-
       const node = grid[row][col];
 
-      switch(node.state.type) {
-        case '':
-          grid[row][col].setState({type: 'wall'})
-          break;
-        case 'start':
+      if (mouseButton == 0) {
+        if (node.state.type === 'start') {
           selectedNode = 'start';
-          break;
-        case 'end':
+        }
+        else if (node.state.type === 'end') {
           selectedNode = 'end';
-          break;
+        }
+        else {
+          grid[row][col].setState({type: 'wall'})
+        }
+      }
+      else if (mouseButton == 2) {
+        switch(node.state.type) {
+          case 'wall':
+            grid[row][col].setState({type: 'empty'})
+            break;
+        }
       }
       
     }
@@ -76,7 +86,7 @@ export const GraphPage = () => {
   }
 
   const handleMouseMove = e => {
-    if (!mouseIsPressed) return;
+    if (mouseButton == -1) return;
 
     const [name, row, col] = e.target.id.split('-');
 
@@ -84,60 +94,80 @@ export const GraphPage = () => {
 
     const node = grid[row][col];
 
-    if ((endRow != row || endCol != col) && (startRow != row || startCol != col)) {
-      if (selectedNode === 'start') {
-        node.setState({type: 'start'});
-        grid[startRow][startCol].setState({type: ''});
-        [startRow, startCol] = [row, col];
+    if (mouseButton == 0) {
+      if ((endRow != row || endCol != col) && (startRow != row || startCol != col)) {
+        if (selectedNode === 'start') {
+          node.setState({type: 'start'});
+          grid[startRow][startCol].setState({type: 'empty'});
+          [startRow, startCol] = [row, col];
+          if (running) {
+            clearVisualization(false);
+            Dijkstra()
+          }
+        }
+        else if (selectedNode === 'end') {
+          node.setState({type: 'end'});
+          grid[endRow][endCol].setState({type: 'empty'});
+          [endRow, endCol] = [row, col];
+          if (running) {
+            clearVisualization(false);
+            animateNoDelay(Dijkstra())
+          }
+        }
+        else {
+          node.setState({type: 'wall'})
+        }
       }
-      else if (selectedNode === 'end') {
-        node.setState({type: 'end'});
-        grid[endRow][endCol].setState({type: ''});
-        [endRow, endCol] = [row, col];
-      }
-      else {
-        node.setState({type: 'wall'})
+    }
+    else if (mouseButton == 2) {
+      if (node.state.type == 'wall') {
+        grid[row][col].setState({type: 'empty'});
       }
     }
   }
 
   const handleMouseUp = () => {
-    mouseIsPressed = false;
+    mouseButton = -1;
     selectedNode = null;
   }
 
   
-  // Animates Dijkstra
-  const animateDijkstra = (visitedNodesInOrder, nodesInShortestPathOrder) => {
-    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-      if (i === visitedNodesInOrder.length) {
-        setTimeout(() => {
-          animateShortestPath(nodesInShortestPathOrder);
-        }, 10 * i);
-        return;
-      }
+  // Animates
+  const animate = ({visitedNodesInOrder, nodesInShortestPathOrder}) => {
+    running = true;
+    for (let i = 0; i < visitedNodesInOrder.length; i++) {
       setTimeout(() => {
         const {row, col} = visitedNodesInOrder[i];
         grid[row][col].setState({type: 'visited'});
-      }, 10 * i);
+      }, VISIT_DELAY * i);
+    }
+    setTimeout(() => {
+      for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+        setTimeout(() => {
+          const {row, col} = nodesInShortestPathOrder[i];
+          grid[row][col].setState({type: 'shortest-path'});
+        }, PATH_DELAY * i);
+      }
+    }, VISIT_DELAY * visitedNodesInOrder.length)
+  }
+
+  const animateNoDelay = ({visitedNodesInOrder, nodesInShortestPathOrder}) => {
+    for (let i = 0; i < visitedNodesInOrder.length; i++) {
+      const {row, col} = visitedNodesInOrder[i];
+      grid[row][col].setState({type: 'visited'});
+    }
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      const {row, col} = nodesInShortestPathOrder[i];
+      grid[row][col].setState({type: 'shortest-path'});
     }
   }
 
-  // Animated Shortest Path
-  const animateShortestPath = (nodesInShortestPathOrder) => {
-    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      setTimeout(() => {
-        const {row, col} = nodesInShortestPathOrder[i];
-        grid[row][col].setState({type: 'shortest-path'});
-      }, 50 * i);
-    }
-  }
 
   // Performs Dijkstra and Animates Grids
-  const visualizeDijkstra = () => {
+  const Dijkstra = () => {
     const visitedNodesInOrder = dijkstra(grid, grid[startRow][startCol], grid[endRow][endCol]);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(grid[endRow][endCol]);
-    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    return {visitedNodesInOrder, nodesInShortestPathOrder};
   }
   
 
@@ -147,19 +177,35 @@ export const GraphPage = () => {
 
     for (let row=0; row<grid.length; row++) {
       for (let col=0; col<grid[0].length; col++) {
-        grid[row][col].setState({type: ''});
+        if ((endRow != row || endCol != col) && (startRow != row || startCol != col))
+          grid[row][col].setState({type: 'empty'});
+
         grid[row][col].reset();
       }
     }
-
-    const rows = pxToNode(gridRef.current.offsetHeight);
-    const cols = pxToNode(gridRef.current.offsetWidth);
-
-    [startRow, startCol] = [2,2];
-    [endRow, endCol] = [rows-3, cols-3];
-    
     grid[startRow][startCol].setState({type: 'start'});
     grid[endRow][endCol].setState({type: 'end'});
+  }
+
+  const clearVisualization = (stopRunning=true) => {
+    clearAllTimeouts();
+    if (stopRunning) {
+      running = false;
+    }
+
+    for (let row=0; row<grid.length; row++) {
+      for (let col=0; col<grid[0].length; col++) {
+        const node = grid[row][col];
+        if (
+          node.state.type === 'visited' || 
+          node.state.type === 'shortest-path'
+        ) {
+          grid[row][col].setState({type: 'empty'})
+        }
+
+        grid[row][col].reset();
+      }
+    }
   }
 
   const resizeGrid = () => {
@@ -207,7 +253,7 @@ export const GraphPage = () => {
                         key={j}
                         row={i}
                         col={j}
-                        type={''}
+                        type={'empty'}
                       />
                     );
                   })
@@ -234,8 +280,9 @@ export const GraphPage = () => {
 
       {/* Graph Buttons */}
       <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
-        <button className="btn btn-info" onClick={resetGrid}>Reset</button>
-        <button className="btn btn-outline-light" onClick={visualizeDijkstra}>Dijkstra</button>
+        <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
+        <button className="btn btn-info" onClick={clearVisualization}>Clear Visualization</button>
+        <button className="btn btn-outline-light" onClick={()=> {animate(Dijkstra())}}>Dijkstra</button>
         <button className="btn btn-outline-light" >Depth First Search</button>
         <button className="btn btn-outline-light" >Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {
