@@ -38,6 +38,8 @@ export function dijkstra(grid, startNode, endNode) {
       }
     }
   }
+  visitedNodesInOrder.shift();
+  return visitedNodesInOrder;
 }
   
 // Backtracks from the finishNode to find the shortest path.
