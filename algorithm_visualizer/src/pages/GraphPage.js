@@ -1,5 +1,5 @@
 import "./GraphPage.css";
-import { dijkstra, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
+import { dijkstra, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
@@ -14,6 +14,7 @@ var running = false;
 var mouseButton = -1;
 var startRow, startCol, endRow, endCol = null;
 var selectedNode = null;
+var currentAlgorithm = null;
   
 export const GraphPage = () => {
 
@@ -58,64 +59,76 @@ export const GraphPage = () => {
 
   const handleMouseDown = e => {
     mouseButton = e.button;
-    const [name, row, col] = e.target.id.split('-');
-    if (name === "node") {
-      const node = grid[row][col];
 
-      if (mouseButton == 0) {
-        if (node.ref.className === 'node-start') {
-          selectedNode = 'node-start';
-        }
-        else if (node.ref.className === 'node-end') {
-          selectedNode = 'node-end';
-        }
-        else {
-          grid[row][col].ref.className = 'node-wall';
-          if (running) animateNoDelay(Dijkstra());
-        }
-      }
-      else if (mouseButton == 2) {
-        if (node.ref.className === 'node-wall') {
-          grid[row][col].ref.className = 'node-empty';
-          if (running) animateNoDelay(Dijkstra());
-        }
-      }
-      
-    }
+    let [name, row, col] = e.target.id.split('-');
     
+    if (name !== "node") return;
+
+    const node = grid[row][col];
+
+    if (mouseButton === 0) {
+      if (node.ref.className === 'node-start') {
+        selectedNode = 'node-start';
+      }
+      else if (node.ref.className === 'node-end') {
+        selectedNode = 'node-end';
+      }
+      else {
+        grid[row][col].ref.className = 'node-wall';
+        if (running) animate(runAlgorithm(), true);
+        else animateNode(node, 100, false);
+      }
+    }
+    else if (mouseButton === 2) {
+      if (node.ref.className === 'node-wall') {
+        grid[row][col].ref.className = 'node-empty';
+        if (running) animate(runAlgorithm(), true);
+      }
+    }    
   }
 
   const handleMouseMove = e => {
-    if (mouseButton == -1) return;
+    if (mouseButton === -1) return;
 
-    const [name, row, col] = e.target.id.split('-');
+    let [name, row, col] = e.target.id.split('-');
 
     if (name !== 'node') return;
 
     const node = grid[row][col];
 
-    if (mouseButton == 0) {
-      if ((endRow != row || endCol != col) && (startRow != row || startCol != col)) {
+    if (mouseButton === 0) {
+      if (node.ref.className === 'node-start') {
+        return;
+      }
+      else if (node.ref.className === 'node-end') {
+        return;
+      }
+      else {
         if (selectedNode === 'node-start') {
           node.ref.className = 'node-start';
           grid[startRow][startCol].ref.className = 'node-empty';
           [startRow, startCol] = [row, col];
+          if (running) animate(runAlgorithm(), true);
+          else animateNode(node, 50, false, .75);
         }
         else if (selectedNode === 'node-end') {
           node.ref.className = 'node-end';
           grid[endRow][endCol].ref.className = 'node-empty';
           [endRow, endCol] = [row, col];
+          if (running) animate(runAlgorithm(), true);
+          else animateNode(node, 50, false, .75);
         }
-        else {
+        else if (node.ref.className !== 'wall') {
           node.ref.className = 'node-wall';
+          if (running) animate(runAlgorithm(), true);
+          else animateNode(node, 100);
         }
-        if (running) animateNoDelay(Dijkstra());
       }
     }
-    else if (mouseButton == 2) {
-      if (node.ref.className == 'node-wall') {
+    else if (mouseButton === 2) {
+      if (node.ref.className === 'node-wall') {
         grid[row][col].ref.className = 'node-empty';
-        if (running) animateNoDelay(Dijkstra());
+        if (running) animate(runAlgorithm(), true);
       }
     }
   }
@@ -127,66 +140,90 @@ export const GraphPage = () => {
 
   
   // Animates
-  const animate = ({visitedNodesInOrder, nodesInShortestPathOrder}) => {
+  const animate = ({visitedNodesInOrder, nodesInShortestPathOrder}, noDelay = false) => {
     running = true;
-    for (let i = 0; i < visitedNodesInOrder.length; i++) {
-      setTimeout(() => {
+    if (noDelay) {
+      for (let i = 0; i < visitedNodesInOrder.length; i++) {
         visitedNodesInOrder[i].ref.className = 'node-visited';
-        visitedNodesInOrder[i].ref.animate([
-          {transform: 'scale(0)', borderRadius: '100%'},
-          {transform: 'scale(1)', borderRadius: 0}
-        ], {
-          duration: 500,
-          iterations: 1
-        });
-      }, VISIT_DELAY * i);
-    }
-    setTimeout(() => {
-      for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-        setTimeout(() => {
-          nodesInShortestPathOrder[i].ref.className = 'node-shortest-path';
-          nodesInShortestPathOrder[i].ref.animate([
-            {transform: 'scale(0)'},
-            {transform: 'scale(1)'}
-          ], {
-            duration: 200,
-            iterations: 1
-          });
-        }, PATH_DELAY * i);
       }
-    }, VISIT_DELAY * visitedNodesInOrder.length)
+      for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+        nodesInShortestPathOrder[i].ref.className = 'node-shortest-path';
+      }
+    }
+    else {
+      for (let i = 0; i < visitedNodesInOrder.length; i++) {
+        setTimeout(() => {
+          visitedNodesInOrder[i].ref.className = 'node-visited';
+          animateNode(visitedNodesInOrder[i], 500, true);
+        }, VISIT_DELAY * i);
+      }
+      setTimeout(() => {
+        for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+          setTimeout(() => {
+            nodesInShortestPathOrder[i].ref.className = 'node-shortest-path';
+            animateNode(nodesInShortestPathOrder[i], 200);
+          }, PATH_DELAY * i);
+        }
+      }, VISIT_DELAY * visitedNodesInOrder.length)
+    }
   }
 
-  const animateNoDelay = ({visitedNodesInOrder, nodesInShortestPathOrder}) => {
-    running = true;
-    for (let i = 0; i < visitedNodesInOrder.length; i++) {
-      const {row, col} = visitedNodesInOrder[i];
-      grid[row][col].ref.className = 'node-visited';
-    }
-    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      const {row, col} = nodesInShortestPathOrder[i];
-      grid[row][col].ref.className = 'node-shortest-path';
-    }
-  }
+  const animateNode = (node, time, borderRadius=false, startScale=0) => {
+    let animation;
 
+    if (borderRadius) {
+      animation = [
+        {transform: `scale(${startScale})`, borderRadius: '100%'},
+        {transform: 'scale(1)', borderRadius: 0}
+      ];
+    }
+    else {
+      animation = [
+        {transform: `scale(${startScale})`},
+        {transform: 'scale(1)'}
+      ];
+    }
+
+    node.ref.animate(animation, {
+      duration: time,
+      iterations: 1
+    });
+  }
 
   // Performs Dijkstra and Animates Grids
-  const Dijkstra = () => {
+  const runAlgorithm = (algorithm = null) => {
     clearVisualization();
-    const visitedNodesInOrder = dijkstra(grid, grid[startRow][startCol], grid[endRow][endCol]);
+
+    if (algorithm) currentAlgorithm = algorithm;
+
+    let visitedNodesInOrder;
+    switch(currentAlgorithm) {
+      case 'dijkstra':
+        visitedNodesInOrder = dijkstra(grid, grid[startRow][startCol], grid[endRow][endCol]);
+        break;
+      case 'breadth-first-search':
+        visitedNodesInOrder = breadthFirstSearch(grid, grid[startRow][startCol], grid[endRow][endCol]);
+        break;
+      default:
+        throw 'no current algorithm!'
+        break;
+    }
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(grid[endRow][endCol]);
+
     return {visitedNodesInOrder, nodesInShortestPathOrder};
   }
+  
   
 
   // Resets Grids
   const resetGrid = () => {
     running = false;
+    currentAlgorithm = null;
     clearAllTimeouts();
 
     for (let row=0; row<grid.length; row++) {
       for (let col=0; col<grid[0].length; col++) {
-        if ((endRow != row || endCol != col) && (startRow != row || startCol != col))
+        if ((endRow !== row || endCol !== col) && (startRow !== row || startCol !== col))
           grid[row][col].ref.className = 'node-empty';
 
         resetNode(grid[row][col]);
@@ -194,7 +231,6 @@ export const GraphPage = () => {
     }
     grid[endRow][endCol].ref.className = 'node-end';
     grid[startRow][startCol].ref.className = 'node-start';
-    console.log(grid[endRow][endCol].ref)
   }
 
   const clearVisualization = () => {
@@ -232,6 +268,8 @@ export const GraphPage = () => {
       if (startCol > cols - 1) startCol = cols - 1;
       if (endRow > rows - 1) endRow = rows - 1;
       if (endCol > cols - 1) endCol = cols - 1;
+      if ((startRow === endRow) && (startCol === endCol))
+        startCol -= 1;
       grid[endRow][endCol].ref.className = 'node-end';
       grid[startRow][startCol].ref.className = 'node-start';
     }
@@ -304,10 +342,10 @@ export const GraphPage = () => {
       {/* Graph Buttons */}
       <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
-        <button className="btn btn-info" onClick={clearVisualization}>Clear Visualization</button>
-        <button className="btn btn-outline-light" onClick={()=> {animate(Dijkstra())}}>Dijkstra</button>
+        <button className="btn btn-info" onClick={() => {clearVisualization(); currentAlgorithm=null;}}>Clear Visualization</button>
+        <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('dijkstra'))}}>Dijkstra</button>
         <button className="btn btn-outline-light" >Depth First Search</button>
-        <button className="btn btn-outline-light" >Breadth First Search</button>
+        <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('breadth-first-search'))}}>Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {
           console.log(grid)}}>test</button>
       </div>
