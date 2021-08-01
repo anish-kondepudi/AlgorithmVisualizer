@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
 const VISIT_DELAY = 10;
-const PATH_DELAY = 20;
-const CELL_SIZE = 1;
+const PATH_DELAY = 30;
+const CELL_SIZE = 1.5;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
