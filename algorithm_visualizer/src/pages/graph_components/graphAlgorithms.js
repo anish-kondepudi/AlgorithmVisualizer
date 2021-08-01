@@ -41,11 +41,6 @@ export function dijkstra(grid, startNode, endNode) {
 
 
 export function breadthFirstSearch(grid, startNode, endNode) {
-
-  const q = new Queue();
-  q.enqueue(2);
-  q.enqueue(3);
-
   const visitedNodesInOrder = [];
   const queue = new Queue();
 
@@ -73,6 +68,41 @@ export function breadthFirstSearch(grid, startNode, endNode) {
           return visitedNodesInOrder;
         }
         queue.enqueue(neighbor);
+      }
+    }
+  }
+  visitedNodesInOrder.shift();
+  return visitedNodesInOrder;
+}
+
+export function depthFirstSearch(grid, startNode, endNode) {
+  const visitedNodesInOrder = [];
+  const stack = [];
+
+  startNode.known = true;
+  stack.push(startNode);
+
+  while(stack.length > 0) {
+    const currentNode = stack.pop();
+
+    visitedNodesInOrder.push(currentNode);
+
+    const neighbors = [];
+    const {row, col} = currentNode;
+    if (row > 0) neighbors.push(grid[row - 1][col]);
+    if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
+    if (col > 0) neighbors.push(grid[row][col - 1]);
+    if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
+
+    for (const neighbor of neighbors) {
+      if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
+        neighbor.pv = currentNode;
+        neighbor.known = true;
+        if (neighbor === endNode) {
+          visitedNodesInOrder.shift();
+          return visitedNodesInOrder;
+        }
+        stack.push(neighbor);
       }
     }
   }
