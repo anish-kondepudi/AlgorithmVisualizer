@@ -3,8 +3,8 @@ import { dijkstra, getNodesInShortestPathOrder } from "./graph_components/graphA
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
-const VISIT_DELAY = 1;
-const PATH_DELAY = 40;
+const VISIT_DELAY = 10;
+const PATH_DELAY = 20;
 const CELL_SIZE = 1;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
@@ -181,6 +181,7 @@ export const GraphPage = () => {
 
   // Resets Grids
   const resetGrid = () => {
+    running = false;
     clearAllTimeouts();
 
     for (let row=0; row<grid.length; row++) {
