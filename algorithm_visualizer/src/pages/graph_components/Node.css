@@ -19,27 +19,7 @@
 }
 
 .node-visited {
-  background-color: darkcyan;/*
-  animation-name: visitedAnimation;
-  animation-duration: .75s;
-  animation-timing-function: ease-out;
-  animation-delay: 0;
-  animation-direction: alternate;
-  animation-iteration-count: 1;
-  animation-fill-mode: forwards;
-  animation-play-state: running;*/
-}
-
-@keyframes visitedAnimation {
-  0% {
-    transform: scale(0);
-    border-radius: 100%;
-  }
-
-  100% {
-    transform: scale(1);
-    border-radius: 0;
-  }
+  background-color: darkcyan;
 }
 
 .node-wall {
@@ -61,18 +41,5 @@
 }
 
 .node-shortest-path {
-  background-color: #ffff99; /*
-  animation-name: shortestPath;
-  animation-duration: 0.2s;
-  animation-timing-function: ease-out;*/
-}
-
-@keyframes shortestPath {
-  0% {
-    transform: scale(0);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+  background-color: #ffff99;
 }

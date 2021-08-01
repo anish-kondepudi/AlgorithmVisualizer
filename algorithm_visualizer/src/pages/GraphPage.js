@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
 const VISIT_DELAY = 10;
-const PATH_DELAY = 40;
-const CELL_SIZE = 2;
+const PATH_DELAY = 30;
+const CELL_SIZE = 1.5;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
@@ -15,8 +15,6 @@ var mouseButton = -1;
 var startRow, startCol, endRow, endCol = null;
 var selectedNode = null;
   
-
-
 export const GraphPage = () => {
 
   // Initializes States
@@ -134,29 +132,41 @@ export const GraphPage = () => {
     for (let i = 0; i < visitedNodesInOrder.length; i++) {
       setTimeout(() => {
         visitedNodesInOrder[i].ref.className = 'node-visited';
+        visitedNodesInOrder[i].ref.animate([
+          {transform: 'scale(0)', borderRadius: '100%'},
+          {transform: 'scale(1)', borderRadius: 0}
+        ], {
+          duration: 500,
+          iterations: 1
+        });
       }, VISIT_DELAY * i);
     }
     setTimeout(() => {
       for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
         setTimeout(() => {
           nodesInShortestPathOrder[i].ref.className = 'node-shortest-path';
+          nodesInShortestPathOrder[i].ref.animate([
+            {transform: 'scale(0)'},
+            {transform: 'scale(1)'}
+          ], {
+            duration: 200,
+            iterations: 1
+          });
         }, PATH_DELAY * i);
       }
     }, VISIT_DELAY * visitedNodesInOrder.length)
   }
 
   const animateNoDelay = ({visitedNodesInOrder, nodesInShortestPathOrder}) => {
-    requestAnimationFrame(() => {
-      running = true;
-      for (let i = 0; i < visitedNodesInOrder.length; i++) {
-        const {row, col} = visitedNodesInOrder[i];
-        grid[row][col].ref.className = 'node-visited';
-      }
-      for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-        const {row, col} = nodesInShortestPathOrder[i];
-        grid[row][col].ref.className = 'node-shortest-path';
-      }
-    });
+    running = true;
+    for (let i = 0; i < visitedNodesInOrder.length; i++) {
+      const {row, col} = visitedNodesInOrder[i];
+      grid[row][col].ref.className = 'node-visited';
+    }
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      const {row, col} = nodesInShortestPathOrder[i];
+      grid[row][col].ref.className = 'node-shortest-path';
+    }
   }
 
 
@@ -171,6 +181,7 @@ export const GraphPage = () => {
 
   // Resets Grids
   const resetGrid = () => {
+    running = false;
     clearAllTimeouts();
 
     for (let row=0; row<grid.length; row++) {
