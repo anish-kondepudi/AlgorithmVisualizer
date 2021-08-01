@@ -246,6 +246,7 @@ export const GraphPage = () => {
       dv: Infinity,
       known: false,
       pv: null,
+      weight: 1
     }
   }
 
@@ -253,6 +254,7 @@ export const GraphPage = () => {
     node.dv = Infinity;
     node.known = false;
     node.pv = null;
+    node.weight = 1;
   }
  
 

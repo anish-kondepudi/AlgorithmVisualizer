@@ -1,9 +1,5 @@
 import { PriorityQueue } from "../data_structures/PriorityQueue";
 
-// Performs Dijkstra's algorithm; returns *all* nodes in the order
-// in which they were visited. Also makes nodes point back to their
-// previous node, effectively allowing us to compute the shortest path
-// by backtracking from the finish node.
 export function dijkstra(grid, startNode, endNode) {
   const visitedNodesInOrder = [];
   const pq = new PriorityQueue((a,b) => a.dv < b.dv);
@@ -27,7 +23,7 @@ export function dijkstra(grid, startNode, endNode) {
 
       for (const neighbor of neighbors) {
         if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
-          neighbor.dv = currentNode.dv + 1;
+          neighbor.dv = currentNode.dv + neighbor.weight;
           neighbor.pv = currentNode;
           if (neighbor === endNode) {
             visitedNodesInOrder.shift();
@@ -42,16 +38,13 @@ export function dijkstra(grid, startNode, endNode) {
   return visitedNodesInOrder;
 }
   
-// Backtracks from the finishNode to find the shortest path.
-// Only works when called *after* the dijkstra method above.
 export function getNodesInShortestPathOrder(finishNode) {
   const nodesInShortestPathOrder = [];
-  let currentNode = finishNode;
-  while (currentNode !== null) {
+  let currentNode = finishNode.pv;
+  if (!currentNode) return [];
+  while (currentNode.pv !== null) {
     nodesInShortestPathOrder.unshift(currentNode);
     currentNode = currentNode.pv;
   }
-  nodesInShortestPathOrder.shift();
-  nodesInShortestPathOrder.pop();
   return nodesInShortestPathOrder;
 }
