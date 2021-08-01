@@ -1,11 +1,11 @@
 import "./GraphPage.css";
-import { dijkstra, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
+import { dijkstra, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
 const VISIT_DELAY = 10;
 const PATH_DELAY = 30;
-const CELL_SIZE = 1.5;
+const CELL_SIZE = 1;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
@@ -73,6 +73,9 @@ export const GraphPage = () => {
       else if (node.ref.className === 'node-end') {
         selectedNode = 'node-end';
       }
+      else if (node.ref.className === 'node-wall') {
+        return;
+      }
       else {
         grid[row][col].ref.className = 'node-wall';
         if (running) animate(runAlgorithm(), true);
@@ -118,7 +121,7 @@ export const GraphPage = () => {
           if (running) animate(runAlgorithm(), true);
           else animateNode(node, 50, false, .75);
         }
-        else if (node.ref.className !== 'wall') {
+        else if (node.ref.className !== 'node-wall') {
           node.ref.className = 'node-wall';
           if (running) animate(runAlgorithm(), true);
           else animateNode(node, 100);
@@ -203,6 +206,9 @@ export const GraphPage = () => {
         break;
       case 'breadth-first-search':
         visitedNodesInOrder = breadthFirstSearch(grid, grid[startRow][startCol], grid[endRow][endCol]);
+        break;
+      case 'depth-first-search':
+        visitedNodesInOrder = depthFirstSearch(grid, grid[startRow][startCol], grid[endRow][endCol]);
         break;
       default:
         throw 'no current algorithm!'
@@ -344,7 +350,7 @@ export const GraphPage = () => {
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
         <button className="btn btn-info" onClick={() => {clearVisualization(); currentAlgorithm=null;}}>Clear Visualization</button>
         <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('dijkstra'))}}>Dijkstra</button>
-        <button className="btn btn-outline-light" >Depth First Search</button>
+        <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('depth-first-search'))}}>Depth First Search</button>
         <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('breadth-first-search'))}}>Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {
           console.log(grid)}}>test</button>
