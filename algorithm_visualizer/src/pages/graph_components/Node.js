@@ -24,10 +24,12 @@ export default class Node extends Component {
 
   render() {
     return (
-      <div
-        id={`node-${this.row}-${this.col}`}
-        className={`node node-${this.state.type}`}
-      />
+      <div className="wrapper">
+        <div
+          id={`node-${this.row}-${this.col}`}
+          className={`node node-${this.state.type}`}
+        />
+      </div>
     );
   }
 }

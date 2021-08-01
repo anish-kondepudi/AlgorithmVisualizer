@@ -3,7 +3,7 @@ import { dijkstra, getNodesInShortestPathOrder } from "./graph_components/graphA
 import { useState, useEffect, useRef } from "react"
 import Node from './graph_components/Node';
 
-
+const DELAY = 1;
 const CELL_SIZE = 1.5;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
@@ -25,19 +25,24 @@ export const GraphPage = () => {
   // Updates Grid when Window Size Changes
   useEffect(() => {
     requestAnimationFrame(() => {
+      [startRow, startCol] = [2,2];
+      [endRow, endCol] = [grid.length-3, grid[0].length-3];
+      
+      grid[startRow][startCol].setState({type: 'start'});
+      grid[endRow][endCol].setState({type: 'end'});
       resetGrid();
     })
   
     resizeGrid();
     window.addEventListener('resize', resizeGrid);
-    gridRef.current.addEventListener("mousedown", handleMouseDown);
-    gridRef.current.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       window.removeEventListener('resize', resizeGrid);
-      gridRef.current.removeEventListener("mousedown", handleMouseDown);
-      gridRef.current.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
@@ -53,10 +58,9 @@ export const GraphPage = () => {
   }
 
   const handleMouseDown = e => {
+    mouseIsPressed = true;
     const [name, row, col] = e.target.id.split('-');
     if (name === "node") {
-      mouseIsPressed = true;
-
       const node = grid[row][col];
 
       switch(node.state.type) {
@@ -113,13 +117,13 @@ export const GraphPage = () => {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
           animateShortestPath(nodesInShortestPathOrder);
-        }, 10 * i);
+        }, DELAY * i);
         return;
       }
       setTimeout(() => {
         const {row, col} = visitedNodesInOrder[i];
         grid[row][col].setState({type: 'visited'});
-      }, 10 * i);
+      }, DELAY * i);
     }
   }
 
@@ -147,19 +151,30 @@ export const GraphPage = () => {
 
     for (let row=0; row<grid.length; row++) {
       for (let col=0; col<grid[0].length; col++) {
-        grid[row][col].setState({type: ''});
+        if ((endRow != row || endCol != col) && (startRow != row || startCol != col))
+          grid[row][col].setState({type: ''});
+
         grid[row][col].reset();
       }
     }
+  }
 
-    const rows = pxToNode(gridRef.current.offsetHeight);
-    const cols = pxToNode(gridRef.current.offsetWidth);
+  const clearVisualization = () => {
+    clearAllTimeouts();
 
-    [startRow, startCol] = [2,2];
-    [endRow, endCol] = [rows-3, cols-3];
-    
-    grid[startRow][startCol].setState({type: 'start'});
-    grid[endRow][endCol].setState({type: 'end'});
+    for (let row=0; row<grid.length; row++) {
+      for (let col=0; col<grid[0].length; col++) {
+        const node = grid[row][col];
+        if (
+          node.state.type === 'visited' || 
+          node.state.type === 'shortest-path'
+        ) {
+          grid[row][col].setState({type: ''})
+        }
+
+        grid[row][col].reset();
+      }
+    }
   }
 
   const resizeGrid = () => {
@@ -234,7 +249,8 @@ export const GraphPage = () => {
 
       {/* Graph Buttons */}
       <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
-        <button className="btn btn-info" onClick={resetGrid}>Reset</button>
+        <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
+        <button className="btn btn-info" onClick={clearVisualization}>Clear Visualization</button>
         <button className="btn btn-outline-light" onClick={visualizeDijkstra}>Dijkstra</button>
         <button className="btn btn-outline-light" >Depth First Search</button>
         <button className="btn btn-outline-light" >Breadth First Search</button>
