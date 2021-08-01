@@ -79,29 +79,28 @@ export function depthFirstSearch(grid, startNode, endNode) {
   const visitedNodesInOrder = [];
   const stack = [];
 
-  startNode.known = true;
   stack.push(startNode);
 
   while(stack.length > 0) {
     const currentNode = stack.pop();
-
+    currentNode.known = true;
+    if (currentNode === endNode) {
+      visitedNodesInOrder.shift();
+      return visitedNodesInOrder;
+    }
     visitedNodesInOrder.push(currentNode);
 
     const neighbors = [];
     const {row, col} = currentNode;
+    
     if (row > 0) neighbors.push(grid[row - 1][col]);
-    if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
     if (col > 0) neighbors.push(grid[row][col - 1]);
     if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
+    if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
 
     for (const neighbor of neighbors) {
       if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
         neighbor.pv = currentNode;
-        neighbor.known = true;
-        if (neighbor === endNode) {
-          visitedNodesInOrder.shift();
-          return visitedNodesInOrder;
-        }
         stack.push(neighbor);
       }
     }
