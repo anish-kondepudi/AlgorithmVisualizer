@@ -1,9 +1,9 @@
 import "./GraphPage.css";
 import { dijkstra, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
 import { useState, useEffect, useRef } from "react"
-import Node from './graph_components/Node';
+import {Node} from './graph_components/Node';
 
-const VISIT_DELAY = 1;
+const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
 const CELL_SIZE = 2;
 const GRID_HEIGHT = 70;
@@ -37,12 +37,14 @@ export const GraphPage = () => {
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    gridRef.current.addEventListener("contextmenu", e => e.preventDefault());
 
     return () => {
       window.removeEventListener('resize', resizeGrid);
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
     };
   }, []);
 
@@ -63,21 +65,21 @@ export const GraphPage = () => {
       const node = grid[row][col];
 
       if (mouseButton == 0) {
-        if (node.state.type === 'start') {
-          selectedNode = 'start';
+        if (node.ref.className === 'node-start') {
+          selectedNode = 'node-start';
         }
-        else if (node.state.type === 'end') {
-          selectedNode = 'end';
+        else if (node.ref.className === 'node-end') {
+          selectedNode = 'node-end';
         }
         else {
-          grid[row][col].setState({type: 'wall'})
+          grid[row][col].ref.className = 'node-wall';
+          if (running) animateNoDelay(Dijkstra());
         }
       }
       else if (mouseButton == 2) {
-        switch(node.state.type) {
-          case 'wall':
-            grid[row][col].setState({type: 'empty'})
-            break;
+        if (node.ref.className === 'node-wall') {
+          grid[row][col].ref.className = 'node-empty';
+          if (running) animateNoDelay(Dijkstra());
         }
       }
       
@@ -96,32 +98,26 @@ export const GraphPage = () => {
 
     if (mouseButton == 0) {
       if ((endRow != row || endCol != col) && (startRow != row || startCol != col)) {
-        if (selectedNode === 'start') {
-          node.setState({type: 'start'});
-          grid[startRow][startCol].setState({type: 'empty'});
+        if (selectedNode === 'node-start') {
+          node.ref.className = 'node-start';
+          grid[startRow][startCol].ref.className = 'node-empty';
           [startRow, startCol] = [row, col];
-          if (running) {
-            clearVisualization(false);
-            Dijkstra()
-          }
         }
-        else if (selectedNode === 'end') {
-          node.setState({type: 'end'});
-          grid[endRow][endCol].setState({type: 'empty'});
+        else if (selectedNode === 'node-end') {
+          node.ref.className = 'node-end';
+          grid[endRow][endCol].ref.className = 'node-empty';
           [endRow, endCol] = [row, col];
-          if (running) {
-            clearVisualization(false);
-            animateNoDelay(Dijkstra())
-          }
         }
         else {
-          node.setState({type: 'wall'})
+          node.ref.className = 'node-wall';
         }
+        if (running) animateNoDelay(Dijkstra());
       }
     }
     else if (mouseButton == 2) {
-      if (node.state.type == 'wall') {
-        grid[row][col].setState({type: 'empty'});
+      if (node.ref.className == 'node-wall') {
+        grid[row][col].ref.className = 'node-empty';
+        if (running) animateNoDelay(Dijkstra());
       }
     }
   }
@@ -137,34 +133,36 @@ export const GraphPage = () => {
     running = true;
     for (let i = 0; i < visitedNodesInOrder.length; i++) {
       setTimeout(() => {
-        const {row, col} = visitedNodesInOrder[i];
-        grid[row][col].setState({type: 'visited'});
+        visitedNodesInOrder[i].ref.className = 'node-visited';
       }, VISIT_DELAY * i);
     }
     setTimeout(() => {
       for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
         setTimeout(() => {
-          const {row, col} = nodesInShortestPathOrder[i];
-          grid[row][col].setState({type: 'shortest-path'});
+          nodesInShortestPathOrder[i].ref.className = 'node-shortest-path';
         }, PATH_DELAY * i);
       }
     }, VISIT_DELAY * visitedNodesInOrder.length)
   }
 
   const animateNoDelay = ({visitedNodesInOrder, nodesInShortestPathOrder}) => {
-    for (let i = 0; i < visitedNodesInOrder.length; i++) {
-      const {row, col} = visitedNodesInOrder[i];
-      grid[row][col].setState({type: 'visited'});
-    }
-    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      const {row, col} = nodesInShortestPathOrder[i];
-      grid[row][col].setState({type: 'shortest-path'});
-    }
+    requestAnimationFrame(() => {
+      running = true;
+      for (let i = 0; i < visitedNodesInOrder.length; i++) {
+        const {row, col} = visitedNodesInOrder[i];
+        grid[row][col].ref.className = 'node-visited';
+      }
+      for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+        const {row, col} = nodesInShortestPathOrder[i];
+        grid[row][col].ref.className = 'node-shortest-path';
+      }
+    });
   }
 
 
   // Performs Dijkstra and Animates Grids
   const Dijkstra = () => {
+    clearVisualization();
     const visitedNodesInOrder = dijkstra(grid, grid[startRow][startCol], grid[endRow][endCol]);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(grid[endRow][endCol]);
     return {visitedNodesInOrder, nodesInShortestPathOrder};
@@ -178,32 +176,31 @@ export const GraphPage = () => {
     for (let row=0; row<grid.length; row++) {
       for (let col=0; col<grid[0].length; col++) {
         if ((endRow != row || endCol != col) && (startRow != row || startCol != col))
-          grid[row][col].setState({type: 'empty'});
+          grid[row][col].ref.className = 'node-empty';
 
-        grid[row][col].reset();
+        resetNode(grid[row][col]);
       }
     }
-    grid[startRow][startCol].setState({type: 'start'});
-    grid[endRow][endCol].setState({type: 'end'});
+    grid[endRow][endCol].ref.className = 'node-end';
+    grid[startRow][startCol].ref.className = 'node-start';
+    console.log(grid[endRow][endCol].ref)
   }
 
-  const clearVisualization = (stopRunning=true) => {
+  const clearVisualization = () => {
+    running = false;
     clearAllTimeouts();
-    if (stopRunning) {
-      running = false;
-    }
 
     for (let row=0; row<grid.length; row++) {
       for (let col=0; col<grid[0].length; col++) {
         const node = grid[row][col];
         if (
-          node.state.type === 'visited' || 
-          node.state.type === 'shortest-path'
+          node.ref.className === 'node-visited' || 
+          node.ref.className === 'node-shortest-path'
         ) {
-          grid[row][col].setState({type: 'empty'})
+          grid[row][col].ref.className = 'node-empty';
         }
 
-        grid[row][col].reset();
+        resetNode(node);
       }
     }
   }
@@ -224,15 +221,28 @@ export const GraphPage = () => {
       if (startCol > cols - 1) startCol = cols - 1;
       if (endRow > rows - 1) endRow = rows - 1;
       if (endCol > cols - 1) endCol = cols - 1;
-      grid[endRow][endCol].setState({type: 'end'});
-      grid[startRow][startCol].setState({type: 'start'});
+      grid[endRow][endCol].ref.className = 'node-end';
+      grid[startRow][startCol].ref.className = 'node-start';
     }
-
-    
   }
 
 
+  const createNode = (refs, rows, cols) => {
+    return {
+      ref: refs,
+      row: rows,
+      col: cols,
+      dv: Infinity,
+      known: false,
+      pv: null,
+    }
+  }
 
+  const resetNode = (node) => {
+    node.dv = Infinity;
+    node.known = false;
+    node.pv = null;
+  }
  
 
   const makeGridElement = () => {
@@ -241,19 +251,19 @@ export const GraphPage = () => {
     return (
       <div className="grid d-flex flex-column mb-3" id="grid" ref={gridRef} style={{width: '100%', height: `${GRID_HEIGHT}vh`}}>
         { dimensions &&
-          [...Array(dimensions.rows)].map((e1,i) => {
+          [...Array(dimensions.rows)].map((e1,r) => {
             const currentRow = [];
             const elementRow = (
-              <div className="grid-row d-flex flex-row" key={i}>
+              <div className="grid-row d-flex flex-row" key={r}>
                 {
-                  [...Array(dimensions.cols)].map((e2,j) => {
+                  [...Array(dimensions.cols)].map((e2,c) => {
                     return (
                       <Node 
-                        ref={ref=>currentRow.push(ref)}
-                        key={j}
-                        row={i}
-                        col={j}
-                        type={'empty'}
+                        ref={ref=>currentRow.push(createNode(ref, r, c))}
+                        key={c}
+                        row={r}
+                        col={c}
+                        type={'node-empty'}
                       />
                     );
                   })
