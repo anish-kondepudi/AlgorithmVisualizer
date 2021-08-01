@@ -5,7 +5,7 @@
   border-bottom: 1px solid #b3b3b3;
 }
 
-.node {
+.wrapper div {
   width: 100%;
   height: 100%;
 }
@@ -53,10 +53,6 @@
   0% {
     transform: scale(0.3);
     border-radius: 80%;
-  }
-
-  75% {
-    transform: scale(1.2);
   }
 
   100% {
