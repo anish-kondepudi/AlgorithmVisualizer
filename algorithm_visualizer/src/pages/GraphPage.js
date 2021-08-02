@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
 const VISIT_DELAY = 10;
-const PATH_DELAY = 30;
+const PATH_DELAY = 40;
 const CELL_SIZE = 1.5;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
@@ -17,13 +17,12 @@ var selectedNode = null;
 var currentAlgorithm = null;
   
 export const GraphPage = () => {
-
-  // Initializes States
   const grid = useRef([]).current;
   const gridRef = useRef();
   const [dimensions, setDimensions] = useState(null);
 
-  // Updates Grid when Window Size Changes
+  // INITIALIZATION
+
   useEffect(() => {
     requestAnimationFrame(() => {
       [startRow, startCol] = [2,2];
@@ -47,15 +46,9 @@ export const GraphPage = () => {
     };
   }, []);
 
-  // Clears all setTimeout()'s [Hack]
-  const clearAllTimeouts = () => {
-    // Set a fake timeout to get the highest timeout id
-    const highestTimeoutId = setTimeout(()=>{});
-    for (let i = prevTimeout ; i < highestTimeoutId ; i++) {
-        clearTimeout(i); 
-    }
-    prevTimeout = highestTimeoutId;
-  }
+  
+
+  // MOUSE HANDLERS
 
   const handleMouseDown = e => {
     mouseButton = e.button;
@@ -78,14 +71,14 @@ export const GraphPage = () => {
       }
       else {
         grid[row][col].ref.className = 'node-wall';
-        if (currentAlgorithm) animate(runAlgorithm(), true);
-        else animateNode(node, 100, false);
+        if (currentAlgorithm) runAlgorithm(null, true);
+        else animateNode(node, 100);
       }
     }
     else if (mouseButton === 2) {
       if (node.ref.className === 'node-wall') {
         grid[row][col].ref.className = 'node-empty';
-        if (currentAlgorithm) animate(runAlgorithm(), true);
+        if (currentAlgorithm) runAlgorithm(null, true);
       }
     }    
   }
@@ -111,19 +104,25 @@ export const GraphPage = () => {
           node.ref.className = 'node-start';
           grid[startRow][startCol].ref.className = 'node-empty';
           [startRow, startCol] = [row, col];
-          if (currentAlgorithm) animate(runAlgorithm(), true);
-          else animateNode(node, 50, false, .75);
+          if (currentAlgorithm) runAlgorithm(null, true);
+          else animateNode(node, 50, [
+            {transform: `scale(.75)`},
+            {transform: 'scale(1)'}
+          ]);
         }
         else if (selectedNode === 'node-end') {
           node.ref.className = 'node-end';
           grid[endRow][endCol].ref.className = 'node-empty';
           [endRow, endCol] = [row, col];
-          if (currentAlgorithm) animate(runAlgorithm(), true);
-          else animateNode(node, 50, false, .75);
+          if (currentAlgorithm) runAlgorithm(null, true);
+          else animateNode(node, 50, [
+            {transform: `scale(.75)`},
+            {transform: 'scale(1)'}
+          ]);
         }
         else if (node.ref.className !== 'node-wall') {
           node.ref.className = 'node-wall';
-          if (currentAlgorithm) animate(runAlgorithm(), true);
+          if (currentAlgorithm) runAlgorithm(null, true);
           else animateNode(node, 100);
         }
       }
@@ -131,7 +130,7 @@ export const GraphPage = () => {
     else if (mouseButton === 2) {
       if (node.ref.className === 'node-wall') {
         grid[row][col].ref.className = 'node-empty';
-        if (currentAlgorithm) animate(runAlgorithm(), true);
+        if (currentAlgorithm) runAlgorithm(null, true);
       }
     }
   }
@@ -141,9 +140,16 @@ export const GraphPage = () => {
     selectedNode = null;
   }
 
-  
-  // Animates
-  const animate = ({visitedNodesInOrder, nodesInShortestPathOrder}, noDelay = false) => {
+  //RUNNING ALGORITHMS
+
+  const runAlgorithm = (algorithmFunction = null, noDelay = false) => {
+    clearVisualization();
+
+    if (algorithmFunction) currentAlgorithm = algorithmFunction;
+
+    const visitedNodesInOrder = currentAlgorithm(grid, grid[startRow][startCol], grid[endRow][endCol]);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrder(grid[endRow][endCol]);
+
     if (noDelay) {
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         visitedNodesInOrder[i].ref.className = 'node-visited';
@@ -156,7 +162,10 @@ export const GraphPage = () => {
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         setTimeout(() => {
           visitedNodesInOrder[i].ref.className = 'node-visited';
-          animateNode(visitedNodesInOrder[i], 200, true);
+          animateNode(visitedNodesInOrder[i], 200, [
+            {transform: `scale(0)`, borderRadius: '100%'},
+            {transform: 'scale(1)', borderRadius: 0}
+          ]);
         }, VISIT_DELAY * i);
       }
       setTimeout(() => {
@@ -170,68 +179,25 @@ export const GraphPage = () => {
     }
   }
 
-  const animateNode = (node, time, borderRadius=false, startScale=0) => {
-    let animation;
-
-    if (borderRadius) {
-      animation = [
-        {transform: `scale(${startScale})`, borderRadius: '100%'},
-        {transform: 'scale(1)', borderRadius: 0}
-      ];
-    }
-    else {
-      animation = [
-        {transform: `scale(${startScale})`},
-        {transform: 'scale(1)'}
-      ];
-    }
-
-    node.ref.animate(animation, {
-      duration: time,
-      iterations: 1
-    });
-  }
-
-  // Performs Dijkstra and Animates Grids
-  const runAlgorithm = (algorithm = null) => {
-    clearVisualization();
-
-    if (algorithm) currentAlgorithm = algorithm;
-
-    let visitedNodesInOrder;
-    switch(currentAlgorithm) {
-      case 'dijkstra':
-        visitedNodesInOrder = dijkstra(grid, grid[startRow][startCol], grid[endRow][endCol]);
-        break;
-      case 'breadth-first-search':
-        visitedNodesInOrder = breadthFirstSearch(grid, grid[startRow][startCol], grid[endRow][endCol]);
-        break;
-      case 'depth-first-search':
-        visitedNodesInOrder = depthFirstSearch(grid, grid[startRow][startCol], grid[endRow][endCol]);
-        break;
-      default:
-        throw 'no current algorithm!'
-        break;
-    }
-    const nodesInShortestPathOrder = getNodesInShortestPathOrder(grid[endRow][endCol]);
-
-    return {visitedNodesInOrder, nodesInShortestPathOrder};
-  }
-
-  const generateMaze = () => {
-    const walls = recursiveDivision(grid);
-    for (const wall of walls) {
+  const generateMaze = (mazeFunction) => {
+    resetGrid();
+    const walls = mazeFunction(grid);
+    for (let i = 0; i < walls.length; i++) {
       if (
-        wall.ref.className === 'node-start' ||
-        wall.ref.className === 'node-end'
+        walls[i].ref.className === 'node-start' ||
+        walls[i].ref.className === 'node-end'
       ) continue;
-      wall.ref.className = 'node-wall';
-    }
-  }
-  
-  
 
-  // Resets Grids
+      const delay = 1500 * i / walls.length;
+      setTimeout(() => {
+        walls[i].ref.className = 'node-wall';
+        animateNode(walls[i], 50);
+      }, delay);
+    }
+  } 
+
+  // GRID FUNCTIONS
+
   const resetGrid = () => {
     currentAlgorithm = null;
     clearAllTimeouts();
@@ -290,6 +256,7 @@ export const GraphPage = () => {
     }
   }
 
+  // NODE FUNCTIONS
 
   const createNode = (refs, rows, cols) => {
     return {
@@ -303,14 +270,32 @@ export const GraphPage = () => {
     }
   }
 
+  const animateNode = (node, time, animation = [{transform: `scale(0)`}, {transform: 'scale(1)'}]) => {
+    node.ref.animate(animation, {
+      duration: time,
+      iterations: 1
+    });
+  }
+
   const resetNode = (node) => {
     node.dv = Infinity;
     node.known = false;
     node.pv = null;
     node.weight = 1;
   }
- 
 
+  // TOOLS
+
+  const clearAllTimeouts = () => {
+    const highestTimeoutId = setTimeout(()=>{});
+    for (let i = prevTimeout ; i < highestTimeoutId ; i++) {
+        clearTimeout(i); 
+    }
+    prevTimeout = highestTimeoutId;
+  }
+
+  // MAKE GRID HTML
+ 
   const makeGridElement = () => {
     grid.length = 0;
 
@@ -358,10 +343,10 @@ export const GraphPage = () => {
       <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
         <button className="btn btn-info" onClick={() => {clearVisualization({completeStop: true});}}>Clear Visualization</button>
-        <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('dijkstra'))}}>Dijkstra</button>
-        <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('depth-first-search'))}}>Depth First Search</button>
-        <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('breadth-first-search'))}}>Breadth First Search</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze()}}>Recursive Maze</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
       </div>
 
     </div>
