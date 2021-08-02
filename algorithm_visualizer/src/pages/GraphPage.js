@@ -1,5 +1,6 @@
 import "./GraphPage.css";
 import { dijkstra, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
+import { recursiveDivision } from "./graph_components/mazeAlgorithms";
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
@@ -10,7 +11,6 @@ const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
 var prevTimeout = 0;
-var running = false;
 var mouseButton = -1;
 var startRow, startCol, endRow, endCol = null;
 var selectedNode = null;
@@ -78,14 +78,14 @@ export const GraphPage = () => {
       }
       else {
         grid[row][col].ref.className = 'node-wall';
-        if (running) animate(runAlgorithm(), true);
+        if (currentAlgorithm) animate(runAlgorithm(), true);
         else animateNode(node, 100, false);
       }
     }
     else if (mouseButton === 2) {
       if (node.ref.className === 'node-wall') {
         grid[row][col].ref.className = 'node-empty';
-        if (running) animate(runAlgorithm(), true);
+        if (currentAlgorithm) animate(runAlgorithm(), true);
       }
     }    
   }
@@ -111,19 +111,19 @@ export const GraphPage = () => {
           node.ref.className = 'node-start';
           grid[startRow][startCol].ref.className = 'node-empty';
           [startRow, startCol] = [row, col];
-          if (running) animate(runAlgorithm(), true);
+          if (currentAlgorithm) animate(runAlgorithm(), true);
           else animateNode(node, 50, false, .75);
         }
         else if (selectedNode === 'node-end') {
           node.ref.className = 'node-end';
           grid[endRow][endCol].ref.className = 'node-empty';
           [endRow, endCol] = [row, col];
-          if (running) animate(runAlgorithm(), true);
+          if (currentAlgorithm) animate(runAlgorithm(), true);
           else animateNode(node, 50, false, .75);
         }
         else if (node.ref.className !== 'node-wall') {
           node.ref.className = 'node-wall';
-          if (running) animate(runAlgorithm(), true);
+          if (currentAlgorithm) animate(runAlgorithm(), true);
           else animateNode(node, 100);
         }
       }
@@ -131,7 +131,7 @@ export const GraphPage = () => {
     else if (mouseButton === 2) {
       if (node.ref.className === 'node-wall') {
         grid[row][col].ref.className = 'node-empty';
-        if (running) animate(runAlgorithm(), true);
+        if (currentAlgorithm) animate(runAlgorithm(), true);
       }
     }
   }
@@ -144,7 +144,6 @@ export const GraphPage = () => {
   
   // Animates
   const animate = ({visitedNodesInOrder, nodesInShortestPathOrder}, noDelay = false) => {
-    running = true;
     if (noDelay) {
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         visitedNodesInOrder[i].ref.className = 'node-visited';
@@ -157,7 +156,7 @@ export const GraphPage = () => {
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         setTimeout(() => {
           visitedNodesInOrder[i].ref.className = 'node-visited';
-          animateNode(visitedNodesInOrder[i], 500, true);
+          animateNode(visitedNodesInOrder[i], 200, true);
         }, VISIT_DELAY * i);
       }
       setTimeout(() => {
@@ -218,12 +217,22 @@ export const GraphPage = () => {
 
     return {visitedNodesInOrder, nodesInShortestPathOrder};
   }
+
+  const generateMaze = () => {
+    const walls = recursiveDivision(grid);
+    for (const wall of walls) {
+      if (
+        wall.ref.className === 'node-start' ||
+        wall.ref.className === 'node-end'
+      ) continue;
+      wall.ref.className = 'node-wall';
+    }
+  }
   
   
 
   // Resets Grids
   const resetGrid = () => {
-    running = false;
     currentAlgorithm = null;
     clearAllTimeouts();
 
@@ -239,8 +248,8 @@ export const GraphPage = () => {
     grid[startRow][startCol].ref.className = 'node-start';
   }
 
-  const clearVisualization = () => {
-    running = false;
+  const clearVisualization = (completeStop = false) => {
+    if (completeStop) currentAlgorithm = null;
     clearAllTimeouts();
 
     for (let row=0; row<grid.length; row++) {
@@ -348,12 +357,11 @@ export const GraphPage = () => {
       {/* Graph Buttons */}
       <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
-        <button className="btn btn-info" onClick={() => {clearVisualization(); currentAlgorithm=null;}}>Clear Visualization</button>
+        <button className="btn btn-info" onClick={() => {clearVisualization({completeStop: true});}}>Clear Visualization</button>
         <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('dijkstra'))}}>Dijkstra</button>
         <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('depth-first-search'))}}>Depth First Search</button>
         <button className="btn btn-outline-light" onClick={()=> {animate(runAlgorithm('breadth-first-search'))}}>Breadth First Search</button>
-        <button className="btn btn-outline-light" onClick={() => {
-          console.log(grid)}}>test</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze()}}>Recursive Maze</button>
       </div>
 
     </div>
