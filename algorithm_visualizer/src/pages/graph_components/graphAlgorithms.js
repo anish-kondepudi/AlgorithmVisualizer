@@ -83,12 +83,12 @@ export function depthFirstSearch(grid, startNode, endNode) {
 
   while(stack.length > 0) {
     const currentNode = stack.pop();
-    currentNode.known = true;
     if (currentNode === endNode) {
       visitedNodesInOrder.shift();
       return visitedNodesInOrder;
     }
-    visitedNodesInOrder.push(currentNode);
+    if (!currentNode.known) visitedNodesInOrder.push(currentNode);
+    currentNode.known = true;
 
     const neighbors = [];
     const {row, col} = currentNode;
