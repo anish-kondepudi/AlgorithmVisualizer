@@ -20,7 +20,7 @@ export function recursiveDivision(grid) {
         return;
 
       // Randomly build the wall either horizontally or vertically
-      let isHorizontal = Math.random() > (grid[0].length /(grid.length + grid[0].length));
+      let isHorizontal = Math.random() < ((y2 - y1) /((x2 - x1) + (y2 - y1)));
     
       // Randomly select the position to build the wall (disconnect cells along the line)
       let wallIdx = isHorizontal ? randEven(y1+1, y2-1) : randEven(x1+1, x2-1);

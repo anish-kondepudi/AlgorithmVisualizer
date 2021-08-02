@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
 const VISIT_DELAY = 10;
-const PATH_DELAY = 30;
+const PATH_DELAY = 40;
 const CELL_SIZE = 1.5;
 const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
@@ -219,13 +219,19 @@ export const GraphPage = () => {
   }
 
   const generateMaze = () => {
+    resetGrid();
     const walls = recursiveDivision(grid);
-    for (const wall of walls) {
+    for (let i = 0; i < walls.length; i++) {
       if (
-        wall.ref.className === 'node-start' ||
-        wall.ref.className === 'node-end'
+        walls[i].ref.className === 'node-start' ||
+        walls[i].ref.className === 'node-end'
       ) continue;
-      wall.ref.className = 'node-wall';
+
+      const delay = 1500 * i / walls.length;
+      setTimeout(() => {
+        walls[i].ref.className = 'node-wall';
+        animateNode(walls[i], 50);
+      }, delay);
     }
   }
   
