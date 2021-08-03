@@ -280,8 +280,8 @@ export const GraphPage = () => {
       ref: refs,
       row: rows,
       col: cols,
-      g: 0,
-      h: 0,
+      g: Infinity,
+      h: Infinity,
       f: Infinity,
       dv: Infinity,
       known: false,
@@ -302,8 +302,8 @@ export const GraphPage = () => {
     node.known = false;
     node.pv = null;
     node.weight = 1;
-    node.g = 0;
-    node.h = 0;
+    node.g = Infinity;
+    node.h = Infinity;
     node.f = Infinity;
   }
 
