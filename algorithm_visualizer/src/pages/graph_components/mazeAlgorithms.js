@@ -77,7 +77,7 @@ export function randomMaze(grid) {
     return walls;
 }
 
-
+//https://stackoverflow.com/questions/23843197/maze-generating-algorithm-in-grid
 export function prims(grid) {
     const walls = [];
     const minSpanTree = [];
@@ -132,3 +132,63 @@ export function prims(grid) {
 
     return walls;
 }
+
+export function dfsMaze(grid) {
+    const walls = [];
+    const dfsTree = [];
+    const tmp = []
+
+    for (let row = 0; row < grid.length; row++) {
+        const curRow = [];
+        for (let col = 0; col < grid[0].length; col++) {
+            curRow.push(true);
+        }
+        tmp.push(curRow);
+    }
+
+    const stack = [];
+    const [startRow, startCol] = [randOdd(1, tmp.length-2), randOdd(1, tmp[0].length-2)]
+    stack.push([startRow, startCol, startRow, startCol]);
+
+    while (stack.length > 0) {
+        const f = stack.pop();
+
+        const row = f[0];
+        const col = f[1];
+
+        dfsTree.push([row, col]);
+
+        tmp[row][col] = false;
+
+        const neighbors = [];
+
+        if (row > 1 && tmp[row - 2][col] === true) { tmp[row - 1][col] = false;  tmp[row - 2][col] = false; neighbors.push([row - 2, col])}
+        if (row < tmp.length - 2 && tmp[row + 2][col] === true) { tmp[row + 1][col] = false;  tmp[row + 2][col] = false; neighbors.push([row+2, col])}
+        if (col > 1 && tmp[row][col - 2] === true) { tmp[row][col - 1] = false;  tmp[row][col - 2] = false; neighbors.push([row, col-2])}
+        if (col < tmp[0].length - 2 && tmp[row][col + 2] === true) { tmp[row][col + 1] = false;  tmp[row][col + 2] = false; neighbors.push([row, col+2])}
+
+        if (neighbors.length > 0) {
+            const randIdx = rand(0, neighbors.length -1);
+            for (let i = 0; i < neighbors.length; i++) {
+                if (i !== randIdx) stack.push(neighbors[i]);
+            }
+            stack.push(neighbors[randIdx]);
+        }
+    }
+
+    for (let coord of dfsTree) {
+        let [row, col] = coord;
+
+        if (tmp[row - 1][col - 1]) walls.push(grid[row - 1][col - 1]);
+        if (tmp[row - 1][col]) walls.push(grid[row - 1][col]);
+        if (tmp[row - 1][col + 1]) walls.push(grid[row - 1][col + 1]);
+        if (tmp[row][col + 1]) walls.push(grid[row][col + 1]);
+        if (tmp[row + 1][col + 1]) walls.push(grid[row + 1][col + 1]);
+        if (tmp[row + 1][col]) walls.push(grid[row + 1][col]);
+        if (tmp[row + 1][col - 1]) walls.push(grid[row + 1][col - 1]);
+        if (tmp[row][col - 1]) walls.push(grid[row][col - 1]);
+    }
+
+    return walls;
+}
+
