@@ -130,7 +130,7 @@ export const GraphPage = () => {
     else if (mouseButton === 2) {
       if (node.ref.className === 'node-wall') {
         grid[row][col].ref.className = 'node-empty';
-        if (currentAlgorithm) runAlgorithm(null, true);
+        if (currentAlgorithm) runAlgorithm(null, true, type);
       }
     }
   }
@@ -142,12 +142,12 @@ export const GraphPage = () => {
 
   //RUNNING ALGORITHMS
 
-  const runAlgorithm = (algorithmFunction = null, noDelay = false) => {
+  const runAlgorithm = (algorithmFunction = null, noDelay = false, type = null) => {
     clearVisualization();
 
     if (algorithmFunction) currentAlgorithm = algorithmFunction;
 
-    const visitedNodesInOrder = currentAlgorithm(grid, grid[startRow][startCol], grid[endRow][endCol]);
+    const visitedNodesInOrder = currentAlgorithm(grid, grid[startRow][startCol], grid[endRow][endCol], type);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(grid[endRow][endCol]);
 
     if (noDelay) {
@@ -350,7 +350,9 @@ export const GraphPage = () => {
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
         <button className="btn btn-info" onClick={() => {clearVisualization({completeStop: true});}}>Clear Visualization</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStar)}}>A*</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStar,false,"Manhattan")}}>A* (Manhattan)</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStar,false,"Diagonal")}}>A* (Diagonal)</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStar,false,"Euclidean")}}>A* (Euclidean)</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
