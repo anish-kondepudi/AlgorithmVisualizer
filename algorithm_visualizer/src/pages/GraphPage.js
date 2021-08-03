@@ -1,5 +1,5 @@
 import "./GraphPage.css";
-import { dijkstra, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
+import { dijkstra, aStar, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
 import { recursiveDivision } from "./graph_components/mazeAlgorithms";
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
@@ -198,7 +198,7 @@ export const GraphPage = () => {
         walls[i].ref.className === 'node-end'
       ) continue;
 
-      const delay = 1500 * i / walls.length;
+      const delay = 2500 * i / walls.length;
       setTimeout(() => {
         walls[i].ref.className = 'node-wall';
         animateNode(walls[i], 50);
@@ -277,6 +277,9 @@ export const GraphPage = () => {
       ref: refs,
       row: rows,
       col: cols,
+      g: 0,
+      h: 0,
+      f: Infinity,
       dv: Infinity,
       known: false,
       pv: null,
@@ -296,6 +299,9 @@ export const GraphPage = () => {
     node.known = false;
     node.pv = null;
     node.weight = 1;
+    node.g = 0;
+    node.h = 0;
+    node.f = Infinity;
   }
 
   // TOOLS
@@ -358,6 +364,7 @@ export const GraphPage = () => {
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
         <button className="btn btn-info" onClick={() => {clearVisualization({completeStop: true});}}>Clear Visualization</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStar)}}>A*</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
