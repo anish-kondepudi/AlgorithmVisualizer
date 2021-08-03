@@ -72,11 +72,6 @@ export function aStar(grid, startNode, endNode) {
     if (col > 0) neighbors.push(grid[row][col - 1]);
     if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
 
-    if (row > 0 && col > 0) neighbors.push(grid[row - 1][col - 1]);
-    if (row < grid.length - 1 && col < grid[0].length - 1) neighbors.push(grid[row + 1][col + 1]);
-    if (col > 0 && row < grid.length - 1) neighbors.push(grid[row + 1][col - 1]);
-    if (col < grid[0].length - 1 && row > 0) neighbors.push(grid[row - 1][col + 1]);
-
     for (const neighbor of neighbors) {
         if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
           const [x1, y1] = [currentNode.row, currentNode.col];
@@ -110,8 +105,8 @@ export function aStar(grid, startNode, endNode) {
     open.push(currentNode);
 
   }
-
-  // return [];
+  visitedNodesInOrder.shift();
+  return visitedNodesInOrder;
 }
 
 
