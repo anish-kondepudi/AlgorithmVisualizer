@@ -79,8 +79,17 @@ export function aStar(grid, startNode, endNode) {
       const [x2, y2] = [neighbor.row, neighbor.col];
       const [x3, y3] = [endNode.row, endNode.col];
 
-      const g = currentNode.g + Math.hypot(x2-x1, y2-y1);
-      const h = Math.hypot(x3-x2, y3-y2);
+      const g = currentNode.g + Math.hypot(x2-x1, y2-y1); // Can change this to +1
+
+      const dx = Math.abs(x3-x2);
+      const dy = Math.abs(y3-y2);
+      const D = 1;
+      const D2 = 1.41421356;
+
+      const h = D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy); // Diagonal Distance
+      // const h = dx + dy; // Manhattan Distance
+      // const h = Math.hypot(x3-x2, y3-y2); // Euclidean Distance
+
       const f = g + h;
 
       if (f < neighbor.f || !open.includes(neighbor)) {
