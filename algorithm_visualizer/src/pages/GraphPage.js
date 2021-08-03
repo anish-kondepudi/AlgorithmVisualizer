@@ -14,6 +14,8 @@ var prevTimeout = 0;
 var mouseButton = -1;
 var startRow, startCol, endRow, endCol = null;
 var selectedNode = null;
+var startCoveredOverNode = null;
+var endCoveredOverNode = null;
 var currentAlgorithm = null;
   
 export const GraphPage = () => {
@@ -101,9 +103,13 @@ export const GraphPage = () => {
       }
       else {
         if (selectedNode === 'node-start') {
+          if (startCoveredOverNode === 'node-wall') grid[startRow][startCol].ref.className = startCoveredOverNode;
+          else grid[startRow][startCol].ref.className = 'node-empty';
+          startCoveredOverNode = node.ref.className;
+
           node.ref.className = 'node-start';
-          grid[startRow][startCol].ref.className = 'node-empty';
           [startRow, startCol] = [row, col];
+
           if (currentAlgorithm) runAlgorithm(null, true);
           else animateNode(node, 50, [
             {transform: `scale(.75)`},
@@ -111,9 +117,13 @@ export const GraphPage = () => {
           ]);
         }
         else if (selectedNode === 'node-end') {
+          if (endCoveredOverNode === 'node-wall') grid[endRow][endCol].ref.className = endCoveredOverNode;
+          else grid[endRow][endCol].ref.className = 'node-empty';
+          endCoveredOverNode = node.ref.className;
+
           node.ref.className = 'node-end';
-          grid[endRow][endCol].ref.className = 'node-empty';
           [endRow, endCol] = [row, col];
+
           if (currentAlgorithm) runAlgorithm(null, true);
           else animateNode(node, 50, [
             {transform: `scale(.75)`},
@@ -199,6 +209,8 @@ export const GraphPage = () => {
   // GRID FUNCTIONS
 
   const resetGrid = () => {
+    startCoveredOverNode = null;
+    endCoveredOverNode = null;
     currentAlgorithm = null;
     clearAllTimeouts();
 
@@ -254,6 +266,8 @@ export const GraphPage = () => {
       grid[endRow][endCol].ref.className = 'node-end';
       grid[startRow][startCol].ref.className = 'node-start';
     }
+
+    if (currentAlgorithm) runAlgorithm(null, true);
   }
 
   // NODE FUNCTIONS
