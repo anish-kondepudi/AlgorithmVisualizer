@@ -46,8 +46,9 @@ export function aStar(grid, startNode, endNode) {
   const closed = [];
 
   startNode.f = 0;
+  startNode.g = 0;
+  startNode.h = 0;
   open.push(startNode)
-  let x = 0;
 
   while (open.length !== 0) {
 
@@ -55,7 +56,6 @@ export function aStar(grid, startNode, endNode) {
     const currentNode = open.shift();
     closed.push(currentNode);
     
-
     if (currentNode === endNode) {
       visitedNodesInOrder.shift();
       return visitedNodesInOrder;
@@ -84,16 +84,90 @@ export function aStar(grid, startNode, endNode) {
       const f = g + h;
 
       if (f < neighbor.f || !open.includes(neighbor)) {
+
         neighbor.f = f;
         neighbor.g = g;
+        neighbor.h = h;
         neighbor.pv = currentNode;
-        
-        if (!open.includes(neighbor)) {
+
+        if (!open.includes(neighbor))
           open.push(neighbor);
-        }
       }
     }
   }
+}
+
+
+export function breadthFirstSearch(grid, startNode, endNode) {
+  const visitedNodesInOrder = [];
+  const queue = new Queue();
+
+  startNode.known = true;
+  queue.enqueue(startNode);
+
+  while(!queue.isEmpty()) {
+    const currentNode = queue.dequeue();
+
+    visitedNodesInOrder.push(currentNode);
+
+    const neighbors = [];
+    const {row, col} = currentNode;
+    if (row > 0) neighbors.push(grid[row - 1][col]);
+    if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
+    if (col > 0) neighbors.push(grid[row][col - 1]);
+    if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
+
+    for (const neighbor of neighbors) {
+      if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
+        neighbor.pv = currentNode;
+        neighbor.known = true;
+        if (neighbor === endNode) {
+          visitedNodesInOrder.shift();
+          return visitedNodesInOrder;
+        }
+        queue.enqueue(neighbor);
+      }
+    }
+  }
+  visitedNodesInOrder.shift();
+  return visitedNodesInOrder;
+}
+
+export function depthFirstSearch(grid, startNode, endNode) {
+  const visitedNodesInOrder = [];
+  const stack = [];
+
+  stack.push(startNode);
+
+  while(stack.length > 0) {
+    const currentNode = stack.pop();
+    if (currentNode === endNode) {
+      visitedNodesInOrder.shift();
+      return visitedNodesInOrder;
+    }
+    if (!currentNode.known) visitedNodesInOrder.push(currentNode);
+    currentNode.known = true;
+
+    const neighbors = [];
+    const {row, col} = currentNode;
+    
+    if (row > 0) neighbors.push(grid[row - 1][col]);
+    if (col > 0) neighbors.push(grid[row][col - 1]);
+    if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
+    if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
+
+    for (const neighbor of neighbors) {
+      if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
+        neighbor.pv = currentNode;
+        stack.push(neighbor);
+      }
+    }
+  }
+  visitedNodesInOrder.shift();
+  return visitedNodesInOrder;
+}
+
+
   
 export function getNodesInShortestPathOrder(finishNode) {
   const nodesInShortestPathOrder = [];
@@ -105,6 +179,4 @@ export function getNodesInShortestPathOrder(finishNode) {
   }
   return nodesInShortestPathOrder;
 }
-
-
 
