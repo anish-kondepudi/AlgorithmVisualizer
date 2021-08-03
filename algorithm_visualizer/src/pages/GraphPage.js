@@ -1,5 +1,5 @@
 import "./GraphPage.css";
-import { dijkstra, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
+import { dijkstra, aStar, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
 import { recursiveDivision, randomMaze, prims } from "./graph_components/mazeAlgorithms";
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
