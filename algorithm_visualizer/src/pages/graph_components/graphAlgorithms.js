@@ -39,6 +39,81 @@ export function dijkstra(grid, startNode, endNode) {
   return visitedNodesInOrder;
 }
 
+export function aStar(grid, startNode, endNode) {
+  console.log("aStar() called");
+  const visitedNodesInOrder = [];
+
+  const open = new PriorityQueue((a,b) => a.f < b.f);
+  // const closed = [];
+
+  startNode.f = 0;
+  startNode.known = false;
+  open.push(startNode);
+
+  // let x = 0;
+  while (!open.isEmpty()) {
+    // console.log("loop");
+
+    // x += 1;
+    // if (x==500) return [];
+
+    const currentNode = open.pop();
+    if (currentNode.known || currentNode.ref.className === 'node-wall') continue;
+    currentNode.known = true;
+
+    visitedNodesInOrder.push(currentNode);
+
+    const neighbors = [];
+    const {row, col} = currentNode;
+
+
+    if (row > 0) neighbors.push(grid[row - 1][col]);
+    if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
+    if (col > 0) neighbors.push(grid[row][col - 1]);
+    if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
+
+    if (row > 0 && col > 0) neighbors.push(grid[row - 1][col - 1]);
+    if (row < grid.length - 1 && col < grid[0].length - 1) neighbors.push(grid[row + 1][col + 1]);
+    if (col > 0 && row < grid.length - 1) neighbors.push(grid[row + 1][col - 1]);
+    if (col < grid[0].length - 1 && row > 0) neighbors.push(grid[row - 1][col + 1]);
+
+    for (const neighbor of neighbors) {
+        if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
+          const [x1, y1] = [currentNode.row, currentNode.col];
+          const [x2, y2] = [neighbor.row, neighbor.col];
+          const [x3, y3] = [endNode.row, endNode.col];
+          // console.log(x1,y1,x2,y2,x3,y3);
+
+          const g = currentNode.g + Math.hypot(x2-x1, y2-y1);
+          const h = Math.hypot(x3-x2, y3-y2);
+          const f = g + h;
+
+          // console.log(g,h,f);
+
+          if (f < neighbor.f) {
+            neighbor.f = f;
+            neighbor.pv = currentNode;
+            open.push(neighbor);
+          }
+
+          if (neighbor === endNode) {
+            console.log("done");
+            visitedNodesInOrder.shift();
+            return visitedNodesInOrder;
+            // return [];
+          }
+
+          // return [];
+        }
+      }
+
+    open.push(currentNode);
+
+  }
+
+  // return [];
+}
+
 
 export function breadthFirstSearch(grid, startNode, endNode) {
   const visitedNodesInOrder = [];
