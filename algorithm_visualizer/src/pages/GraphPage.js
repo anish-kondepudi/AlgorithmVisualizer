@@ -1,6 +1,6 @@
 import "./GraphPage.css";
-import { dijkstra, aStar, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
-import { recursiveDivision } from "./graph_components/mazeAlgorithms";
+import { dijkstra, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
+import { recursiveDivision, randomMaze, prims } from "./graph_components/mazeAlgorithms";
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
@@ -201,7 +201,10 @@ export const GraphPage = () => {
       const delay = 2500 * i / walls.length;
       setTimeout(() => {
         walls[i].ref.className = 'node-wall';
-        animateNode(walls[i], 50);
+        animateNode(walls[i], 50, [
+          {transform: `scale(1.2)`},
+          {transform: 'scale(1)'}
+        ]);
       }, delay);
     }
   } 
@@ -368,6 +371,8 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(prims)}}>Prims Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
       </div>
 
     </div>
