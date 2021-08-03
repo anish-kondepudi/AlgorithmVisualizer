@@ -47,6 +47,7 @@ export function aStar(grid, startNode, endNode) {
 
   startNode.f = 0;
   open.push(startNode)
+  let x = 0;
 
   while (open.length !== 0) {
 
@@ -77,18 +78,19 @@ export function aStar(grid, startNode, endNode) {
       const [x1, y1] = [currentNode.row, currentNode.col];
       const [x2, y2] = [neighbor.row, neighbor.col];
       const [x3, y3] = [endNode.row, endNode.col];
-      console.log(x1,y1,x2,y2,x3,y3);
 
       const g = currentNode.g + Math.hypot(x2-x1, y2-y1);
       const h = Math.hypot(x3-x2, y3-y2);
       const f = g + h;
-      console.log(g,h,f);
 
       if (f < neighbor.f || !open.includes(neighbor)) {
         neighbor.f = f;
+        neighbor.g = g;
         neighbor.pv = currentNode;
-        if (!open.includes(neighbor))
+        
+        if (!open.includes(neighbor)) {
           open.push(neighbor);
+        }
       }
     }
   }
