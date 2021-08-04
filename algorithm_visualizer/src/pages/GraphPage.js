@@ -1,6 +1,8 @@
 import "./GraphPage.css";
+
 import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
-import { recursiveDivision } from "./graph_components/mazeAlgorithms";
+import { recursiveDivision, randomMaze, prims, dfsMaze, binaryTreeMaze } from "./graph_components/mazeAlgorithms";
+
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
@@ -14,6 +16,8 @@ var prevTimeout = 0;
 var mouseButton = -1;
 var startRow, startCol, endRow, endCol = null;
 var selectedNode = null;
+var startCoveredOverNode = null;
+var endCoveredOverNode = null;
 var currentAlgorithm = null;
   
 export const GraphPage = () => {
@@ -45,8 +49,6 @@ export const GraphPage = () => {
       gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
     };
   }, []);
-
-  
 
   // MOUSE HANDLERS
 
@@ -101,9 +103,13 @@ export const GraphPage = () => {
       }
       else {
         if (selectedNode === 'node-start') {
+          if (startCoveredOverNode === 'node-wall') grid[startRow][startCol].ref.className = startCoveredOverNode;
+          else grid[startRow][startCol].ref.className = 'node-empty';
+          startCoveredOverNode = node.ref.className;
+
           node.ref.className = 'node-start';
-          grid[startRow][startCol].ref.className = 'node-empty';
           [startRow, startCol] = [row, col];
+
           if (currentAlgorithm) runAlgorithm(null, true);
           else animateNode(node, 50, [
             {transform: `scale(.75)`},
@@ -111,9 +117,13 @@ export const GraphPage = () => {
           ]);
         }
         else if (selectedNode === 'node-end') {
+          if (endCoveredOverNode === 'node-wall') grid[endRow][endCol].ref.className = endCoveredOverNode;
+          else grid[endRow][endCol].ref.className = 'node-empty';
+          endCoveredOverNode = node.ref.className;
+
           node.ref.className = 'node-end';
-          grid[endRow][endCol].ref.className = 'node-empty';
           [endRow, endCol] = [row, col];
+
           if (currentAlgorithm) runAlgorithm(null, true);
           else animateNode(node, 50, [
             {transform: `scale(.75)`},
@@ -191,7 +201,10 @@ export const GraphPage = () => {
       const delay = 2500 * i / walls.length;
       setTimeout(() => {
         walls[i].ref.className = 'node-wall';
-        animateNode(walls[i], 50);
+        animateNode(walls[i], 100, [
+          {transform: `scale(1.3)`},
+          {transform: 'scale(1)'}
+        ]);
       }, delay);
     }
   } 
@@ -199,6 +212,8 @@ export const GraphPage = () => {
   // GRID FUNCTIONS
 
   const resetGrid = () => {
+    startCoveredOverNode = null;
+    endCoveredOverNode = null;
     currentAlgorithm = null;
     clearAllTimeouts();
 
@@ -236,8 +251,11 @@ export const GraphPage = () => {
   const resizeGrid = () => {
     clearAllTimeouts();
 
-    const rows = pxToNode(gridRef.current.offsetHeight);
-    const cols = pxToNode(gridRef.current.offsetWidth);
+    let rows = pxToNode(gridRef.current.offsetHeight);
+    let cols = pxToNode(gridRef.current.offsetWidth);
+    
+    if (rows % 2 == 0) rows++;
+    if (cols % 2 == 0) cols++;
 
     setDimensions({
       rows: rows, 
@@ -254,6 +272,8 @@ export const GraphPage = () => {
       grid[endRow][endCol].ref.className = 'node-end';
       grid[startRow][startCol].ref.className = 'node-start';
     }
+
+    if (currentAlgorithm) runAlgorithm(null, true);
   }
 
   // NODE FUNCTIONS
@@ -356,6 +376,10 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(prims)}}>Prims Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
       </div>
 
     </div>

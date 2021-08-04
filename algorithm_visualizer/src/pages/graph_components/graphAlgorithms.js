@@ -107,6 +107,9 @@ function aStar(grid, startNode, endNode, type) {
       }
     }
   }
+
+  visitedNodesInOrder.shift();
+  return visitedNodesInOrder;
 }
 
 export function aStarManhattan (grid, startNode, endNode) { return aStar(grid, startNode, endNode, "Manhattan"); }
