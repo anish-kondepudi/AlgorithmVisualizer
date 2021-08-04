@@ -243,6 +243,65 @@ export function dfsMaze(grid) {
     return walls;
 }
 
+export function binaryTreeMaze(grid) {
+    const walls = [];
+    const bst = [];
+    const tmp = [];
+
+    for (let row = 0; row < grid.length; row++) {
+        const curRow = [];
+        for (let col = 0; col < grid[0].length; col++) {
+            curRow.push(true);
+        }
+        tmp.push(curRow);
+    }
+
+    for (let row = 1; row < grid.length; row += 2) {
+        for (let col = 1; col < grid[0].length; col += 2) {
+            tmp[row][col] = false;
+            bst.push([row,col]);
+
+            const connections = [];
+
+            if (row > 1) connections.push([row - 1, col]);
+            if (col > 1) connections.push([row, col - 1]);
+
+            if (connections.length > 0) {
+                const connection = connections[rand(0, connections.length - 1)];
+                tmp[connection[0]][connection[1]] = false;
+            }
+        }
+    }
+
+    for (let coord of bst) {
+        let [row, col] = coord;
+
+        for (let coord of [
+            [row - 1, col - 1], 
+            [row - 1, col], 
+            [row - 1, col + 1], 
+            [row, col + 1], 
+            [row + 1, col + 1],
+            [row + 1, col],
+            [row + 1, col - 1],
+            [row, col - 1]
+        ]) {    
+            if (
+                coord[0] >= 0 && 
+                coord[0] < grid.length && 
+                coord[1] >= 0 && 
+                coord[1] < grid[0].length && 
+                tmp[coord[0]][coord[1]]
+            ) {
+                walls.push(grid[coord[0]][coord[1]]);
+                tmp[coord[0]][coord[1]] = false;
+            }
+        }
+    }
+    
+    return walls;
+}
+
 /*
 walls.push(grid[f[0] + (f[1] - col)][f[1] + (f[0] - row)])
 walls.push(grid[f[0] - (f[1] - col)][f[1] - (f[0] - row)])
