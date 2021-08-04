@@ -7,7 +7,7 @@ import {Node} from './graph_components/Node';
 const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
 const CELL_SIZE = 1.5;
-const GRID_HEIGHT = 70;
+const GRID_HEIGHT = 80;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
 var prevTimeout = 0;
@@ -47,8 +47,6 @@ export const GraphPage = () => {
       gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
     };
   }, []);
-
-  
 
   // MOUSE HANDLERS
 

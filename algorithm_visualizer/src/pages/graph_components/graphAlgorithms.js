@@ -97,7 +97,7 @@ export function aStar(grid, startNode, endNode) {
   }
 
   visitedNodesInOrder.shift();
-      return visitedNodesInOrder;
+  return visitedNodesInOrder;
 }
 
 

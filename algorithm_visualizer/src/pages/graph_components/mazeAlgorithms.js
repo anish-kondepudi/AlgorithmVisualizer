@@ -15,6 +15,18 @@ const rand = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function randomArrayShuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  }
+
 export function recursiveDivision(grid) {
     const walls = [];
 
@@ -108,26 +120,38 @@ export function prims(grid) {
             tmp[f[0]][f[1]] = false;
 
             minSpanTree.push([row, col]);
-            minSpanTree.push([f[0], f[1]]);
 
             if (row > 1 && tmp[row - 2][col] === true) frontier.push([row - 1, col, row - 2, col]);
             if (row < tmp.length - 2 && tmp[row + 2][col] === true) frontier.push([row + 1, col, row + 2, col]);
             if (col > 1 && tmp[row][col - 2] === true) frontier.push([row, col - 1, row, col - 2]);
             if (col < tmp[0].length - 2 && tmp[row][col + 2] === true) frontier.push([row, col + 1, row, col + 2]);
-        }
+        }  
     }
 
     for (let coord of minSpanTree) {
         let [row, col] = coord;
 
-        if (tmp[row - 1][col - 1]) walls.push(grid[row - 1][col - 1]);
-        if (tmp[row - 1][col]) walls.push(grid[row - 1][col]);
-        if (tmp[row - 1][col + 1]) walls.push(grid[row - 1][col + 1]);
-        if (tmp[row][col + 1]) walls.push(grid[row][col + 1]);
-        if (tmp[row + 1][col + 1]) walls.push(grid[row + 1][col + 1]);
-        if (tmp[row + 1][col]) walls.push(grid[row + 1][col]);
-        if (tmp[row + 1][col - 1]) walls.push(grid[row + 1][col - 1]);
-        if (tmp[row][col - 1]) walls.push(grid[row][col - 1]);
+        for (let coord of [
+            [row - 1, col - 1], 
+            [row - 1, col], 
+            [row - 1, col + 1], 
+            [row, col + 1], 
+            [row + 1, col + 1],
+            [row + 1, col],
+            [row + 1, col - 1],
+            [row, col - 1]
+        ]) {    
+            if (
+                coord[0] >= 0 && 
+                coord[0] < grid.length && 
+                coord[1] >= 0 && 
+                coord[1] < grid[0].length && 
+                tmp[coord[0]][coord[1]]
+            ) {
+                walls.push(grid[coord[0]][coord[1]]);
+                tmp[coord[0]][coord[1]] = false;
+            }
+        }
     }
 
     return walls;
@@ -153,42 +177,78 @@ export function dfsMaze(grid) {
     while (stack.length > 0) {
         const f = stack.pop();
 
-        const row = f[0];
-        const col = f[1];
+        const row = f[2];
+        const col = f[3];
 
-        dfsTree.push([row, col]);
+        if (tmp[row][col]) {
+            tmp[row][col] = false;
+            tmp[f[0]][f[1]] = false;
 
-        tmp[row][col] = false;
+            dfsTree.push([row, col]);
 
-        const neighbors = [];
+            const neighbors = [];
 
-        if (row > 1 && tmp[row - 2][col] === true) { tmp[row - 1][col] = false;  tmp[row - 2][col] = false; neighbors.push([row - 2, col])}
-        if (row < tmp.length - 2 && tmp[row + 2][col] === true) { tmp[row + 1][col] = false;  tmp[row + 2][col] = false; neighbors.push([row+2, col])}
-        if (col > 1 && tmp[row][col - 2] === true) { tmp[row][col - 1] = false;  tmp[row][col - 2] = false; neighbors.push([row, col-2])}
-        if (col < tmp[0].length - 2 && tmp[row][col + 2] === true) { tmp[row][col + 1] = false;  tmp[row][col + 2] = false; neighbors.push([row, col+2])}
+            if (row > 1 && tmp[row - 2][col] === true) { 
+                neighbors.push([row-1, col, row-2, col])
+            } 
 
-        if (neighbors.length > 0) {
-            const randIdx = rand(0, neighbors.length -1);
-            for (let i = 0; i < neighbors.length; i++) {
-                if (i !== randIdx) stack.push(neighbors[i]);
+            if (row < tmp.length - 2 && tmp[row + 2][col] === true) { 
+                neighbors.push([row+1, col, row+2, col]);
+            } 
+
+            if (col > 1 && tmp[row][col - 2] === true) { 
+                neighbors.push([row, col -1 , row, col-2])
+            } 
+
+            if (col < tmp[0].length - 2 && tmp[row][col + 2] === true) { 
+                neighbors.push([row, col+1, row, col+2])
+            } 
+
+            if (neighbors.length > 0) {
+                const randIdx = rand(0, neighbors.length -1);
+                for (let i = 0; i < neighbors.length; i++) {
+                    if (i !== randIdx) stack.splice(rand(0,stack.length), 0, neighbors[i]);
+                }
+                stack.push(neighbors[randIdx]);
             }
-            stack.push(neighbors[randIdx]);
         }
     }
 
     for (let coord of dfsTree) {
         let [row, col] = coord;
 
-        if (tmp[row - 1][col - 1]) walls.push(grid[row - 1][col - 1]);
-        if (tmp[row - 1][col]) walls.push(grid[row - 1][col]);
-        if (tmp[row - 1][col + 1]) walls.push(grid[row - 1][col + 1]);
-        if (tmp[row][col + 1]) walls.push(grid[row][col + 1]);
-        if (tmp[row + 1][col + 1]) walls.push(grid[row + 1][col + 1]);
-        if (tmp[row + 1][col]) walls.push(grid[row + 1][col]);
-        if (tmp[row + 1][col - 1]) walls.push(grid[row + 1][col - 1]);
-        if (tmp[row][col - 1]) walls.push(grid[row][col - 1]);
+        for (let coord of [
+            [row - 1, col - 1], 
+            [row - 1, col], 
+            [row - 1, col + 1], 
+            [row, col + 1], 
+            [row + 1, col + 1],
+            [row + 1, col],
+            [row + 1, col - 1],
+            [row, col - 1]
+        ]) {    
+            if (
+                coord[0] >= 0 && 
+                coord[0] < grid.length && 
+                coord[1] >= 0 && 
+                coord[1] < grid[0].length && 
+                tmp[coord[0]][coord[1]]
+            ) {
+                walls.push(grid[coord[0]][coord[1]]);
+                tmp[coord[0]][coord[1]] = false;
+            }
+        }
     }
-
+    
     return walls;
 }
+
+/*
+walls.push(grid[f[0] + (f[1] - col)][f[1] + (f[0] - row)])
+walls.push(grid[f[0] - (f[1] - col)][f[1] - (f[0] - row)])
+
+else {
+    walls.push(grid[f[0]][f[1]])
+}
+*/
 
