@@ -41,8 +41,9 @@ export function dijkstra(grid, startNode, endNode) {
 
 // A* Heuristics from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
 function aStar(grid, startNode, endNode, type) {
+  const ERROR = 'Invalid A* Distance Type';
   const visitedNodesInOrder = [];
-
+  
   const open = [];
   const closed = [];
 
@@ -76,19 +77,18 @@ function aStar(grid, startNode, endNode, type) {
 
       if (neighbor.ref.className === 'node-wall' || closed.includes(neighbor)) continue;
 
-      const [x1, y1] = [currentNode.row, currentNode.col];
-      const [x2, y2] = [neighbor.row, neighbor.col];
-      const [x3, y3] = [endNode.row, endNode.col];
+      const [x1, y1] = [neighbor.row, neighbor.col];
+      const [x2, y2] = [endNode.row, endNode.col];
 
-      const dx = Math.abs(x3-x2);
-      const dy = Math.abs(y3-y2);
+      const dx = Math.abs(x2-x1);
+      const dy = Math.abs(y2-y1);
 
       let hTemp = 0;
 
       if (type === "Manhattan") hTemp = dx + dy;
       else if (type === "Diagonal") hTemp = (dx + dy) - 0.58578644 * Math.min(dx, dy);
-      else if (type === "Euclidean") hTemp = Math.hypot(x3-x2, y3-y2);
-      else throw 'Invalid A* Distance Type';
+      else if (type === "Euclidean") hTemp = Math.hypot(dx, dy);
+      else throw ERROR;
 
       const g = currentNode.g + 1;
       const h = hTemp;

@@ -254,8 +254,8 @@ export const GraphPage = () => {
     let rows = pxToNode(gridRef.current.offsetHeight);
     let cols = pxToNode(gridRef.current.offsetWidth);
     
-    if (rows % 2 == 0) rows++;
-    if (cols % 2 == 0) cols++;
+    if (rows % 2 === 0) rows++;
+    if (cols % 2 === 0) cols++;
 
     setDimensions({
       rows: rows, 
