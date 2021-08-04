@@ -39,8 +39,10 @@ export function dijkstra(grid, startNode, endNode) {
   return visitedNodesInOrder;
 }
 
-export function aStar(grid, startNode, endNode) {
+function aStar(grid, startNode, endNode, type) {
   const visitedNodesInOrder = [];
+
+  console.log(type);
 
   const open = [];
   const closed = [];
@@ -79,8 +81,18 @@ export function aStar(grid, startNode, endNode) {
       const [x2, y2] = [neighbor.row, neighbor.col];
       const [x3, y3] = [endNode.row, endNode.col];
 
-      const g = currentNode.g + Math.hypot(x2-x1, y2-y1);
-      const h = Math.hypot(x3-x2, y3-y2);
+      const dx = Math.abs(x3-x2);
+      const dy = Math.abs(y3-y2);
+
+      let hTemp = 0;
+
+      if (type === "Manhattan") hTemp = dx + dy;
+      else if (type === "Diagonal") hTemp = (dx + dy) - 0.58578644 * Math.min(dx, dy);
+      else if (type === "Euclidean") hTemp = Math.hypot(x3-x2, y3-y2);
+      else throw 'Invalid A* Distance Type';
+
+      const g = currentNode.g + 1;
+      const h = hTemp;
       const f = g + h;
 
       if (f < neighbor.f || !open.includes(neighbor)) {
@@ -99,6 +111,12 @@ export function aStar(grid, startNode, endNode) {
   visitedNodesInOrder.shift();
   return visitedNodesInOrder;
 }
+
+export function aStarManhattan (grid, startNode, endNode) { return aStar(grid, startNode, endNode, "Manhattan"); }
+
+export function aStarDiagonal (grid, startNode, endNode) { return aStar(grid, startNode, endNode, "Diagonal"); }
+
+export function aStarEuclidean (grid, startNode, endNode) { return aStar(grid, startNode, endNode, "Euclidean"); }
 
 
 export function breadthFirstSearch(grid, startNode, endNode) {

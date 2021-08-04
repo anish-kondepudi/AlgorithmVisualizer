@@ -1,6 +1,8 @@
 import "./GraphPage.css";
-import { dijkstra, aStar, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
+
+import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
 import { recursiveDivision, randomMaze, prims, dfsMaze, binaryTreeMaze } from "./graph_components/mazeAlgorithms";
+
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
@@ -368,7 +370,9 @@ export const GraphPage = () => {
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
         <button className="btn btn-info" onClick={() => {clearVisualization({completeStop: true});}}>Clear Visualization</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStar)}}>A*</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarManhattan)}}>A* (Manhattan)</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarDiagonal)}}>A* (Diagonal)</button>
+        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarEuclidean)}}>A* (Euclidean)</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
