@@ -19,11 +19,13 @@ var selectedNode = null;
 var startCoveredOverNode = null;
 var endCoveredOverNode = null;
 var currentAlgorithm = null;
+var weight = 10;
   
 export const GraphPage = () => {
   const grid = useRef([]).current;
   const gridRef = useRef();
   const [dimensions, setDimensions] = useState(null);
+  const [sliderWeight, setSliderWeight] = useState(10);
 
   // INITIALIZATION
 
@@ -73,6 +75,8 @@ export const GraphPage = () => {
       }
       else {
         grid[row][col].ref.className = 'node-wall';
+        console.log(weight);
+        node.ref.style.opacity = (weight/10.0).toString();
         if (currentAlgorithm) runAlgorithm(null, true);
         else animateNode(node, 100);
       }
@@ -132,6 +136,8 @@ export const GraphPage = () => {
         }
         else if (node.ref.className !== 'node-wall') {
           node.ref.className = 'node-wall';
+          console.log(weight);
+          node.ref.style.opacity = (weight/10.0).toString();
           if (currentAlgorithm) runAlgorithm(null, true);
           else animateNode(node, 100);
         }
@@ -380,6 +386,15 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
+      </div>
+
+      <div className="col-sm-12 col-md-6">
+        <label className="form-label"> Wall Weight : { (sliderWeight === 10) ? "Infinity" : sliderWeight } </label>
+        <input type="range" step="1" min="1" max="10" defaultValue={weight} className="form-range"
+          onChange={(e) => {
+            weight = e.target.value;
+            setSliderWeight(e.target.value);
+          }} />
       </div>
 
     </div>
