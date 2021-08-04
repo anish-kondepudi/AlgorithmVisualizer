@@ -39,7 +39,7 @@ export function dijkstra(grid, startNode, endNode) {
   return visitedNodesInOrder;
 }
 
-export function aStar(grid, startNode, endNode, type) {
+function aStar(grid, startNode, endNode, type) {
   const visitedNodesInOrder = [];
 
   console.log(type);
@@ -108,6 +108,12 @@ export function aStar(grid, startNode, endNode, type) {
     }
   }
 }
+
+export function aStarManhattan (grid, startNode, endNode) { return aStar(grid, startNode, endNode, "Manhattan"); }
+
+export function aStarDiagonal (grid, startNode, endNode) { return aStar(grid, startNode, endNode, "Diagonal"); }
+
+export function aStarEuclidean (grid, startNode, endNode) { return aStar(grid, startNode, endNode, "Euclidean"); }
 
 
 export function breadthFirstSearch(grid, startNode, endNode) {
