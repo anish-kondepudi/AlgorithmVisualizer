@@ -1,13 +1,13 @@
 import "./GraphPage.css";
 import { dijkstra, aStar, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
-import { recursiveDivision, randomMaze, prims, dfsMaze } from "./graph_components/mazeAlgorithms";
+import { recursiveDivision, randomMaze, prims, dfsMaze, binaryTreeMaze } from "./graph_components/mazeAlgorithms";
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 
 const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
 const CELL_SIZE = 1.5;
-const GRID_HEIGHT = 80;
+const GRID_HEIGHT = 70;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
 var prevTimeout = 0;
@@ -199,8 +199,8 @@ export const GraphPage = () => {
       const delay = 2500 * i / walls.length;
       setTimeout(() => {
         walls[i].ref.className = 'node-wall';
-        animateNode(walls[i], 50, [
-          {transform: `scale(1.2)`},
+        animateNode(walls[i], 100, [
+          {transform: `scale(1.3)`},
           {transform: 'scale(1)'}
         ]);
       }, delay);
@@ -249,8 +249,11 @@ export const GraphPage = () => {
   const resizeGrid = () => {
     clearAllTimeouts();
 
-    const rows = pxToNode(gridRef.current.offsetHeight);
-    const cols = pxToNode(gridRef.current.offsetWidth);
+    let rows = pxToNode(gridRef.current.offsetHeight);
+    let cols = pxToNode(gridRef.current.offsetWidth);
+    
+    if (rows % 2 == 0) rows++;
+    if (cols % 2 == 0) cols++;
 
     setDimensions({
       rows: rows, 
@@ -371,6 +374,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(prims)}}>Prims Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
       </div>
 
