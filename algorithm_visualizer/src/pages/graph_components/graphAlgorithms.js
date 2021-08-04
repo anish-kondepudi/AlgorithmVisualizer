@@ -39,10 +39,9 @@ export function dijkstra(grid, startNode, endNode) {
   return visitedNodesInOrder;
 }
 
+// A* Heuristics from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
 function aStar(grid, startNode, endNode, type) {
   const visitedNodesInOrder = [];
-
-  console.log(type);
 
   const open = [];
   const closed = [];
