@@ -55,7 +55,7 @@ export const GraphPage = () => {
   const handleMouseDown = e => {
     mouseButton = e.button;
 
-    let [name, row, col] = e.target.id.split('-');
+    let [name, row, col] = e.target.parentNode.id.split('-');
     
     if (name !== "node") return;
 
@@ -74,23 +74,12 @@ export const GraphPage = () => {
       else {
         node.ref.className = 'node-wall';
         if (currentAlgorithm) runAlgorithm(null, true);
-        else animateNode(node, 100);
+        else animateElement(node.ref, 100);
       }
     }
     else if (mouseButton === 2) {
-      if (node.ref.className === 'node-start') {
-        return;
-      }
-      else if (node.ref.className === 'node-end') {
-        return;
-      }
-      if (node.ref.className === 'node-wall') {
+      if (node.ref.className === 'node-wall' || node.ref.className.startsWith('node-weight-')) {
         node.ref.className = 'node-empty';
-        if (currentAlgorithm) runAlgorithm(null, true);
-      }
-      else if (node.weight > 1) {
-        node.ref.className = 'node-empty';
-        node.weight = 1;
         if (currentAlgorithm) runAlgorithm(null, true);
       }
     }    
@@ -99,7 +88,7 @@ export const GraphPage = () => {
   const handleMouseMove = e => {
     if (mouseButton === -1) return;
 
-    let [name, row, col] = e.target.id.split('-');
+    let [name, row, col] = e.target.parentNode.id.split('-');
 
     if (name !== 'node') return;
 
@@ -116,8 +105,7 @@ export const GraphPage = () => {
         if (selectedNode === 'node-start') {
           const prevNode = grid[startRow][startCol];
 
-          if (startCoveredOverNode === 'node-wall') prevNode.ref.className = 'node-wall';
-          else if (prevNode.weight > 1) prevNode.ref.className = `node-weight-${prevNode.weight}`;
+          if (startCoveredOverNode && (startCoveredOverNode === 'node-wall' || startCoveredOverNode.startsWith('node-weight-'))) prevNode.ref.className = startCoveredOverNode;
           else prevNode.ref.className = 'node-empty';
           startCoveredOverNode = node.ref.className;
 
@@ -125,7 +113,7 @@ export const GraphPage = () => {
           [startRow, startCol] = [row, col];
 
           if (currentAlgorithm) runAlgorithm(null, true);
-          else animateNode(node, 50, [
+          else animateElement(node.ref, 50, [
             {transform: `scale(.75)`},
             {transform: 'scale(1)'}
           ]);
@@ -133,8 +121,7 @@ export const GraphPage = () => {
         else if (selectedNode === 'node-end') {
           const prevNode = grid[endRow][endCol];
 
-          if (endCoveredOverNode === 'node-wall') prevNode.ref.className = 'node-wall';
-          else if (prevNode.weight > 1) prevNode.ref.className = `node-weight-${prevNode.weight}`;
+          if (endCoveredOverNode && (endCoveredOverNode === 'node-wall' || endCoveredOverNode.startsWith('node-weight-'))) prevNode.ref.className = endCoveredOverNode;
           else prevNode.ref.className = 'node-empty';
           endCoveredOverNode = node.ref.className;
 
@@ -142,7 +129,7 @@ export const GraphPage = () => {
           [endRow, endCol] = [row, col];
 
           if (currentAlgorithm) runAlgorithm(null, true);
-          else animateNode(node, 50, [
+          else animateElement(node.ref, 50, [
             {transform: `scale(.75)`},
             {transform: 'scale(1)'}
           ]);
@@ -150,24 +137,13 @@ export const GraphPage = () => {
         else if (node.ref.className !== 'node-wall') {
           node.ref.className = 'node-wall';
           if (currentAlgorithm) runAlgorithm(null, true);
-          else animateNode(node, 100);
+          else animateElement(node.ref, 100);
         }
       }
     }
     else if (mouseButton === 2) {
-      if (node.ref.className === 'node-start') {
-        return;
-      }
-      else if (node.ref.className === 'node-end') {
-        return;
-      }
-      if (node.ref.className === 'node-wall') {
+      if (node.ref.className === 'node-wall' || node.ref.className.startsWith('node-weight-')) {
         node.ref.className = 'node-empty';
-        if (currentAlgorithm) runAlgorithm(null, true);
-      }
-      else if (node.weight > 1) {
-        node.ref.className = 'node-empty';
-        node.weight = 1;
         if (currentAlgorithm) runAlgorithm(null, true);
       }
     }
@@ -190,17 +166,18 @@ export const GraphPage = () => {
 
     if (noDelay) {
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
-        visitedNodesInOrder[i].ref.className = 'node-visited';
+        visitedNodesInOrder[i].ref.childNodes[0].className = 'node-visited';
       }
       for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-        nodesInShortestPathOrder[i].ref.className = 'node-shortest-path';
+        nodesInShortestPathOrder[i].ref.childNodes[0].className = 'node-shortest-path';
       }
     }
     else {
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         setTimeout(() => {
-          visitedNodesInOrder[i].ref.className = 'node-visited';
-          animateNode(visitedNodesInOrder[i], 200, [
+          const overlay = visitedNodesInOrder[i].ref.childNodes[0];
+          overlay.className = 'node-visited';
+          animateElement(overlay, 200, [
             {transform: `scale(0)`, borderRadius: '100%'},
             {transform: 'scale(1)', borderRadius: 0}
           ]);
@@ -209,8 +186,9 @@ export const GraphPage = () => {
       setTimeout(() => {
         for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
           setTimeout(() => {
-            nodesInShortestPathOrder[i].ref.className = 'node-shortest-path';
-            animateNode(nodesInShortestPathOrder[i], 200);
+            const overlay = nodesInShortestPathOrder[i].ref.childNodes[0];
+            overlay.className = 'node-shortest-path';
+            animateElement(overlay, 200);
           }, PATH_DELAY * i);
         }
       }, VISIT_DELAY * visitedNodesInOrder.length)
@@ -221,16 +199,21 @@ export const GraphPage = () => {
     resetGrid();
     const walls = mazeFunction(grid);
     for (let i = 0; i < walls.length; i++) {
+
+      const node = grid[walls[i][0]][walls[i][1]];
+      let weight = null;
+      if (walls[i].length === 3) weight = walls[i][2];
+
       if (
-        walls[i].ref.className === 'node-start' ||
-        walls[i].ref.className === 'node-end'
+        node.ref.className === 'node-start' ||
+        node.ref.className === 'node-end'
       ) continue;
 
       const delay = 2500 * i / walls.length;
       setTimeout(() => {
-        if (walls[i].weight > 1) walls[i].ref.className = `node-weight-${walls[i].weight}`;
-        else walls[i].ref.className = 'node-wall';
-        animateNode(walls[i], 100, [
+        if (weight) node.ref.className = `node-weight-${weight}`;
+        else node.ref.className = 'node-wall';
+        animateElement(node.ref, 100, [
           {transform: `scale(1.3)`},
           {transform: 'scale(1)'}
         ]);
@@ -248,10 +231,12 @@ export const GraphPage = () => {
 
     for (let row=0; row<grid.length; row++) {
       for (let col=0; col<grid[0].length; col++) {
+        const node = grid[row][col];
         if ((endRow !== row || endCol !== col) && (startRow !== row || startCol !== col))
-          grid[row][col].ref.className = 'node-empty';
+          node.ref.className = 'node-empty';
+          node.ref.childNodes[0].className = 'node-empty';
 
-        resetNode(grid[row][col]);
+        resetNode(node);
       }
     }
     grid[endRow][endCol].ref.className = 'node-end';
@@ -265,18 +250,8 @@ export const GraphPage = () => {
     for (let row=0; row<grid.length; row++) {
       for (let col=0; col<grid[0].length; col++) {
         const node = grid[row][col];
-        if (
-          node.ref.className === 'node-visited' || 
-          node.ref.className === 'node-shortest-path'
-        ) {
-          if (node.weight > 1) {
-            node.ref.className = `node-weight-${node.weight}`;
-          }
-          else {
-            node.ref.className = 'node-empty';
-          }
-        }
-        resetNode(node, false);
+        node.ref.childNodes[0].className = 'node-empty';
+        resetNode(node);
       }
     }
   }
@@ -321,26 +296,24 @@ export const GraphPage = () => {
       f: Infinity,
       dv: Infinity,
       known: false,
-      pv: null,
-      weight: 1
+      pv: null
     }
   }
 
-  const animateNode = (node, time, animation = [{transform: `scale(0)`}, {transform: 'scale(1)'}]) => {
-    node.ref.animate(animation, {
+  const animateElement = (element, time, animation = [{transform: `scale(0)`}, {transform: 'scale(1)'}]) => {
+    element.animate(animation, {
       duration: time,
       iterations: 1
     });
   }
 
-  const resetNode = (node, resetWeight = true) => {
+  const resetNode = (node) => {
     node.dv = Infinity;
     node.known = false;
     node.pv = null;
     node.g = Infinity;
     node.h = Infinity;
     node.f = Infinity;
-    if (resetWeight) node.weight = 1;
   }
 
   // TOOLS

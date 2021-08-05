@@ -1,11 +1,16 @@
 .wrapper {
   width: 100%;
   height: 100%;
-  border-right: 1px solid #b3b3b3;
-  border-bottom: 1px solid #b3b3b3;
+  border-right: 2px solid lightgrey;
+  border-bottom: 2px solid lightgrey;
 }
 
-.wrapper div {
+.wrapper > div {
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper > div > div {
   width: 100%;
   height: 100%;
 }
@@ -19,7 +24,7 @@
 }
 
 .node-visited {
-  background-color: darkcyan;
+  background-color: rgba(13, 202, 240, .5);
 }
 
 .node-wall {
@@ -27,14 +32,13 @@
 }
 
 .node-shortest-path {
-  background-color: #ffff99;
+  background-color: rgba(255, 255, 153, .75);
 }
 
 $min: 2;
 $max: 10;
 @for $weight from $min through $max {
   .node-weight-#{$weight} {
-    background-color: plum;
-    opacity: #{($weight - $min) * (1 - .2) / ($max - $min) + .2};
+    background-color: rgba(221, 160, 221, ($weight - $min) * (1 - .2) / ($max - $min) + .2);
   }
 }

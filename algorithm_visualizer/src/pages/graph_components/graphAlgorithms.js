@@ -23,8 +23,13 @@ export function dijkstra(grid, startNode, endNode) {
       if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
 
       for (const neighbor of neighbors) {
-        if (!neighbor.known && neighbor.ref.className !== 'node-wall' && neighbor.dv > currentNode.dv + neighbor.weight) {
-          neighbor.dv = currentNode.dv + neighbor.weight;
+        const neighborType = neighbor.ref.className;
+
+        let weight = 1;
+        if (neighborType.startsWith('node-weight-')) weight = parseInt(neighborType.split('-')[2]);
+
+        if (!neighbor.known && neighborType !== 'node-wall' && neighbor.dv > currentNode.dv + weight) {
+          neighbor.dv = currentNode.dv + weight;
           neighbor.pv = currentNode;
           if (neighbor === endNode) {
             visitedNodesInOrder.shift();
@@ -74,8 +79,10 @@ function aStar(grid, startNode, endNode, type) {
     if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
 
     for (const neighbor of neighbors) {
+      
+      const neighborType = neighbor.ref.className;
 
-      if (neighbor.ref.className === 'node-wall' || closed.includes(neighbor)) continue;
+      if (neighborType === 'node-wall' || closed.includes(neighbor)) continue;
 
       const [x1, y1] = [neighbor.row, neighbor.col];
       const [x2, y2] = [endNode.row, endNode.col];
@@ -90,7 +97,10 @@ function aStar(grid, startNode, endNode, type) {
       else if (type === "Euclidean") hTemp = Math.hypot(dx, dy);
       else throw ERROR;
 
-      const g = currentNode.g + neighbor.weight;
+      let weight = 1;
+      if (neighborType.startsWith('node-weight-')) weight = parseInt(neighborType.split('-')[2]);
+
+      const g = currentNode.g + weight;
       const h = hTemp;
       const f = g + h;
 
