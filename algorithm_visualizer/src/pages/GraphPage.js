@@ -1,7 +1,7 @@
 import "./GraphPage.css";
 
 import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
-import { recursiveDivision, randomMaze, prims, dfsMaze, binaryTreeMaze } from "./graph_components/mazeAlgorithms";
+import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze } from "./graph_components/mazeAlgorithms";
 
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
@@ -209,6 +209,27 @@ export const GraphPage = () => {
     }
   } 
 
+  const generateWeightedMaze = (mazeFunction) => {
+    resetGrid();
+    const weights = mazeFunction(grid);
+    for (let i = 0; i < weights.length; i++) {
+      if (
+        weights[i][0].ref.className === 'node-start' ||
+        weights[i][0].ref.className === 'node-end'
+      ) continue;
+
+      const delay = 2500 * i / weights.length;
+      setTimeout(() => {
+        weights[i][0].ref.className = `node-weight-${weights[i][1]}`;
+        weights[i][0].weight = weights[i][1];
+        animateNode(weights[i][0], 100, [
+          {transform: `scale(1.3)`},
+          {transform: 'scale(1)'}
+        ]);
+      }, delay);
+    }
+  } 
+
   // GRID FUNCTIONS
 
   const resetGrid = () => {
@@ -240,10 +261,14 @@ export const GraphPage = () => {
           node.ref.className === 'node-visited' || 
           node.ref.className === 'node-shortest-path'
         ) {
-          grid[row][col].ref.className = 'node-empty';
+          if (node.weight > 1) {
+            node.ref.className = `node-weight-${node.weight}`;
+          }
+          else {
+            node.ref.className = 'node-empty';
+          }
         }
-
-        resetNode(node);
+        resetNode(node, false);
       }
     }
   }
@@ -254,8 +279,8 @@ export const GraphPage = () => {
     let rows = pxToNode(gridRef.current.offsetHeight);
     let cols = pxToNode(gridRef.current.offsetWidth);
     
-    if (rows % 2 === 0) rows++;
-    if (cols % 2 === 0) cols++;
+    if (rows > 1 && rows % 2 === 0) rows--;
+    if (cols > 1 && cols % 2 === 0) cols--;
 
     setDimensions({
       rows: rows, 
@@ -300,14 +325,14 @@ export const GraphPage = () => {
     });
   }
 
-  const resetNode = (node) => {
+  const resetNode = (node, resetWeight = true) => {
     node.dv = Infinity;
     node.known = false;
     node.pv = null;
-    node.weight = 1;
     node.g = Infinity;
     node.h = Infinity;
     node.f = Infinity;
+    if (resetWeight) node.weight = 1;
   }
 
   // TOOLS
@@ -380,6 +405,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateWeightedMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
       </div>
 
     </div>

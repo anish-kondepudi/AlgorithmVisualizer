@@ -29,3 +29,12 @@
 .node-shortest-path {
   background-color: #ffff99;
 }
+
+$min: 2;
+$max: 100;
+@for $weight from $min through $max {
+  .node-weight-#{$weight} {
+    background-color: plum;
+    opacity: #{($weight - $min) * (1 - .2) / ($max - $min) + .2};
+  }
+}

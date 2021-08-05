@@ -1,5 +1,5 @@
 import { forwardRef } from "react"
-import "./Node.css";
+import "./Node.scss";
 
 export const Node = forwardRef((props, ref) => {
   const {row, col} = props;
