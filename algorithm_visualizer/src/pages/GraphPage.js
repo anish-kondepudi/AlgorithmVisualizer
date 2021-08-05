@@ -72,14 +72,19 @@ export const GraphPage = () => {
         return;
       }
       else {
-        grid[row][col].ref.className = 'node-wall';
+        node.ref.className = 'node-wall';
         if (currentAlgorithm) runAlgorithm(null, true);
         else animateNode(node, 100);
       }
     }
     else if (mouseButton === 2) {
       if (node.ref.className === 'node-wall') {
-        grid[row][col].ref.className = 'node-empty';
+        node.ref.className = 'node-empty';
+        if (currentAlgorithm) runAlgorithm(null, true);
+      }
+      else if (node.weight > 1) {
+        node.ref.className = 'node-empty';
+        node.weight = 1;
         if (currentAlgorithm) runAlgorithm(null, true);
       }
     }    
@@ -103,8 +108,11 @@ export const GraphPage = () => {
       }
       else {
         if (selectedNode === 'node-start') {
-          if (startCoveredOverNode === 'node-wall') grid[startRow][startCol].ref.className = startCoveredOverNode;
-          else grid[startRow][startCol].ref.className = 'node-empty';
+          const prevNode = grid[startRow][startCol];
+
+          if (startCoveredOverNode === 'node-wall') prevNode.ref.className = 'node-wall';
+          else if (prevNode.weight > 1) prevNode.ref.className = `node-weight-${prevNode.weight}`;
+          else prevNode.ref.className = 'node-empty';
           startCoveredOverNode = node.ref.className;
 
           node.ref.className = 'node-start';
@@ -117,8 +125,11 @@ export const GraphPage = () => {
           ]);
         }
         else if (selectedNode === 'node-end') {
-          if (endCoveredOverNode === 'node-wall') grid[endRow][endCol].ref.className = endCoveredOverNode;
-          else grid[endRow][endCol].ref.className = 'node-empty';
+          const prevNode = grid[endRow][endCol];
+
+          if (endCoveredOverNode === 'node-wall') prevNode.ref.className = 'node-wall';
+          else if (prevNode.weight > 1) prevNode.ref.className = `node-weight-${prevNode.weight}`;
+          else prevNode.ref.className = 'node-empty';
           endCoveredOverNode = node.ref.className;
 
           node.ref.className = 'node-end';
@@ -139,7 +150,12 @@ export const GraphPage = () => {
     }
     else if (mouseButton === 2) {
       if (node.ref.className === 'node-wall') {
-        grid[row][col].ref.className = 'node-empty';
+        node.ref.className = 'node-empty';
+        if (currentAlgorithm) runAlgorithm(null, true);
+      }
+      else if (node.weight > 1) {
+        node.ref.className = 'node-empty';
+        node.weight = 1;
         if (currentAlgorithm) runAlgorithm(null, true);
       }
     }
@@ -200,29 +216,9 @@ export const GraphPage = () => {
 
       const delay = 2500 * i / walls.length;
       setTimeout(() => {
-        walls[i].ref.className = 'node-wall';
+        if (walls[i].weight > 1) walls[i].ref.className = `node-weight-${walls[i].weight}`;
+        else walls[i].ref.className = 'node-wall';
         animateNode(walls[i], 100, [
-          {transform: `scale(1.3)`},
-          {transform: 'scale(1)'}
-        ]);
-      }, delay);
-    }
-  } 
-
-  const generateWeightedMaze = (mazeFunction) => {
-    resetGrid();
-    const weights = mazeFunction(grid);
-    for (let i = 0; i < weights.length; i++) {
-      if (
-        weights[i][0].ref.className === 'node-start' ||
-        weights[i][0].ref.className === 'node-end'
-      ) continue;
-
-      const delay = 2500 * i / weights.length;
-      setTimeout(() => {
-        weights[i][0].ref.className = `node-weight-${weights[i][1]}`;
-        weights[i][0].weight = weights[i][1];
-        animateNode(weights[i][0], 100, [
           {transform: `scale(1.3)`},
           {transform: 'scale(1)'}
         ]);
@@ -405,7 +401,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateWeightedMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
       </div>
 
     </div>

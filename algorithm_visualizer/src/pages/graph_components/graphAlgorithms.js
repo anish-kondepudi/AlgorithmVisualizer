@@ -23,7 +23,7 @@ export function dijkstra(grid, startNode, endNode) {
       if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
 
       for (const neighbor of neighbors) {
-        if (!neighbor.known && neighbor.ref.className !== 'node-wall') {
+        if (!neighbor.known && neighbor.ref.className !== 'node-wall' && neighbor.dv > currentNode.dv + neighbor.weight) {
           neighbor.dv = currentNode.dv + neighbor.weight;
           neighbor.pv = currentNode;
           if (neighbor === endNode) {
@@ -90,7 +90,7 @@ function aStar(grid, startNode, endNode, type) {
       else if (type === "Euclidean") hTemp = Math.hypot(dx, dy);
       else throw ERROR;
 
-      const g = currentNode.g + 1;
+      const g = currentNode.g + neighbor.weight;
       const h = hTemp;
       const f = g + h;
 
