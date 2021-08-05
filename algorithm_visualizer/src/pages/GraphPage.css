@@ -4,8 +4,9 @@
 }
 
 .grid {
-  border-left: 2px solid lightgrey;
-  border-top: 2px solid lightgrey;
+  border-left: 1px solid lightgrey;
+  border-top: 1px solid lightgrey;
+  background-color: lightgrey;
 }
 
 .grid-row {
