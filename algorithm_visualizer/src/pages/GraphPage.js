@@ -78,6 +78,12 @@ export const GraphPage = () => {
       }
     }
     else if (mouseButton === 2) {
+      if (node.ref.className === 'node-start') {
+        return;
+      }
+      else if (node.ref.className === 'node-end') {
+        return;
+      }
       if (node.ref.className === 'node-wall') {
         node.ref.className = 'node-empty';
         if (currentAlgorithm) runAlgorithm(null, true);
@@ -149,6 +155,12 @@ export const GraphPage = () => {
       }
     }
     else if (mouseButton === 2) {
+      if (node.ref.className === 'node-start') {
+        return;
+      }
+      else if (node.ref.className === 'node-end') {
+        return;
+      }
       if (node.ref.className === 'node-wall') {
         node.ref.className = 'node-empty';
         if (currentAlgorithm) runAlgorithm(null, true);

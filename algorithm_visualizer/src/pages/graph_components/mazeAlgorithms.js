@@ -94,7 +94,7 @@ export function randomWeightedMaze(grid) {
     const weights = [];
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[0].length; col++) {
-            grid[row][col].weight = rand(2,100);
+            grid[row][col].weight = rand(2,10);
             weights.push(grid[row][col]);
         }
     }
