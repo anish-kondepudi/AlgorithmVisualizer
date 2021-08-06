@@ -1,17 +1,11 @@
 .wrapper {
   border-right: 1px solid lightgrey;
   border-bottom: 1px solid lightgrey;
-  background-color: lightgrey;
-}
-
-.wrapper > div {
-  background-color: black;
 }
 
 .wrapper,
 .wrapper > div,
-.wrapper > div > div,
-.wrapper > div > div > div {
+.wrapper > div > div {
   width: 100%;
   height: 100%;
 }
