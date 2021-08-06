@@ -16,6 +16,10 @@ const rand = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+const map = (val, in_min, in_max, out_min, out_max) => {
+    return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 export function recursiveDivision(grid) {
     const walls = [];
 
@@ -300,6 +304,21 @@ export function binaryTreeMaze(grid) {
     
     return walls;
 }
+
+
+var SimplexNoise = require('simplex-noise');
+
+export function terrainMap(grid) {
+    const weights = [];
+    const simplex = new SimplexNoise(Math.random)
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[0].length; col++) {
+            weights.push([row, col, Math.floor(map(simplex.noise2D(.05* row, .05 *col), -1, 1, 2, 20))]);
+        }
+    }
+    return weights;
+}
+
 
 /*
 walls.push(grid[f[0] + (f[1] - col)][f[1] + (f[0] - row)])

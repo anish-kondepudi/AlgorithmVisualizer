@@ -1,7 +1,7 @@
 import "./GraphPage.css";
 
 import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
-import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze } from "./graph_components/mazeAlgorithms";
+import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze, terrainMap } from "./graph_components/mazeAlgorithms";
 
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
@@ -364,7 +364,7 @@ export const GraphPage = () => {
   }
 
   return (
-    <div className="graphPage container">
+    <div className="graphPage container-fluid">
 
       {/* Title */}
       <h1 className="my-4"> Graph Algorithms </h1>
@@ -389,6 +389,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
       </div>
 
     </div>
