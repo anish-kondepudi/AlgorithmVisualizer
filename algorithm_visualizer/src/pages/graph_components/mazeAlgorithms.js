@@ -20,6 +20,12 @@ const map = (val, in_min, in_max, out_min, out_max) => {
     return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+const clip = (val, min, max) => {
+    if (val < min) val = min;
+    if (val > max) val = max;
+    return val;
+}
+
 export function recursiveDivision(grid) {
     const walls = [];
 
@@ -313,7 +319,11 @@ export function terrainMap(grid) {
     const simplex = new SimplexNoise(Math.random)
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[0].length; col++) {
-            weights.push([row, col, Math.floor(map(simplex.noise2D(.05* row, .05 *col), -1, 1, 2, 20))]);
+            weights.push([
+                row, 
+                col, 
+                Math.floor(map(clip(simplex.noise2D(.075* row, .075 *col), -.6, .6), -.6, .6, 2, 20))
+            ]);
         }
     }
     return weights;

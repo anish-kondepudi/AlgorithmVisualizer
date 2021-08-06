@@ -206,7 +206,7 @@ export const GraphPage = () => {
       let weight = null;
       if (walls[i].length === 3) weight = walls[i][2];
 
-      const delay = 2500 * i / walls.length;
+      const delay = 1000 * i / walls.length;
       setTimeout(() => {
         if (
           node.ref.className !== 'node-start' &&
