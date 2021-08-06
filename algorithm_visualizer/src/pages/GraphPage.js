@@ -42,6 +42,7 @@ export const GraphPage = () => {
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
     gridRef.current.addEventListener("contextmenu", e => e.preventDefault());
+    document.querySelector("#terrainImageInput").addEventListener("change", generateImageTerrain);
 
     return () => {
       window.removeEventListener('resize', resizeGrid);
@@ -49,8 +50,117 @@ export const GraphPage = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
+      document.querySelector("#terrainImageInput").addEventListener("change", generateImageTerrain);
     };
   }, []);
+
+  const generateImageTerrain = () => {
+    // const fileInput = document.querySelector("#terrainImageInput").files[0];
+    // console.log(fileInput);
+
+    // const reader = new FileReader();
+
+    // reader.readAsDataURL(fileInput);
+
+    // // reader.addEventListener("load", () => {
+    // //   console.log(reader.result);
+    // // })
+
+    // var canvas = document.createElement('canvas');
+    // var ctx = canvas.getContext('2d');
+    // canvas.width=300
+    // canvas.height=234
+    // ctx.drawImage(reader.result, 0, 0, 300, 234);
+    // document.body.appendChild(canvas);
+
+    
+    const file = document.querySelector("#terrainImageInput").files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = function (event) {
+      const imgElement = document.createElement("img");
+      imgElement.src = event.target.result;
+      document.querySelector("#input").src = event.target.result;
+
+      imgElement.onload = function (e) {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = grid[0].length; // GET CORRECT WIDTH
+        const MAX_HEIGHT = grid.length; // GET CORRECT HEIGHT
+
+        console.log(grid[0].length,grid.length)
+
+        canvas.width = MAX_WIDTH;
+        canvas.height = MAX_HEIGHT;
+
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
+
+        const srcEncoded = ctx.canvas.toDataURL(e.target, "image/jpeg");
+
+        // you can send srcEncoded to the server
+        document.querySelector("#output").src = srcEncoded;
+
+        let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+        let pixels = imgData.data;
+
+        // Convert RGBA to Greyscale (range 0-255)
+        let greyscale = [];
+        for (var i = 0; i < pixels.length; i += 4) {
+          let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
+          greyscale.push(lightness)
+        }
+
+        const convertGrayscaleToWeight = (val, in_min, in_max, out_min, out_max) => {
+          return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+        }
+
+        for (let i=0; i<greyscale.length; i++) {
+          greyscale[i] = Math.round(convertGrayscaleToWeight(greyscale[i],0,255,2,30))
+        }
+
+        // console.log(greyscale)
+
+        const walls = [];
+        let idx = 0;
+        for (let row = 0; row < grid.length; row++) {
+            for (let col = 0; col < grid[0].length; col++) {
+                walls.push([row, col, greyscale[idx++]]);
+            }
+        }
+        console.log(walls)
+        resetGrid();
+        for (let i = 0; i < walls.length; i++) {
+
+          const node = grid[walls[i][0]][walls[i][1]];
+          let weight = null;
+          if (walls[i].length === 3) weight = walls[i][2];
+
+          const delay = 1000 * i / walls.length;
+          setTimeout(() => {
+            if (
+              node.ref.className !== 'node-start' &&
+              node.ref.className !== 'node-end'
+            ) {
+              if (weight) node.ref.className = `node-weight-${weight}`;
+              else node.ref.className = 'node-wall';
+              animateElement(node.ref, 100, [
+                {transform: `scale(1.3)`},
+                {transform: 'scale(1)'}
+              ]);
+            }
+          }, delay);
+        }
+
+      }}
+  }   
+
+
 
   // MOUSE HANDLERS
 
@@ -402,6 +512,14 @@ export const GraphPage = () => {
             weight = e.target.value;
             setSliderWeight(e.target.value);
           }} />
+      </div>
+
+      <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/>
+      <div>
+        <img id="input" />
+      </div>
+      <div>
+        <img id="output" />
       </div>
 
     </div>
