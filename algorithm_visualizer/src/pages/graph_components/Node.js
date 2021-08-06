@@ -1,16 +1,22 @@
 import { forwardRef } from "react"
-import "./Node.css";
+import "./Node.scss";
 
 export const Node = forwardRef((props, ref) => {
-  const {row, col} = props;
+  const {row, col, type} = props;
 
   return (
     <div className="wrapper">
       <div
         ref={ref}
         id={`node-${row}-${col}`}
-        className={'node-empty'}
-      />
+        className={type}
+      >
+        <div
+          
+        >
+
+        </div>
+      </div>
     </div>
   );
   
