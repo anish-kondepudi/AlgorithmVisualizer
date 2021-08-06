@@ -92,7 +92,7 @@ export function randomWeightedMaze(grid) {
     const walls = [];
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[0].length; col++) {
-            walls.push([row, col, rand(2,20)]);
+            walls.push([row, col, rand(2,30)]);
         }
     }
     return walls;
@@ -322,7 +322,7 @@ export function terrainMap(grid) {
             weights.push([
                 row, 
                 col, 
-                Math.floor(map(clip(simplex.noise2D(.075* row, .075 *col), -.6, .6), -.6, .6, 2, 20))
+                Math.floor(map(clip(simplex.noise2D(.075* row, .075 *col), -.6, .6), -.6, .6, 2, 30))
             ]);
         }
     }

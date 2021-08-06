@@ -31,7 +31,7 @@
 }
 
 $min: 2;
-$max: 20;
+$max: 30;
 @for $weight from $min through $max {
   .node-weight-#{$weight} {
     background-color: rgba(221, 160, 221, ($weight - $min) * (1 - .2) / ($max - $min) + .2);
