@@ -12,7 +12,7 @@ export const Node = forwardRef((props, ref) => {
         className={type}
       >
         <div
-          
+          className={type}
         >
 
         </div>
