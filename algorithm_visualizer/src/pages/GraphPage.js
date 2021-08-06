@@ -184,8 +184,7 @@ export const GraphPage = () => {
     else {
       const delay = 10000 / (dimensions.rows * dimensions.cols) * 5 * Math.pow(1/5,animationSpeed/50);
       const iterPerTimeout = delay > 3 ? 1 : Math.ceil(3 / delay);
-      console.log(iterPerTimeout)
-      const animate = iterPerTimeout < 2 ? true : false;
+      const animate = iterPerTimeout < 2 && nodeSize > 1 ? true : false;
 
       for (let i = 0; i < visitedNodesInOrder.length; i += iterPerTimeout) {
         setTimeout(() => {
@@ -218,7 +217,7 @@ export const GraphPage = () => {
     resetGrid();
     const walls = mazeFunction(grid);
 
-    const delay = 2000 / walls.length;
+    const delay = 1500 / walls.length;
     const wallsPerIteration = delay > 2 ? 1 : Math.ceil(2 / delay);
 
     for (let i = 0; i < walls.length; i += wallsPerIteration) {
@@ -412,7 +411,7 @@ export const GraphPage = () => {
 
 
       <label className="form-label d-block"> Set grid size : </label>
-      <input type="range" step=".1" min="1" max="2.4" defaultValue={nodeSize} className="form-range w-50 d-block"
+      <input type="range" step=".1" min=".7" max="3" defaultValue={nodeSize} className="form-range w-50 d-block"
         onChange={(e) => {
           nodeSize = e.target.value;
           resizeGrid();
