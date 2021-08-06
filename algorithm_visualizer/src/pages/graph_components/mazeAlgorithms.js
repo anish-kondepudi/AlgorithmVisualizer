@@ -16,18 +16,6 @@ const rand = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function randomArrayShuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
-
 export function recursiveDivision(grid) {
     const walls = [];
 
@@ -48,7 +36,7 @@ export function recursiveDivision(grid) {
       {
         for(let i = x1 + 1; i < x2; i++) {
             if (i === pathIdx) continue;
-            walls.push(grid[wallIdx][i]);
+            walls.push([wallIdx, i]);
         }
         division(grid, x1, y1, x2, wallIdx);
         division(grid, x1, wallIdx, x2, y2);
@@ -57,7 +45,7 @@ export function recursiveDivision(grid) {
       {
         for(let i = y1 + 1; i < y2; i++) {
             if (i === pathIdx) continue;
-            walls.push(grid[i][wallIdx]);
+            walls.push([i, wallIdx]);
         }
         division(grid, x1, y1, wallIdx, y2);
         division(grid, wallIdx, y1, x2, y2);
@@ -65,12 +53,12 @@ export function recursiveDivision(grid) {
     }
 
     for (let i = 0; i < grid.length; i++) {
-        walls.push(grid[i][0]);
-        walls.push(grid[grid.length - i - 1][grid[0].length - 1]);
+        walls.push([i, 0]);
+        walls.push([grid.length - i - 1, grid[0].length - 1]);
     }
     for (let j = 0; j < grid[0].length; j++) {
-        walls.push(grid[0][grid[0].length - j - 1]);
-        walls.push(grid[grid.length - 1][j]);
+        walls.push([0, grid[0].length - j - 1]);
+        walls.push([grid.length - 1, j]);
     }
 
     division(grid, 0, 0, grid[0].length-1, grid.length-1);
@@ -83,8 +71,18 @@ export function randomMaze(grid) {
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[0].length; col++) {
             if (Math.random() < .3) {
-                walls.push(grid[row][col]);
+                walls.push([row, col]);
             }
+        }
+    }
+    return walls;
+}
+
+export function randomWeightedMaze(grid) {
+    const walls = [];
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[0].length; col++) {
+            walls.push([row, col, rand(2,10)]);
         }
     }
     return walls;
@@ -149,7 +147,7 @@ export function prims(grid) {
                 coord[1] < grid[0].length && 
                 tmp[coord[0]][coord[1]]
             ) {
-                walls.push(grid[coord[0]][coord[1]]);
+                walls.push(coord);
                 tmp[coord[0]][coord[1]] = false;
             }
         }
@@ -235,7 +233,7 @@ export function dfsMaze(grid) {
                 coord[1] < grid[0].length && 
                 tmp[coord[0]][coord[1]]
             ) {
-                walls.push(grid[coord[0]][coord[1]]);
+                walls.push(coord);
                 tmp[coord[0]][coord[1]] = false;
             }
         }
@@ -294,7 +292,7 @@ export function binaryTreeMaze(grid) {
                 coord[1] < grid[0].length && 
                 tmp[coord[0]][coord[1]]
             ) {
-                walls.push(grid[coord[0]][coord[1]]);
+                walls.push(coord);
                 tmp[coord[0]][coord[1]] = false;
             }
         }
