@@ -1,7 +1,7 @@
 import "./GraphPage.css";
 
 import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
-import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze } from "./graph_components/mazeAlgorithms";
+import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze, terrainMap } from "./graph_components/mazeAlgorithms";
 
 import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
@@ -55,6 +55,7 @@ export const GraphPage = () => {
   const handleMouseDown = e => {
     mouseButton = e.button;
 
+    if (!e.target.parentNode.id) return;
     let [name, row, col] = e.target.parentNode.id.split('-');
     
     if (name !== "node") return;
@@ -88,6 +89,7 @@ export const GraphPage = () => {
   const handleMouseMove = e => {
     if (mouseButton === -1) return;
 
+    if (!e.target.parentNode.id) return;
     let [name, row, col] = e.target.parentNode.id.split('-');
 
     if (name !== 'node') return;
@@ -204,19 +206,19 @@ export const GraphPage = () => {
       let weight = null;
       if (walls[i].length === 3) weight = walls[i][2];
 
-      if (
-        node.ref.className === 'node-start' ||
-        node.ref.className === 'node-end'
-      ) continue;
-
-      const delay = 2500 * i / walls.length;
+      const delay = 1000 * i / walls.length;
       setTimeout(() => {
-        if (weight) node.ref.className = `node-weight-${weight}`;
-        else node.ref.className = 'node-wall';
-        animateElement(node.ref, 100, [
-          {transform: `scale(1.3)`},
-          {transform: 'scale(1)'}
-        ]);
+        if (
+          node.ref.className !== 'node-start' &&
+          node.ref.className !== 'node-end'
+        ) {
+          if (weight) node.ref.className = `node-weight-${weight}`;
+          else node.ref.className = 'node-wall';
+          animateElement(node.ref, 100, [
+            {transform: `scale(1.3)`},
+            {transform: 'scale(1)'}
+          ]);
+        }
       }, delay);
     }
   } 
@@ -362,7 +364,7 @@ export const GraphPage = () => {
   }
 
   return (
-    <div className="graphPage container">
+    <div className="graphPage container-fluid">
 
       {/* Title */}
       <h1 className="my-4"> Graph Algorithms </h1>
@@ -387,6 +389,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
+        <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
       </div>
 
     </div>

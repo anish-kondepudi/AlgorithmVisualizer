@@ -16,6 +16,16 @@ const rand = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+const map = (val, in_min, in_max, out_min, out_max) => {
+    return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+const clip = (val, min, max) => {
+    if (val < min) val = min;
+    if (val > max) val = max;
+    return val;
+}
+
 export function recursiveDivision(grid) {
     const walls = [];
 
@@ -82,7 +92,7 @@ export function randomWeightedMaze(grid) {
     const walls = [];
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[0].length; col++) {
-            walls.push([row, col, rand(2,10)]);
+            walls.push([row, col, rand(2,30)]);
         }
     }
     return walls;
@@ -300,6 +310,25 @@ export function binaryTreeMaze(grid) {
     
     return walls;
 }
+
+
+var SimplexNoise = require('simplex-noise');
+
+export function terrainMap(grid) {
+    const weights = [];
+    const simplex = new SimplexNoise(Math.random)
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[0].length; col++) {
+            weights.push([
+                row, 
+                col, 
+                Math.floor(map(clip(simplex.noise2D(.075* row, .075 *col), -.6, .6), -.6, .6, 2, 30))
+            ]);
+        }
+    }
+    return weights;
+}
+
 
 /*
 walls.push(grid[f[0] + (f[1] - col)][f[1] + (f[0] - row)])
