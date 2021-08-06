@@ -1,16 +1,17 @@
 .wrapper {
-  width: 100%;
-  height: 100%;
-  border-right: 2px solid lightgrey;
-  border-bottom: 2px solid lightgrey;
+  border-right: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+  background-color: lightgrey;
 }
 
 .wrapper > div {
-  width: 100%;
-  height: 100%;
+  background-color: black;
 }
 
-.wrapper > div > div {
+.wrapper,
+.wrapper > div,
+.wrapper > div > div,
+.wrapper > div > div > div {
   width: 100%;
   height: 100%;
 }
@@ -32,11 +33,11 @@
 }
 
 .node-shortest-path {
-  background-color: rgba(255, 255, 153, .75);
+  background-color: rgba(255, 255, 153, .85);
 }
 
 $min: 2;
-$max: 10;
+$max: 20;
 @for $weight from $min through $max {
   .node-weight-#{$weight} {
     background-color: rgba(221, 160, 221, ($weight - $min) * (1 - .2) / ($max - $min) + .2);

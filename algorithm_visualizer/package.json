@@ -12,6 +12,7 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
+    "simplex-noise": "^2.4.0",
     "web-vitals": "^1.1.2"
   },
   "scripts": {

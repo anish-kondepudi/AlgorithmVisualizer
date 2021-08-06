@@ -57,6 +57,7 @@ export const GraphPage = () => {
   const handleMouseDown = e => {
     mouseButton = e.button;
 
+    if (!e.target.parentNode.id) return;
     let [name, row, col] = e.target.parentNode.id.split('-');
     
     if (name !== "node") return;
@@ -92,6 +93,7 @@ export const GraphPage = () => {
   const handleMouseMove = e => {
     if (mouseButton === -1) return;
 
+    if (!e.target.parentNode.id) return;
     let [name, row, col] = e.target.parentNode.id.split('-');
 
     if (name !== 'node') return;
@@ -210,19 +212,19 @@ export const GraphPage = () => {
       let weight = null;
       if (walls[i].length === 3) weight = walls[i][2];
 
-      if (
-        node.ref.className === 'node-start' ||
-        node.ref.className === 'node-end'
-      ) continue;
-
       const delay = 2500 * i / walls.length;
       setTimeout(() => {
-        if (weight) node.ref.className = `node-weight-${weight}`;
-        else node.ref.className = 'node-wall';
-        animateElement(node.ref, 100, [
-          {transform: `scale(1.3)`},
-          {transform: 'scale(1)'}
-        ]);
+        if (
+          node.ref.className !== 'node-start' &&
+          node.ref.className !== 'node-end'
+        ) {
+          if (weight) node.ref.className = `node-weight-${weight}`;
+          else node.ref.className = 'node-wall';
+          animateElement(node.ref, 100, [
+            {transform: `scale(1.3)`},
+            {transform: 'scale(1)'}
+          ]);
+        }
       }, delay);
     }
   } 
