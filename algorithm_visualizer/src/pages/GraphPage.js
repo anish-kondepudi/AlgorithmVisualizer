@@ -8,10 +8,9 @@ import {Node} from './graph_components/Node';
 
 const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
-const CELL_SIZE = 1.5;
 const GRID_HEIGHT = 70;
-const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / CELL_SIZE);
 
+var nodeSize = 1.5;
 var prevTimeout = 0;
 var mouseButton = -1;
 var startRow, startCol, endRow, endCol = null;
@@ -19,11 +18,19 @@ var selectedNode = null;
 var startCoveredOverNode = null;
 var endCoveredOverNode = null;
 var currentAlgorithm = null;
+var placeableNode = 'node-wall';
+var animationSpeed = 50;
+
+const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / nodeSize);
   
 export const GraphPage = () => {
+  // grid states
   const grid = useRef([]).current;
   const gridRef = useRef();
   const [dimensions, setDimensions] = useState(null);
+
+  // slider states
+  const exampleWeightRef = useRef();
 
   // INITIALIZATION
 
@@ -69,11 +76,11 @@ export const GraphPage = () => {
       else if (node.ref.className === 'node-end') {
         selectedNode = 'node-end';
       }
-      else if (node.ref.className === 'node-wall') {
+      else if (node.ref.className === placeableNode) {
         return;
       }
       else {
-        node.ref.className = 'node-wall';
+        node.ref.className = placeableNode;
         if (currentAlgorithm) runAlgorithm(null, true);
         else animateElement(node.ref, 100);
       }
@@ -136,8 +143,8 @@ export const GraphPage = () => {
             {transform: 'scale(1)'}
           ]);
         }
-        else if (node.ref.className !== 'node-wall') {
-          node.ref.className = 'node-wall';
+        else if (node.ref.className !== placeableNode) {
+          node.ref.className = placeableNode;
           if (currentAlgorithm) runAlgorithm(null, true);
           else animateElement(node.ref, 100);
         }
@@ -175,51 +182,60 @@ export const GraphPage = () => {
       }
     }
     else {
-      for (let i = 0; i < visitedNodesInOrder.length; i++) {
+      const delay = 10000 / (dimensions.rows * dimensions.cols) * 5 * Math.pow(1/5,animationSpeed/50);
+      const iterPerTimeout = delay > 3 ? 1 : Math.ceil(3 / delay);
+      const animate = iterPerTimeout < 2 && nodeSize > 1 ? true : false;
+
+      for (let i = 0; i < visitedNodesInOrder.length; i += iterPerTimeout) {
         setTimeout(() => {
-          const overlay = visitedNodesInOrder[i].ref.childNodes[0];
-          overlay.className = 'node-visited';
-          animateElement(overlay, 200, [
-            {transform: `scale(0)`, borderRadius: '100%'},
-            {transform: 'scale(1)', borderRadius: 0}
-          ]);
-        }, VISIT_DELAY * i);
+          for (let j = i; j < i + iterPerTimeout && j < visitedNodesInOrder.length; j++) {
+            const overlay = visitedNodesInOrder[j].ref.childNodes[0];
+            overlay.className = 'node-visited';
+            if (animate) {
+              animateElement(overlay, 200, [
+                {transform: `scale(0)`, borderRadius: '100%'},
+                {transform: 'scale(1)', borderRadius: 0}
+              ]);
+            }
+          }
+        }, delay * i);
       }
+      const pathDelay = delay * 5 < 15 ? 15 : (delay * 5 > 50 ? 50 : delay * 5);
       setTimeout(() => {
         for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
           setTimeout(() => {
             const overlay = nodesInShortestPathOrder[i].ref.childNodes[0];
             overlay.className = 'node-shortest-path';
             animateElement(overlay, 200);
-          }, PATH_DELAY * i);
+          }, pathDelay * i);
         }
-      }, VISIT_DELAY * visitedNodesInOrder.length)
+      }, delay * visitedNodesInOrder.length)
     }
   }
 
   const generateMaze = (mazeFunction) => {
     resetGrid();
     const walls = mazeFunction(grid);
-    for (let i = 0; i < walls.length; i++) {
 
-      const node = grid[walls[i][0]][walls[i][1]];
-      let weight = null;
-      if (walls[i].length === 3) weight = walls[i][2];
+    const delay = 1500 / walls.length;
+    const wallsPerIteration = delay > 2 ? 1 : Math.ceil(2 / delay);
 
-      const delay = 1000 * i / walls.length;
+    for (let i = 0; i < walls.length; i += wallsPerIteration) {
       setTimeout(() => {
-        if (
-          node.ref.className !== 'node-start' &&
-          node.ref.className !== 'node-end'
-        ) {
-          if (weight) node.ref.className = `node-weight-${weight}`;
-          else node.ref.className = 'node-wall';
-          animateElement(node.ref, 100, [
-            {transform: `scale(1.3)`},
-            {transform: 'scale(1)'}
-          ]);
+        for (let j = i; j < i + wallsPerIteration && j < walls.length; j++) {
+          const node = grid[walls[j][0]][walls[j][1]];
+          let weight = null;
+          if (walls[j].length === 3) weight = walls[j][2];
+
+          if (
+            node.ref.className !== 'node-start' &&
+            node.ref.className !== 'node-end'
+          ) {
+            if (weight) node.ref.className = `node-weight-${weight}`;
+            else node.ref.className = 'node-wall';
+          }
         }
-      }, delay);
+      }, delay * i);
     }
   } 
 
@@ -376,7 +392,7 @@ export const GraphPage = () => {
       {/* Graph Buttons */}
       <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
         <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
-        <button className="btn btn-info" onClick={() => {clearVisualization({completeStop: true});}}>Clear Visualization</button>
+        <button className="btn btn-info" onClick={() => {clearVisualization(true);}}>Clear Visualization</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarManhattan)}}>A* (Manhattan)</button>
         <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarDiagonal)}}>A* (Diagonal)</button>
@@ -391,6 +407,31 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
       </div>
+
+
+      <label className="form-label d-block"> Set grid size : </label>
+      <input type="range" step=".1" min=".7" max="3" defaultValue={nodeSize} className="form-range w-50 d-block"
+        onChange={(e) => {
+          nodeSize = e.target.value;
+          resizeGrid();
+        }} />
+
+      <label className="form-label d-block"> Set node : </label>
+      <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range w-50 d-block"
+        onChange={(e) => {
+          const value = parseInt(e.target.value);
+          if (value === 31) placeableNode = 'node-wall';
+          else if (value >= 2 || value <= 30) placeableNode = `node-weight-${Math.floor(value)}`
+          exampleWeightRef.current.className = placeableNode;
+        }} />
+      <div ref={exampleWeightRef} className="node-wall" style={{width: '2rem', height: '2rem'}}></div>
+
+      <label className="form-label d-block">Animation Speed : </label>
+      <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range w-50 d-block"
+        onChange={(e) => {
+          clearVisualization(true);
+          animationSpeed = parseInt(e.target.value);
+        }} />
 
     </div>
   );
