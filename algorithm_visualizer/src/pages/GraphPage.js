@@ -66,11 +66,81 @@ export const GraphPage = () => {
 
   // IMAGE & VIDEO HANDLING
 
-  const displayImage = () => {
+  const updateBoardFromReader = (reader) => {
+
     // Helper Function to Convert Range
     const convertRange = (val, in_min, in_max, out_min, out_max) => {
       return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
+
+    reader.onload = function (event) {
+      
+      const imgElement = document.createElement("img");
+      imgElement.src = event.target.result;
+
+      imgElement.onload = function (e) {
+
+        // Resize Image to Dimensions of Grid
+        const canvas = document.createElement("canvas");
+
+        canvas.width = grid[0].length;
+        canvas.height = grid.length;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
+
+
+        // Retrieve RGBA pixel values of resized image
+        let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+        let pixels = imgData.data;
+
+        // Convert RGBA to Greyscale Weight (range 2-30)
+        const greyscaleWeights = [];
+        for (var i = 0; i < pixels.length; i += 4) {
+          let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
+          greyscaleWeights.push(Math.round(convertRange(lightness,0,255,2,30)));
+        }
+
+        // Create Weighted Walls
+        const walls = [];
+        let idx = 0;
+        for (let row = 0; row < grid.length; row++) {
+            for (let col = 0; col < grid[0].length; col++) {
+                walls.push([row, col, greyscaleWeights[idx++]]);
+            }
+        }
+
+        // Update Grid with Weighted Walls
+        resetGrid();
+        for (let i = 0; i < walls.length; i++) {
+
+          const node = grid[walls[i][0]][walls[i][1]];
+          let weight = null;
+          if (walls[i].length === 3) weight = walls[i][2];
+
+          const delay = 1000 * i / walls.length;
+          setTimeout(() => {
+            if (
+              node.ref.className !== 'node-start' &&
+              node.ref.className !== 'node-end'
+            ) {
+              if (weight) node.ref.className = `node-weight-${weight}`;
+              else node.ref.className = 'node-wall';
+              animateElement(node.ref, 100, [
+                {transform: `scale(1.3)`},
+                {transform: 'scale(1)'}
+              ]);
+            }
+          }, delay);
+
+        }
+
+      }
+    }
+
+  }
+
+  const displayImage = () => {
     
     const dataURLtoBlob = (dataurl) => {
       var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
@@ -81,160 +151,26 @@ export const GraphPage = () => {
       return new Blob([u8arr], {type:mime});
     }
 
-    console.log("hi")
     const screenshot = webCamRef.current.getScreenshot();
     const blob =  dataURLtoBlob(screenshot);
 
     const reader = new FileReader();
     reader.readAsDataURL(blob);
-    console.log(reader);
 
-    reader.onload = function (event) {
-      
-      const imgElement = document.createElement("img");
-      imgElement.src = event.target.result;
-
-      imgElement.onload = function (e) {
-
-        // Resize Image to Dimensions of Grid
-        const canvas = document.createElement("canvas");
-
-        canvas.width = grid[0].length;
-        canvas.height = grid.length;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
-
-
-        // Retrieve RGBA pixel values of resized image
-        let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-        let pixels = imgData.data;
-
-        // Convert RGBA to Greyscale Weight (range 2-30)
-        const greyscaleWeights = [];
-        for (var i = 0; i < pixels.length; i += 4) {
-          let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
-          greyscaleWeights.push(Math.round(convertRange(lightness,0,255,2,30)));
-        }
-
-        // Create Weighted Walls
-        const walls = [];
-        let idx = 0;
-        for (let row = 0; row < grid.length; row++) {
-            for (let col = 0; col < grid[0].length; col++) {
-                walls.push([row, col, greyscaleWeights[idx++]]);
-            }
-        }
-
-        // Update Grid with Weighted Walls
-        resetGrid();
-        for (let i = 0; i < walls.length; i++) {
-
-          const node = grid[walls[i][0]][walls[i][1]];
-          let weight = null;
-          if (walls[i].length === 3) weight = walls[i][2];
-
-          const delay = 1000 * i / walls.length;
-          setTimeout(() => {
-            if (
-              node.ref.className !== 'node-start' &&
-              node.ref.className !== 'node-end'
-            ) {
-              if (weight) node.ref.className = `node-weight-${weight}`;
-              else node.ref.className = 'node-wall';
-              animateElement(node.ref, 100, [
-                {transform: `scale(1.3)`},
-                {transform: 'scale(1)'}
-              ]);
-            }
-          }, delay);
-
-        }
-
-      }
-    }
-
+    updateBoardFromReader(reader);
 
   }
 
   const generateImageTerrain = () => {
-
-    // Helper Function to Convert Range
-    const convertRange = (val, in_min, in_max, out_min, out_max) => {
-      return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-    }
    
     const file = document.querySelector("#terrainImageInput").files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    console.log(reader);
-
-    reader.onload = function (event) {
-      
-      const imgElement = document.createElement("img");
-      imgElement.src = event.target.result;
-
-      imgElement.onload = function (e) {
-
-        // Resize Image to Dimensions of Grid
-        const canvas = document.createElement("canvas");
-
-        canvas.width = grid[0].length;
-        canvas.height = grid.length;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
-
-
-        // Retrieve RGBA pixel values of resized image
-        let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-        let pixels = imgData.data;
-
-        // Convert RGBA to Greyscale Weight (range 2-30)
-        const greyscaleWeights = [];
-        for (var i = 0; i < pixels.length; i += 4) {
-          let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
-          greyscaleWeights.push(Math.round(convertRange(lightness,0,255,2,30)));
-        }
-
-        // Create Weighted Walls
-        const walls = [];
-        let idx = 0;
-        for (let row = 0; row < grid.length; row++) {
-            for (let col = 0; col < grid[0].length; col++) {
-                walls.push([row, col, greyscaleWeights[idx++]]);
-            }
-        }
-
-        // Update Grid with Weighted Walls
-        resetGrid();
-        for (let i = 0; i < walls.length; i++) {
-
-          const node = grid[walls[i][0]][walls[i][1]];
-          let weight = null;
-          if (walls[i].length === 3) weight = walls[i][2];
-
-          const delay = 1000 * i / walls.length;
-          setTimeout(() => {
-            if (
-              node.ref.className !== 'node-start' &&
-              node.ref.className !== 'node-end'
-            ) {
-              if (weight) node.ref.className = `node-weight-${weight}`;
-              else node.ref.className = 'node-wall';
-              animateElement(node.ref, 100, [
-                {transform: `scale(1.3)`},
-                {transform: 'scale(1)'}
-              ]);
-            }
-          }, delay);
-
-        }
-
-      }
-    }
+    
+    updateBoardFromReader(reader);
+  
   }   
   
   // MOUSE HANDLERS
