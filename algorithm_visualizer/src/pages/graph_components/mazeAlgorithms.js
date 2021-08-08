@@ -330,6 +330,54 @@ export function terrainMap(grid) {
 }
 
 
+export function fileReaderTerrain(grid, reader) {
+    return new Promise((resolve, reject) => {
+        if (!reader) reject("invalid reader")
+        // Update Grid with Reader Data (Reader holds image data)
+        reader.onload = function (event) {
+            
+            const imgElement = document.createElement("img");
+            imgElement.src = event.target.result;
+
+            imgElement.onload = function (e) {
+
+                // Resize Image to Dimensions of Grid
+                const canvas = document.createElement("canvas");
+
+                canvas.width = grid[0].length;
+                canvas.height = grid.length;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
+
+
+                // Retrieve RGBA pixel values of resized image
+                let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                let pixels = imgData.data;
+
+                // Convert RGBA to Greyscale Weight (range 2-30)
+                const greyscaleWeights = [];
+                for (var i = 0; i < pixels.length; i += 4) {
+                    let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
+                    greyscaleWeights.push(Math.round(map(lightness,0,255,2,30)));
+                }
+
+                // Create Weighted Walls
+                const walls = [];
+                let idx = 0;
+                for (let row = 0; row < grid.length; row++) {
+                    for (let col = 0; col < grid[0].length; col++) {
+                        walls.push([row, col, greyscaleWeights[idx++]]);
+                    }
+                }
+
+                resolve(walls);
+            }
+        }
+    });
+}
+
+
 /*
 walls.push(grid[f[0] + (f[1] - col)][f[1] + (f[0] - row)])
 walls.push(grid[f[0] - (f[1] - col)][f[1] - (f[0] - row)])
