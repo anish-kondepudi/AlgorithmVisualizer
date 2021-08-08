@@ -59,86 +59,63 @@ export const GraphPage = () => {
     };
   }, []);
 
+
+  // IMAGE HANDLING
+
   const generateImageTerrain = () => {
-    // const fileInput = document.querySelector("#terrainImageInput").files[0];
-    // console.log(fileInput);
 
-    // const reader = new FileReader();
-
-    // reader.readAsDataURL(fileInput);
-
-    // // reader.addEventListener("load", () => {
-    // //   console.log(reader.result);
-    // // })
-
-    // var canvas = document.createElement('canvas');
-    // var ctx = canvas.getContext('2d');
-    // canvas.width=300
-    // canvas.height=234
-    // ctx.drawImage(reader.result, 0, 0, 300, 234);
-    // document.body.appendChild(canvas);
-
-    
+    // Helper Function to Convert Range
+    const convertRange = (val, in_min, in_max, out_min, out_max) => {
+      return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+   
     const file = document.querySelector("#terrainImageInput").files[0];
-
     if (!file) return;
 
     const reader = new FileReader();
-
     reader.readAsDataURL(file);
 
     reader.onload = function (event) {
+      
       const imgElement = document.createElement("img");
       imgElement.src = event.target.result;
-      document.querySelector("#input").src = event.target.result;
 
       imgElement.onload = function (e) {
-        const canvas = document.createElement("canvas");
-        const MAX_WIDTH = grid[0].length; // GET CORRECT WIDTH
-        const MAX_HEIGHT = grid.length; // GET CORRECT HEIGHT
 
-        console.log(grid[0].length,grid.length)
+        // Resize Image to Dimensions of Grid
+        const canvas = document.createElement("canvas");
+        
+        const MAX_WIDTH = grid[0].length;
+        const MAX_HEIGHT = grid.length;
 
         canvas.width = MAX_WIDTH;
         canvas.height = MAX_HEIGHT;
 
         const ctx = canvas.getContext("2d");
-
         ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
 
-        const srcEncoded = ctx.canvas.toDataURL(e.target, "image/jpeg");
 
-        // you can send srcEncoded to the server
-        document.querySelector("#output").src = srcEncoded;
-
+        // Retrieve RGBA pixel values of resized image
         let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
         let pixels = imgData.data;
 
-        // Convert RGBA to Greyscale (range 0-255)
-        let greyscale = [];
+        // Convert RGBA to Greyscale Weight (range 2-30)
+        const greyscaleWeights = [];
         for (var i = 0; i < pixels.length; i += 4) {
           let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
-          greyscale.push(lightness)
+          greyscaleWeights.push(Math.round(convertRange(lightness,0,255,2,30)));
         }
 
-        const convertGrayscaleToWeight = (val, in_min, in_max, out_min, out_max) => {
-          return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-        }
-
-        for (let i=0; i<greyscale.length; i++) {
-          greyscale[i] = Math.round(convertGrayscaleToWeight(greyscale[i],0,255,2,30))
-        }
-
-        // console.log(greyscale)
-
+        // Create Weighted Walls
         const walls = [];
         let idx = 0;
         for (let row = 0; row < grid.length; row++) {
             for (let col = 0; col < grid[0].length; col++) {
-                walls.push([row, col, greyscale[idx++]]);
+                walls.push([row, col, greyscaleWeights[idx++]]);
             }
         }
-        console.log(walls)
+
+        // Update Grid with Weighted Walls
         resetGrid();
         for (let i = 0; i < walls.length; i++) {
 
@@ -160,13 +137,12 @@ export const GraphPage = () => {
               ]);
             }
           }, delay);
+
         }
 
       }}
   }   
-
-
-
+  
   // MOUSE HANDLERS
 
   const handleMouseDown = e => {
