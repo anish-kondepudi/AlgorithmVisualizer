@@ -73,6 +73,7 @@ export const GraphPage = () => {
       return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
+    // Update Grid with Reader Data
     reader.onload = function (event) {
       
       const imgElement = document.createElement("img");
@@ -140,7 +141,7 @@ export const GraphPage = () => {
 
   }
 
-  const displayImage = () => {
+  const generateWebcamTerrain = () => {
     
     const dataURLtoBlob = (dataurl) => {
       var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
@@ -556,7 +557,7 @@ export const GraphPage = () => {
 
       <br></br>
       <Webcam ref={webCamRef}/>
-      <button className="btn btn-outline-light" onClick={()=>{displayImage()}}>Capture Image</button>
+      <button className="btn btn-outline-light" onClick={()=>{generateWebcamTerrain()}}>Capture Image</button>
 
     </div>
   );
