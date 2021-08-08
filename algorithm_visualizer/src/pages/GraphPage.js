@@ -4,22 +4,24 @@ import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSear
 import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze, terrainMap } from "./graph_components/mazeAlgorithms";
 
 import { useState, useEffect, useRef } from "react"
+
 import {Node} from './graph_components/Node';
+import Webcam from "react-webcam";
 
 const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
 const GRID_HEIGHT = 70;
 
-var nodeSize = 1.5;
-var prevTimeout = 0;
-var mouseButton = -1;
-var startRow, startCol, endRow, endCol = null;
-var selectedNode = null;
-var startCoveredOverNode = null;
-var endCoveredOverNode = null;
-var currentAlgorithm = null;
-var placeableNode = 'node-wall';
-var animationSpeed = 50;
+let nodeSize = 1.5;
+let prevTimeout = 0;
+let mouseButton = -1;
+let startRow, startCol, endRow, endCol = null;
+let selectedNode = null;
+let startCoveredOverNode = null;
+let endCoveredOverNode = null;
+let currentAlgorithm = null;
+let placeableNode = 'node-wall';
+let animationSpeed = 50;
 
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / nodeSize);
   
@@ -31,6 +33,10 @@ export const GraphPage = () => {
 
   // slider states
   const exampleWeightRef = useRef();
+
+  // webcam states
+  const webCamRef = useRef();
+  const [webcamEnabled, setWebcamState] = useState(false);
 
   // INITIALIZATION
 
@@ -55,26 +61,20 @@ export const GraphPage = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
-      document.querySelector("#terrainImageInput").addEventListener("change", generateImageTerrain);
     };
   }, []);
 
 
-  // IMAGE HANDLING
+  // IMAGE & VIDEO HANDLING
 
-  const generateImageTerrain = () => {
+  const updateBoardFromReader = (reader) => {
 
     // Helper Function to Convert Range
     const convertRange = (val, in_min, in_max, out_min, out_max) => {
       return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
-   
-    const file = document.querySelector("#terrainImageInput").files[0];
-    if (!file) return;
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
+    // Update Grid with Reader Data (Reader holds image data)
     reader.onload = function (event) {
       
       const imgElement = document.createElement("img");
@@ -84,12 +84,9 @@ export const GraphPage = () => {
 
         // Resize Image to Dimensions of Grid
         const canvas = document.createElement("canvas");
-        
-        const MAX_WIDTH = grid[0].length;
-        const MAX_HEIGHT = grid.length;
 
-        canvas.width = MAX_WIDTH;
-        canvas.height = MAX_HEIGHT;
+        canvas.width = grid[0].length;
+        canvas.height = grid.length;
 
         const ctx = canvas.getContext("2d");
         ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
@@ -140,9 +137,44 @@ export const GraphPage = () => {
 
         }
 
-      }}
-  }   
+      }
+    }
 
+  }
+
+  const generateWebcamTerrain = () => {
+    
+    // https://github.com/mozmorris/react-webcam/issues/65#issuecomment-385126201
+    const dataURLtoBlob = (dataurl) => {
+      var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+      while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {type:mime});
+    }
+
+    const screenshot = webCamRef.current.getScreenshot();
+    const blob =  dataURLtoBlob(screenshot);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+
+    updateBoardFromReader(reader);
+
+  }
+
+  const generateImageTerrain = () => {
+   
+    const file = document.querySelector("#terrainImageInput").files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    
+    updateBoardFromReader(reader);
+  
+  }   
   
   // MOUSE HANDLERS
 
@@ -493,17 +525,19 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
+        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}>Webcam Terrain</button>
       </div>
 
-
-      <label className="form-label d-block"> Set grid size : </label>
+      {/* Grid Size Slider */}
+      <label className="form-label d-block"> Set Grid Size : </label>
       <input type="range" step=".1" min=".7" max="3" defaultValue={nodeSize} className="form-range w-50 d-block"
         onChange={(e) => {
           nodeSize = e.target.value;
           resizeGrid();
         }} />
 
-      <label className="form-label d-block"> Set node : </label>
+      {/* Wall Weight Slider */}
+      <label className="form-label d-block"> Set Wall Weight : </label>
       <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range w-50 d-block"
         onChange={(e) => {
           const value = parseInt(e.target.value);
@@ -513,6 +547,7 @@ export const GraphPage = () => {
         }} />
       <div ref={exampleWeightRef} className="node-wall" style={{width: '2rem', height: '2rem'}}></div>
 
+      {/* Animation Speed Slider */}
       <label className="form-label d-block">Animation Speed : </label>
       <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range w-50 d-block"
         onChange={(e) => {
@@ -520,17 +555,32 @@ export const GraphPage = () => {
           animationSpeed = parseInt(e.target.value);
         }} />
 
-        
-      <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/>
-      <div>
-        <img id="input" />
-      </div>
-      <div>
-        <img id="output" />
+      {/* Image Terrain Upload*/}
+      <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/><br/>
+
+      {/* Webcam Popup Window */}
+      <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modal-label">Webcam Terrain Generator</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
+            </div>
+            <div className="modal-body">
+              {webcamEnabled ? (
+                <Webcam id="webcam" ref={webCamRef} screenshotFormat="image/jpeg" audio={false}/>
+              ) : (
+                <h5> Webcam Disabled </h5>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-info" data-bs-dismiss="modal" onClick={()=>{generateWebcamTerrain();setWebcamState(false);}}>Capture Image</button>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
   );
-
   
 }
