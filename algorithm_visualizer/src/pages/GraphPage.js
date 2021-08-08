@@ -48,7 +48,6 @@ export const GraphPage = () => {
     })
   
     resizeGrid();
-    // document.getElementById("modal-container").style.display = "none"; (Use ref.. also, why does this even need to be here.. css should be sufficient)
     window.addEventListener('resize', resizeGrid);
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);
