@@ -84,12 +84,9 @@ export const GraphPage = () => {
 
         // Resize Image to Dimensions of Grid
         const canvas = document.createElement("canvas");
-        
-        const MAX_WIDTH = grid[0].length;
-        const MAX_HEIGHT = grid.length;
 
-        canvas.width = MAX_WIDTH;
-        canvas.height = MAX_HEIGHT;
+        canvas.width = grid[0].length;
+        canvas.height = grid.length;
 
         const ctx = canvas.getContext("2d");
         ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
@@ -494,15 +491,16 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
       </div>
 
-
-      <label className="form-label d-block"> Set grid size : </label>
+      {/* Grid Size Slider */}
+      <label className="form-label d-block"> Set Grid Size : </label>
       <input type="range" step=".1" min=".7" max="3" defaultValue={nodeSize} className="form-range w-50 d-block"
         onChange={(e) => {
           nodeSize = e.target.value;
           resizeGrid();
         }} />
 
-      <label className="form-label d-block"> Set node : </label>
+      {/* Wall Weight Slider */}
+      <label className="form-label d-block"> Set Wall Weight : </label>
       <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range w-50 d-block"
         onChange={(e) => {
           const value = parseInt(e.target.value);
@@ -512,6 +510,7 @@ export const GraphPage = () => {
         }} />
       <div ref={exampleWeightRef} className="node-wall" style={{width: '2rem', height: '2rem'}}></div>
 
+      {/* Animation Speed Slider */}
       <label className="form-label d-block">Animation Speed : </label>
       <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range w-50 d-block"
         onChange={(e) => {
@@ -519,13 +518,8 @@ export const GraphPage = () => {
           animationSpeed = parseInt(e.target.value);
         }} />
 
+      {/* Image Upload */}
       <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/>
-      <div>
-        <img id="input" />
-      </div>
-      <div>
-        <img id="output" />
-      </div>
 
     </div>
   );
