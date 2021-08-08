@@ -509,6 +509,10 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
         <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}>Webcam Terrain</button>
+        <label class="btn btn-outline-light">
+          <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/>
+          Image Terrain
+        </label>
       </div>
 
       {/* Grid Size Slider */}
@@ -537,9 +541,6 @@ export const GraphPage = () => {
           clearVisualization(true);
           animationSpeed = parseInt(e.target.value);
         }} />
-
-      {/* Image Terrain Upload*/}
-      <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/><br/>
         
       {/* Webcam Popup Window */}
       <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
