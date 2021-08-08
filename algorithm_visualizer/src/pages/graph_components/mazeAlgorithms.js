@@ -330,6 +330,28 @@ export function terrainMap(grid) {
 }
 
 
+export function imageTerrain(grid, pixels) {
+
+    // Convert RGBA to Greyscale Weight (range 2-30)
+    const greyscaleWeights = [];
+    for (var i = 0; i < pixels.length; i += 4) {
+      let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
+      greyscaleWeights.push(Math.round(map(lightness,0,255,2,30)));
+    }
+
+    // Create Weighted Walls
+    const walls = [];
+    let idx = 0;
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[0].length; col++) {
+            walls.push([row, col, greyscaleWeights[idx++]]);
+        }
+    }
+
+    return walls;
+}
+
+
 /*
 walls.push(grid[f[0] + (f[1] - col)][f[1] + (f[0] - row)])
 walls.push(grid[f[0] - (f[1] - col)][f[1] - (f[0] - row)])
