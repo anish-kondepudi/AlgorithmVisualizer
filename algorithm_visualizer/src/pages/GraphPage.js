@@ -75,6 +75,7 @@ export const GraphPage = () => {
     }
 
     const screenshot = webCamRef.current.getScreenshot();
+    if (!screenshot) return null;
     const blob =  dataURLtoBlob(screenshot);
 
     const reader = new FileReader();
@@ -244,7 +245,7 @@ export const GraphPage = () => {
           setTimeout(() => {
             const overlay = nodesInShortestPathOrder[i].ref.childNodes[0];
             overlay.className = 'node-shortest-path';
-            animateElement(overlay, 200);
+            if (animate) animateElement(overlay, 200);
           }, pathDelay * i);
         }
       }, delay * visitedNodesInOrder.length)
@@ -479,14 +480,14 @@ export const GraphPage = () => {
         
       {/* Webcam Popup Window */}
       <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content bg-dark">
             <div className="modal-header">
-              <h5 className="modal-title" id="modal-label">Webcam Terrain Generator</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
+              <h5 className="modal-title text-white" id="modal-label">Webcam Terrain Generator</h5>
+              <button type="button" className="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
             </div>
             <div className="modal-body">
-              {webcamEnabled && <Webcam id="webcam" ref={webCamRef} screenshotFormat="image/jpeg" audio={false}/>}
+              {webcamEnabled && <Webcam className="w-100" ref={webCamRef} screenshotFormat="image/jpeg" audio={false}/>}
             </div>
             <div className="modal-footer">
               <button className="btn btn-info" data-bs-dismiss="modal" onClick={(e) => {fileReaderTerrain(grid, readWebcam()).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)}); setWebcamState(false)}}>Capture Image</button>
