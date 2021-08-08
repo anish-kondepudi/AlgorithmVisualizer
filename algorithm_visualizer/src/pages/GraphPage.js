@@ -525,7 +525,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
-        <button className="btn btn-outline-light" onClick={()=>{document.getElementById("modal-container").style.display = "flex";}}>Webcam Terrain</button>
+        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modal">Webcam Terrain</button>
       </div>
 
       {/* Grid Size Slider */}
@@ -559,11 +559,20 @@ export const GraphPage = () => {
       <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/><br/>
 
       {/* Webcam Popup Window */}
-      <div id="modal-container">
-        <div class="modal-content">
-          <span className="close-modal" onClick={()=>{document.getElementById("modal-container").style.display = "none";}}>&times;</span>
-          <Webcam ref={webCamRef}/><br/>
-          <button className="btn btn-info" onClick={()=>{generateWebcamTerrain();document.getElementById("modal-container").style.display = "none";}}>Capture Image</button>
+      <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modal-label">Webcam Terrain Generator</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <Webcam id="webcam" ref={webCamRef}/>
+            </div>
+            <div class="modal-footer">
+              <button className="btn btn-info" data-bs-dismiss="modal" onClick={()=>{generateWebcamTerrain()}}>Capture Image</button>
+            </div>
+          </div>
         </div>
       </div>
 
