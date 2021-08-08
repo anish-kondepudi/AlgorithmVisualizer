@@ -12,16 +12,16 @@ const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
 const GRID_HEIGHT = 70;
 
-var nodeSize = 1.5;
-var prevTimeout = 0;
-var mouseButton = -1;
-var startRow, startCol, endRow, endCol = null;
-var selectedNode = null;
-var startCoveredOverNode = null;
-var endCoveredOverNode = null;
-var currentAlgorithm = null;
-var placeableNode = 'node-wall';
-var animationSpeed = 50;
+let nodeSize = 1.5;
+let prevTimeout = 0;
+let mouseButton = -1;
+let startRow, startCol, endRow, endCol = null;
+let selectedNode = null;
+let startCoveredOverNode = null;
+let endCoveredOverNode = null;
+let currentAlgorithm = null;
+let placeableNode = 'node-wall';
+let animationSpeed = 50;
 
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / nodeSize);
   
@@ -36,6 +36,7 @@ export const GraphPage = () => {
 
   // webcam states
   const webCamRef = useRef();
+  const [webcamEnabled, setWebcamState] = useState(false);
 
   // INITIALIZATION
 
@@ -525,7 +526,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
-        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modal">Webcam Terrain</button>
+        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}>Webcam Terrain</button>
       </div>
 
       {/* Grid Size Slider */}
@@ -559,18 +560,22 @@ export const GraphPage = () => {
       <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/><br/>
 
       {/* Webcam Popup Window */}
-      <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modal-label">Webcam Terrain Generator</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modal-label">Webcam Terrain Generator</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
             </div>
-            <div class="modal-body">
-              <Webcam id="webcam" ref={webCamRef}/>
+            <div className="modal-body">
+              {webcamEnabled ? (
+                <Webcam id="webcam" ref={webCamRef} screenshotFormat="image/jpeg" audio={false}/>
+              ) : (
+                <h5> Webcam Disabled </h5>
+              )}
             </div>
-            <div class="modal-footer">
-              <button className="btn btn-info" data-bs-dismiss="modal" onClick={()=>{generateWebcamTerrain()}}>Capture Image</button>
+            <div className="modal-footer">
+              <button className="btn btn-info" data-bs-dismiss="modal" onClick={()=>{generateWebcamTerrain();setWebcamState(false);}}>Capture Image</button>
             </div>
           </div>
         </div>
