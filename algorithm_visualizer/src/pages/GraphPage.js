@@ -4,7 +4,9 @@ import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSear
 import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze, terrainMap } from "./graph_components/mazeAlgorithms";
 
 import { useState, useEffect, useRef } from "react"
+
 import {Node} from './graph_components/Node';
+import Webcam from "react-webcam";
 
 const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
@@ -27,7 +29,9 @@ export const GraphPage = () => {
   // grid states
   const grid = useRef([]).current;
   const gridRef = useRef();
+  const webCamRef = useRef();
   const [dimensions, setDimensions] = useState(null);
+
 
   // slider states
   const exampleWeightRef = useRef();
@@ -55,25 +59,35 @@ export const GraphPage = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
-      document.querySelector("#terrainImageInput").addEventListener("change", generateImageTerrain);
+      // document.querySelector("#terrainImageInput").addEventListener("change", generateImageTerrain);
     };
   }, []);
 
 
-  // IMAGE HANDLING
+  // IMAGE & VIDEO HANDLING
 
-  const generateImageTerrain = () => {
-
+  const displayImage = () => {
     // Helper Function to Convert Range
     const convertRange = (val, in_min, in_max, out_min, out_max) => {
       return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
-   
-    const file = document.querySelector("#terrainImageInput").files[0];
-    if (!file) return;
+    
+    const dataURLtoBlob = (dataurl) => {
+      var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+      while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {type:mime});
+    }
+
+    console.log("hi")
+    const screenshot = webCamRef.current.getScreenshot();
+    const blob =  dataURLtoBlob(screenshot);
 
     const reader = new FileReader();
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(blob);
+    console.log(reader);
 
     reader.onload = function (event) {
       
@@ -137,7 +151,90 @@ export const GraphPage = () => {
 
         }
 
-      }}
+      }
+    }
+
+
+  }
+
+  const generateImageTerrain = () => {
+
+    // Helper Function to Convert Range
+    const convertRange = (val, in_min, in_max, out_min, out_max) => {
+      return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+   
+    const file = document.querySelector("#terrainImageInput").files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    console.log(reader);
+
+    reader.onload = function (event) {
+      
+      const imgElement = document.createElement("img");
+      imgElement.src = event.target.result;
+
+      imgElement.onload = function (e) {
+
+        // Resize Image to Dimensions of Grid
+        const canvas = document.createElement("canvas");
+
+        canvas.width = grid[0].length;
+        canvas.height = grid.length;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
+
+
+        // Retrieve RGBA pixel values of resized image
+        let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+        let pixels = imgData.data;
+
+        // Convert RGBA to Greyscale Weight (range 2-30)
+        const greyscaleWeights = [];
+        for (var i = 0; i < pixels.length; i += 4) {
+          let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
+          greyscaleWeights.push(Math.round(convertRange(lightness,0,255,2,30)));
+        }
+
+        // Create Weighted Walls
+        const walls = [];
+        let idx = 0;
+        for (let row = 0; row < grid.length; row++) {
+            for (let col = 0; col < grid[0].length; col++) {
+                walls.push([row, col, greyscaleWeights[idx++]]);
+            }
+        }
+
+        // Update Grid with Weighted Walls
+        resetGrid();
+        for (let i = 0; i < walls.length; i++) {
+
+          const node = grid[walls[i][0]][walls[i][1]];
+          let weight = null;
+          if (walls[i].length === 3) weight = walls[i][2];
+
+          const delay = 1000 * i / walls.length;
+          setTimeout(() => {
+            if (
+              node.ref.className !== 'node-start' &&
+              node.ref.className !== 'node-end'
+            ) {
+              if (weight) node.ref.className = `node-weight-${weight}`;
+              else node.ref.className = 'node-wall';
+              animateElement(node.ref, 100, [
+                {transform: `scale(1.3)`},
+                {transform: 'scale(1)'}
+              ]);
+            }
+          }, delay);
+
+        }
+
+      }
+    }
   }   
   
   // MOUSE HANDLERS
@@ -521,8 +618,11 @@ export const GraphPage = () => {
       {/* Image Upload */}
       <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/>
 
+      <br></br>
+      <Webcam ref={webCamRef}/>
+      <button className="btn btn-outline-light" onClick={()=>{displayImage()}}>Capture Image</button>
+
     </div>
   );
-
   
 }
