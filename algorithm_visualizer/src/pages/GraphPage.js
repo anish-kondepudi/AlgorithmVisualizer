@@ -29,12 +29,13 @@ export const GraphPage = () => {
   // grid states
   const grid = useRef([]).current;
   const gridRef = useRef();
-  const webCamRef = useRef();
   const [dimensions, setDimensions] = useState(null);
-
 
   // slider states
   const exampleWeightRef = useRef();
+
+  // webcam states
+  const webCamRef = useRef();
 
   // INITIALIZATION
 
@@ -59,7 +60,6 @@ export const GraphPage = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
-      // document.querySelector("#terrainImageInput").addEventListener("change", generateImageTerrain);
     };
   }, []);
 
@@ -552,11 +552,11 @@ export const GraphPage = () => {
           animationSpeed = parseInt(e.target.value);
         }} />
 
-      {/* Image Upload */}
-      <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/>
+      {/* Image Terrain Upload*/}
+      <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/><br/>
 
-      <br></br>
-      <Webcam ref={webCamRef}/>
+      {/* Webcame Terrain*/}
+      <Webcam ref={webCamRef}/><br/>
       <button className="btn btn-outline-light" onClick={()=>{generateWebcamTerrain()}}>Capture Image</button>
 
     </div>
