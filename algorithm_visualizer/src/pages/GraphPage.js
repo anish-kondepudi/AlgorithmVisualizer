@@ -142,7 +142,6 @@ export const GraphPage = () => {
 
       }}
   }   
-
   
   // MOUSE HANDLERS
 
@@ -520,7 +519,6 @@ export const GraphPage = () => {
           animationSpeed = parseInt(e.target.value);
         }} />
 
-        
       <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/>
       <div>
         <img id="input" />
