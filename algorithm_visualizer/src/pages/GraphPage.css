@@ -11,3 +11,7 @@
 .grid-row {
   height: 100%;
 }
+
+input {
+    display: none;
+}
