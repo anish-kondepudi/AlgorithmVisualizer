@@ -4,7 +4,9 @@ import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSear
 import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze, terrainMap } from "./graph_components/mazeAlgorithms";
 
 import { useState, useEffect, useRef } from "react"
+
 import {Node} from './graph_components/Node';
+import Webcam from "react-webcam";
 
 const VISIT_DELAY = 10;
 const PATH_DELAY = 40;
@@ -32,6 +34,9 @@ export const GraphPage = () => {
   // slider states
   const exampleWeightRef = useRef();
 
+  // webcam states
+  const webCamRef = useRef();
+
   // INITIALIZATION
 
   useEffect(() => {
@@ -55,26 +60,20 @@ export const GraphPage = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
-      document.querySelector("#terrainImageInput").addEventListener("change", generateImageTerrain);
     };
   }, []);
 
 
-  // IMAGE HANDLING
+  // IMAGE & VIDEO HANDLING
 
-  const generateImageTerrain = () => {
+  const updateBoardFromReader = (reader) => {
 
     // Helper Function to Convert Range
     const convertRange = (val, in_min, in_max, out_min, out_max) => {
       return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
-   
-    const file = document.querySelector("#terrainImageInput").files[0];
-    if (!file) return;
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
+    // Update Grid with Reader Data
     reader.onload = function (event) {
       
       const imgElement = document.createElement("img");
@@ -137,7 +136,42 @@ export const GraphPage = () => {
 
         }
 
-      }}
+      }
+    }
+
+  }
+
+  const generateWebcamTerrain = () => {
+    
+    const dataURLtoBlob = (dataurl) => {
+      var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+      while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {type:mime});
+    }
+
+    const screenshot = webCamRef.current.getScreenshot();
+    const blob =  dataURLtoBlob(screenshot);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+
+    updateBoardFromReader(reader);
+
+  }
+
+  const generateImageTerrain = () => {
+   
+    const file = document.querySelector("#terrainImageInput").files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    
+    updateBoardFromReader(reader);
+  
   }   
   
   // MOUSE HANDLERS
@@ -518,11 +552,14 @@ export const GraphPage = () => {
           animationSpeed = parseInt(e.target.value);
         }} />
 
-      {/* Image Upload */}
-      <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/>
+      {/* Image Terrain Upload*/}
+      <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/><br/>
+
+      {/* Webcame Terrain*/}
+      <Webcam ref={webCamRef}/><br/>
+      <button className="btn btn-outline-light" onClick={()=>{generateWebcamTerrain()}}>Capture Image</button>
 
     </div>
   );
-
   
 }
