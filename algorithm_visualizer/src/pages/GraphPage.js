@@ -47,6 +47,7 @@ export const GraphPage = () => {
     })
   
     resizeGrid();
+    // document.getElementById("modal-container").style.display = "none"; (Use ref.. also, why does this even need to be here.. css should be sufficient)
     window.addEventListener('resize', resizeGrid);
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);
@@ -73,7 +74,7 @@ export const GraphPage = () => {
       return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    // Update Grid with Reader Data
+    // Update Grid with Reader Data (Reader holds image data)
     reader.onload = function (event) {
       
       const imgElement = document.createElement("img");
@@ -143,6 +144,7 @@ export const GraphPage = () => {
 
   const generateWebcamTerrain = () => {
     
+    // https://github.com/mozmorris/react-webcam/issues/65#issuecomment-385126201
     const dataURLtoBlob = (dataurl) => {
       var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
           bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -523,6 +525,7 @@ export const GraphPage = () => {
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
         <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
+        <button className="btn btn-outline-light" onClick={()=>{document.getElementById("modal-container").style.display = "flex";}}>Webcam Terrain</button>
       </div>
 
       {/* Grid Size Slider */}
@@ -555,9 +558,14 @@ export const GraphPage = () => {
       {/* Image Terrain Upload*/}
       <input type="file" id="terrainImageInput" accept=".jpg, .jpeg, .png"/><br/>
 
-      {/* Webcame Terrain*/}
-      <Webcam ref={webCamRef}/><br/>
-      <button className="btn btn-outline-light" onClick={()=>{generateWebcamTerrain()}}>Capture Image</button>
+      {/* Webcam Popup Window */}
+      <div id="modal-container">
+        <div class="modal-content">
+          <span className="close-modal" onClick={()=>{document.getElementById("modal-container").style.display = "none";}}>&times;</span>
+          <Webcam ref={webCamRef}/><br/>
+          <button className="btn btn-info" onClick={()=>{generateWebcamTerrain();document.getElementById("modal-container").style.display = "none";}}>Capture Image</button>
+        </div>
+      </div>
 
     </div>
   );
