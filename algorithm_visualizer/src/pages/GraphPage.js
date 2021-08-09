@@ -8,11 +8,7 @@ import { useState, useEffect, useRef } from "react"
 import {Node} from './graph_components/Node';
 import Webcam from "react-webcam";
 
-const VISIT_DELAY = 10;
-const PATH_DELAY = 40;
-const GRID_HEIGHT = 70;
-
-let nodeSize = 1.5;
+let nodeSize = 1.6;
 let prevTimeout = 0;
 let mouseButton = -1;
 let startRow, startCol, endRow, endCol = null;
@@ -389,7 +385,7 @@ export const GraphPage = () => {
     grid.length = 0;
 
     return (
-      <div className="grid d-flex flex-column mb-3" id="grid" ref={gridRef} style={{width: '100%', height: `${GRID_HEIGHT}vh`}}>
+      <div className="grid d-flex flex-column mb-3" ref={gridRef}>
         { dimensions &&
           [...Array(dimensions.rows)].map((e1,r) => {
             const currentRow = [];
@@ -420,127 +416,94 @@ export const GraphPage = () => {
 
   return (
     <div className="graphPage">
-
-
-<div class="flex-shrink-0 p-3 bg-white" style={{width:'280px'}}>
-    <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-      <span class="fs-5 fw-semibold">Collapsible</span>
-    </a>
-    <ul class="list-unstyled ps-0">
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-          Home
-        </button>
-        <div class="collapse show" id="home-collapse" style={{}}>
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">Overview</a></li>
-            <li><a href="#" class="link-dark rounded">Updates</a></li>
-            <li><a href="#" class="link-dark rounded">Reports</a></li>
-          </ul>
+      {/* SIDEBAR */}
+      <div class="flex-shrink-0 p-3 bg-black scrollarea" style={{width:'18rem'}}>
+        <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom text-white">
+          <span class="fs-5 fw-semibold">Graph Algorithms</span>
+        </a>
+        <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
+          <button className="btn btn-sm btn-warning" onClick={resetGrid}>Reset Board</button>
+          <button className="btn btn-sm btn-info" onClick={() => {clearVisualization(true);}}>Clear Visualization</button>
         </div>
-      </li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="true">
-          Dashboard
-        </button>
-        <div class="collapse show" id="dashboard-collapse" style={{}}>
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">Overview</a></li>
-            <li><a href="#" class="link-dark rounded">Weekly</a></li>
-            <li><a href="#" class="link-dark rounded">Monthly</a></li>
-            <li><a href="#" class="link-dark rounded">Annually</a></li>
-          </ul>
-        </div>
-      </li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="true">
-          Orders
-        </button>
-        <div class="collapse show" id="orders-collapse" style={{}}>
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">New</a></li>
-            <li><a href="#" class="link-dark rounded">Processed</a></li>
-            <li><a href="#" class="link-dark rounded">Shipped</a></li>
-            <li><a href="#" class="link-dark rounded">Returned</a></li>
-          </ul>
-        </div>
-      </li>
-      <li class="border-top my-3"></li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
-          Account
-        </button>
-        <div class="collapse show" id="account-collapse" style={{}}>
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">New...</a></li>
-            <li><a href="#" class="link-dark rounded">Profile</a></li>
-            <li><a href="#" class="link-dark rounded">Settings</a></li>
-            <li><a href="#" class="link-dark rounded">Sign out</a></li>
-          </ul>
-        </div>
-      </li>
-    </ul>
-  </div>
+        <ul class="list-unstyled ps-0">
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+              Algorithms
+            </button>
+            <div class="collapse" id="home-collapse" style={{}}>
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</li>
+                <li onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</li>
+                <li onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</li>
+                <li onClick={()=> {runAlgorithm(aStarManhattan)}}>A* (Manhattan)</li>
+                <li onClick={()=> {runAlgorithm(aStarDiagonal)}}>A* (Diagonal)</li>
+                <li onClick={()=> {runAlgorithm(aStarEuclidean)}}>A* (Euclidean)</li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+              Mazes
+            </button>
+            <div class="collapse" id="orders-collapse" style={{}}>
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</li>
+                <li onClick={() => {generateMaze(prims)}}>Prims Maze</li>
+                <li onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</li>
+                <li onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</li>
+                <li onClick={() => {generateMaze(randomMaze)}}>Random Maze</li>
+                <li onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</li>
+                <li onClick={() => {generateMaze(terrainMap)}}>Terrain Map</li>
+                <label className="w-100"><li>
+                  <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/>
+                  Image Terrain
+                </li></label>
+                <li type="button" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}>Webcam Terrain</li>
+              </ul>
+            </div>
+          </li>
+          <li class="border-top mb-3"></li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+              Options
+            </button>
+            <div class="collapse" id="account-collapse" style={{}}>
+                {/* Grid Size Slider */}
+                <label className="form-label d-block mt-2"> Set Grid Size : </label>
+                <input type="range" step=".2" min=".6" max="3.2" defaultValue={nodeSize} className="form-range"
+                  onChange={(e) => {
+                    nodeSize = e.target.value;
+                    resizeGrid();
+                  }} />
 
+                {/* Wall Weight Slider */}
+                <div className="mb-2 gap-2 d-flex justify-content-start align-items-center flex-wrap">
+                  <label className="form-label m-0"> Set Wall Weight : </label>
+                  <div ref={exampleWeightRef} id="example-weight" className="node-wall"></div>
+                </div>
+                <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range"
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (value === 31) placeableNode = 'node-wall';
+                    else if (value >= 2 || value <= 30) placeableNode = `node-weight-${Math.floor(value)}`
+                    exampleWeightRef.current.className = placeableNode;
+                  }} />
 
-
-      {/* Title */}
-      <h1 className="my-4"> Graph Algorithms </h1>
+                {/* Animation Speed Slider */}
+                <label className="form-label d-block">Animation Speed : </label>
+                <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range"
+                  onChange={(e) => {
+                    clearVisualization(true);
+                    animationSpeed = parseInt(e.target.value);
+                  }} />
+              
+            </div>
+          </li>
+        </ul>
+      </div>
 
       {/* Graph Algorithm Grid */}
       {makeGridElement()}
-
-
-      {/* Graph Buttons */}
-      <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
-        <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
-        <button className="btn btn-info" onClick={() => {clearVisualization(true);}}>Clear Visualization</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarManhattan)}}>A* (Manhattan)</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarDiagonal)}}>A* (Diagonal)</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarEuclidean)}}>A* (Euclidean)</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(prims)}}>Prims Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
-        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}>Webcam Terrain</button>
-        <label class="btn btn-outline-light">
-          <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/>
-          Image Terrain
-        </label>
-      </div>
-
-      {/* Grid Size Slider */}
-      <label className="form-label d-block"> Set Grid Size : </label>
-      <input type="range" step=".1" min=".7" max="3" defaultValue={nodeSize} className="form-range w-50 d-block"
-        onChange={(e) => {
-          nodeSize = e.target.value;
-          resizeGrid();
-        }} />
-
-      {/* Wall Weight Slider */}
-      <label className="form-label d-block"> Set Wall Weight : </label>
-      <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range w-50 d-block"
-        onChange={(e) => {
-          const value = parseInt(e.target.value);
-          if (value === 31) placeableNode = 'node-wall';
-          else if (value >= 2 || value <= 30) placeableNode = `node-weight-${Math.floor(value)}`
-          exampleWeightRef.current.className = placeableNode;
-        }} />
-      <div ref={exampleWeightRef} className="node-wall" style={{width: '2rem', height: '2rem'}}></div>
-
-      {/* Animation Speed Slider */}
-      <label className="form-label d-block">Animation Speed : </label>
-      <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range w-50 d-block"
-        onChange={(e) => {
-          clearVisualization(true);
-          animationSpeed = parseInt(e.target.value);
-        }} />
         
       {/* Webcam Popup Window */}
       <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
@@ -559,7 +522,6 @@ export const GraphPage = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
   
