@@ -476,7 +476,7 @@ export const GraphPage = () => {
           </ul>
         </div>
 
-        <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
+        <button className="btn btn-toggle align-items-center rounded my-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
           Options
         </button>
         <div className="collapse settings-menu" id="settings-collapse">
