@@ -428,12 +428,21 @@ export const GraphPage = () => {
         <ul class="list-unstyled ps-0">
           <li class="mb-3">
             <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-              Algorithms
+              Unweighted Algorithms
             </button>
             <div class="collapse" id="home-collapse" style={{}}>
               <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                 <li onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</li>
                 <li onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+              Weighted Algorithms
+            </button>
+            <div class="collapse" id="dashboard-collapse" style={{}}>
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                 <li onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</li>
                 <li onClick={()=> {runAlgorithm(aStarManhattan)}}>A* (Manhattan)</li>
                 <li onClick={()=> {runAlgorithm(aStarDiagonal)}}>A* (Diagonal)</li>
@@ -452,6 +461,15 @@ export const GraphPage = () => {
                 <li onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</li>
                 <li onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</li>
                 <li onClick={() => {generateMaze(randomMaze)}}>Random Maze</li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#order-collapse" aria-expanded="false">
+              Weighted Mazes
+            </button>
+            <div class="collapse" id="order-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                 <li onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</li>
                 <li onClick={() => {generateMaze(terrainMap)}}>Terrain Map</li>
                 <label className="w-100"><li>
