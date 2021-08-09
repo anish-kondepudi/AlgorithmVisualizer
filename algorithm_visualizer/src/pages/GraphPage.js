@@ -418,7 +418,7 @@ export const GraphPage = () => {
     <div className="graphPage">
       {/* SIDEBAR */}
       <div class="flex-shrink-0 p-3 bg-black scrollarea" style={{width:'18rem'}}>
-        <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom text-white">
+        <a class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom text-white">
           <span class="fs-5 fw-semibold">Graph Algorithms</span>
         </a>
         <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
