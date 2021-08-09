@@ -430,7 +430,7 @@ export const GraphPage = () => {
           <ul className="list-unstyled mb-0 ps-0 bg-dark rounded">
             <li>
               <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-                Unweighted Algorithms
+                Unweighted Pathfinding
               </button>
               <div className="collapse" id="home-collapse">
                 <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -441,7 +441,7 @@ export const GraphPage = () => {
             </li>
             <li>
               <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                Weighted Algorithms
+                Weighted Pathfinding
               </button>
               <div className="collapse" id="dashboard-collapse">
                 <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -516,17 +516,17 @@ export const GraphPage = () => {
         
       {/* Webcam Popup Window */}
       <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content bg-dark">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content camera-modal">
             <div className="modal-header">
               <h5 className="modal-title text-white" id="modal-label">Webcam Terrain Generator</h5>
-              <button type="button" className="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
+              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-0">
               {webcamEnabled && <Webcam className="w-100" ref={webCamRef} screenshotFormat="image/jpeg" audio={false}/>}
             </div>
             <div className="modal-footer">
-              <button className="btn btn-info" data-bs-dismiss="modal" onClick={(e) => {fileReaderTerrain(grid, readWebcam()).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)}); setWebcamState(false)}}>Capture Image</button>
+              <button className="btn btn-outline-light" data-bs-dismiss="modal" onClick={(e) => {fileReaderTerrain(grid, readWebcam()).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)}); setWebcamState(false)}}>Capture Image</button>
             </div>
           </div>
         </div>

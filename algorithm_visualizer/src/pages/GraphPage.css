@@ -107,3 +107,8 @@ li > input {
 .sidebar i {
   margin-right: .5rem;
 }
+
+.camera-modal {
+  background-color: black;
+  border: 1px solid white
+}
