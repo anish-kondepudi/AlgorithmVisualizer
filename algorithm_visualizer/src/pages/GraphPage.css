@@ -3,15 +3,107 @@
   text-align: center;
 }
 
-.grid {
+.graphPage .grid {
   border-left: 1px solid lightgrey;
   border-top: 1px solid lightgrey;
+  height: 100vh;
+  width: 100%;
 }
 
-.grid-row {
+.graphPage .grid-row {
   height: 100%;
 }
 
-input {
+.graphPage {
+  display: flex;
+  flex-wrap: nowrap;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.graphPage .sidebar {
+  padding: .75rem;
+  flex:0 0 16.5rem;
+}
+
+.graphPage .btn-toggle {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  padding: .3rem .5rem;
+  font-weight: 600;
+  font-size: .9rem;
+  color: white;
+  background-color: transparent; 
+}
+.graphPage .btn-toggle:hover,
+.graphPage .btn-toggle:focus {
+  color: white;
+}
+
+.graphPage .btn-toggle::before {
+  width: 1.25rem;
+  line-height: 0;
+  content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+  transition: transform .35s ease;
+  transform-origin: .5em 50%;
+}
+
+.graphPage .btn-toggle[aria-expanded="true"] {
+  color: white;
+}
+.graphPage .btn-toggle[aria-expanded="true"]::before {
+  transform: rotate(90deg);
+}
+
+.graphPage .btn-toggle-nav li {
+  display: block;
+  border-radius: .25rem;
+  padding: .1875rem .5rem;
+  margin-top: .125rem;
+  padding: .3rem .3rem .3rem 2rem;
+  font-size: .85rem;
+  color: white;
+  background-color: transparent;
+  width: 100%;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out;
+  cursor: pointer;
+}
+
+.graphPage .btn-toggle-nav li:hover,
+.graphPage .btn-toggle-nav li:focus {
+  background-color: #f8f9fa;
+  color: black;
+}
+
+.graphPage .scrollarea {
+  overflow-y: auto;
+}
+
+li > input {
     display: none;
+}
+
+.graphPage #example-weight {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.graphPage .form-range {
+  width: 100%;
+  display: block;
+}
+
+.settings-menu {
+  padding-top: .5rem;
+}
+
+.settings-menu label {
+  font-size: .85rem;
+}
+
+.sidebar i {
+  margin-right: .5rem;
 }
