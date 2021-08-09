@@ -6,8 +6,8 @@
 .graphPage .grid {
   border-left: 1px solid lightgrey;
   border-top: 1px solid lightgrey;
-  width:100%;
   height: 100vh;
+  width: 100%;
 }
 
 .graphPage .grid-row {
@@ -22,15 +22,20 @@
   overflow-y: hidden;
 }
 
+.graphPage .sidebar {
+  padding: .75rem;
+  flex:0 0 16.5rem;
+}
+
 .graphPage .btn-toggle {
   width: 100%;
   display: inline-flex;
   align-items: center;
-  padding: .25rem .5rem;
+  padding: .3rem .5rem;
   font-weight: 600;
+  font-size: .9rem;
   color: white;
-  background-color: transparent;
-  border: 0;
+  background-color: transparent; 
 }
 .graphPage .btn-toggle:hover,
 .graphPage .btn-toggle:focus {
@@ -38,9 +43,9 @@
 }
 
 .graphPage .btn-toggle::before {
-  width: 1.25em;
+  width: 1.25rem;
   line-height: 0;
-  content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+  content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
   transition: transform .35s ease;
   transform-origin: .5em 50%;
 }
@@ -57,8 +62,8 @@
   border-radius: .25rem;
   padding: .1875rem .5rem;
   margin-top: .125rem;
-  padding: .5rem .5rem .5rem 1.75rem;
-  font-size: 1rem;
+  padding: .3rem .3rem .3rem 2rem;
+  font-size: .85rem;
   color: white;
   background-color: transparent;
   width: 100%;
@@ -89,5 +94,16 @@ li > input {
 .graphPage .form-range {
   width: 100%;
   display: block;
-  margin-bottom: .5rem;
+}
+
+.settings-menu {
+  padding-top: .5rem;
+}
+
+.settings-menu label {
+  font-size: .85rem;
+}
+
+.sidebar i {
+  margin-right: .5rem;
 }

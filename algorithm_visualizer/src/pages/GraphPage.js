@@ -385,7 +385,7 @@ export const GraphPage = () => {
     grid.length = 0;
 
     return (
-      <div className="grid d-flex flex-column mb-3" ref={gridRef}>
+      <div className="grid d-flex flex-column flex-grow-1" ref={gridRef}>
         { dimensions &&
           [...Array(dimensions.rows)].map((e1,r) => {
             const currentRow = [];
@@ -417,107 +417,98 @@ export const GraphPage = () => {
   return (
     <div className="graphPage">
       {/* SIDEBAR */}
-      <div class="flex-shrink-0 p-3 bg-black scrollarea" style={{width:'18rem'}}>
-        <a class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom text-white">
-          <span class="fs-5 fw-semibold">Graph Algorithms</span>
-        </a>
-        <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
+      <div className="sidebar d-flex flex-column bg-black">
+
+        <h5 className="pb-3 mb-3 border-bottom"><a href="/"><i className="fas fa-arrow-circle-left fa-lg me-3"></i></a>Graph Algorithms</h5>
+
+        <div className="mb-3 gap-2 d-flex flex-row justify-content-start flex-wrap">
           <button className="btn btn-sm btn-warning" onClick={resetGrid}>Reset Board</button>
           <button className="btn btn-sm btn-info" onClick={() => {clearVisualization(true);}}>Clear Visualization</button>
         </div>
-        <ul class="list-unstyled ps-0">
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-              Unweighted Algorithms
-            </button>
-            <div class="collapse" id="home-collapse" style={{}}>
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</li>
-                <li onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</li>
-              </ul>
-            </div>
-          </li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-              Weighted Algorithms
-            </button>
-            <div class="collapse" id="dashboard-collapse" style={{}}>
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</li>
-                <li onClick={()=> {runAlgorithm(aStarManhattan)}}>A* (Manhattan)</li>
-                <li onClick={()=> {runAlgorithm(aStarDiagonal)}}>A* (Diagonal)</li>
-                <li onClick={()=> {runAlgorithm(aStarEuclidean)}}>A* (Euclidean)</li>
-              </ul>
-            </div>
-          </li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-              Mazes
-            </button>
-            <div class="collapse" id="orders-collapse" style={{}}>
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</li>
-                <li onClick={() => {generateMaze(prims)}}>Prims Maze</li>
-                <li onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</li>
-                <li onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</li>
-                <li onClick={() => {generateMaze(randomMaze)}}>Random Maze</li>
-              </ul>
-            </div>
-          </li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#order-collapse" aria-expanded="false">
-              Weighted Mazes
-            </button>
-            <div class="collapse" id="order-collapse">
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</li>
-                <li onClick={() => {generateMaze(terrainMap)}}>Terrain Map</li>
-                <label className="w-100"><li>
-                  <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/>
-                  Image Terrain
-                </li></label>
-                <li type="button" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}>Webcam Terrain</li>
-              </ul>
-            </div>
-          </li>
-          <li class="border-top mb-3"></li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded mb-2" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-              Options
-            </button>
-            <div class="collapse" id="account-collapse" style={{}}>
-                {/* Grid Size Slider */}
-                <label className="form-label d-block mt-2"> Set Grid Size : </label>
-                <input type="range" step=".2" min=".6" max="3.2" defaultValue={nodeSize} className="form-range"
-                  onChange={(e) => {
-                    nodeSize = e.target.value;
-                    resizeGrid();
-                  }} />
 
-                {/* Wall Weight Slider */}
-                <div className="mb-2 gap-2 d-flex justify-content-start align-items-center flex-wrap">
-                  <label className="form-label m-0"> Set Wall Weight : </label>
-                  <div ref={exampleWeightRef} id="example-weight" className="node-wall"></div>
-                </div>
-                <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range"
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    if (value === 31) placeableNode = 'node-wall';
-                    else if (value >= 2 || value <= 30) placeableNode = `node-weight-${Math.floor(value)}`
-                    exampleWeightRef.current.className = placeableNode;
-                  }} />
+        <div className="scrollarea flex-grow-1">
+          <ul className="list-unstyled mb-0 ps-0 bg-dark rounded">
+            <li>
+              <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+                Unweighted Algorithms
+              </button>
+              <div className="collapse" id="home-collapse">
+                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                  <li onClick={()=> {runAlgorithm(breadthFirstSearch)}}><i className="fas fa-search-location fa-sm"></i>Breadth First Search</li>
+                  <li onClick={()=> {runAlgorithm(depthFirstSearch)}}><i className="fas fa-layer-group fa-sm"></i>Depth First Search</li>
+                </ul>
+              </div>
+            </li>
+            <li>
+              <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                Weighted Algorithms
+              </button>
+              <div className="collapse" id="dashboard-collapse">
+                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                  <li onClick={()=> {runAlgorithm(dijkstra)}}><i className="fas fa-project-diagram fa-sm"></i>Dijkstra</li>
+                  <li onClick={()=> {runAlgorithm(aStarManhattan)}}><i className="far fa-star fa-sm"></i>A* (Manhattan)</li>
+                  <li onClick={()=> {runAlgorithm(aStarDiagonal)}}><i className="far fa-star fa-sm"></i>A* (Diagonal)</li>
+                  <li onClick={()=> {runAlgorithm(aStarEuclidean)}}><i className="far fa-star fa-sm"></i>A* (Euclidean)</li>
+                </ul>
+              </div>
+            </li>
+            <li>
+              <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                Mazes
+              </button>
+              <div className="collapse" id="orders-collapse">
+                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                  <li onClick={() => {generateMaze(recursiveDivision)}}><i className="fas fa-sync-alt fa-sm"></i>Recursive Maze</li>
+                  <li onClick={() => {generateMaze(prims)}}><i className="fab fa-pagelines fa-sm"></i>Prims Maze</li>
+                  <li onClick={() => {generateMaze(dfsMaze)}}><i className="fas fa-layer-group fa-sm"></i>DFS Maze</li>
+                  <li onClick={() => {generateMaze(binaryTreeMaze)}}><i className="fas fa-code-branch fa-sm"></i>Binary Tree Maze</li>
+                  <li onClick={() => {generateMaze(randomMaze)}}><i className="fas fa-random fa-sm"></i>Random Maze</li>
+                  <li onClick={() => {generateMaze(randomWeightedMaze)}}><i className="fas fa-weight-hanging fa-sm"></i>Random Weighted Maze</li>
+                  <li onClick={() => {generateMaze(terrainMap)}}><i className="fas fa-mountain fa-sm"></i>Natural Terrain</li>
+                  <label className="w-100"><li>
+                    <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/>
+                    <i className="far fa-image fa-sm"></i>Image Terrain
+                  </li></label>
+                  <li type="button" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}><i className="fas fa-camera fa-sm"></i>Webcam Terrain</li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
 
-                {/* Animation Speed Slider */}
-                <label className="form-label d-block">Animation Speed : </label>
-                <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range"
-                  onChange={(e) => {
-                    clearVisualization(true);
-                    animationSpeed = parseInt(e.target.value);
-                  }} />
-              
-            </div>
-          </li>
-        </ul>
+        <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
+          Options
+        </button>
+        <div className="collapse settings-menu" id="settings-collapse">
+          {/* Wall Weight Slider */}
+          <div className="mb-1 gap-2 d-flex justify-content-start align-items-center flex-wrap">
+            <label className="form-label m-0"> Set Wall Weight : </label>
+            <div ref={exampleWeightRef} id="example-weight" className="node-wall"></div>
+          </div>
+          <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range"
+            onChange={(e) => {
+              const value = parseInt(e.target.value);
+              if (value === 31) placeableNode = 'node-wall';
+              else if (value >= 2 || value <= 30) placeableNode = `node-weight-${Math.floor(value)}`
+              exampleWeightRef.current.className = placeableNode;
+            }} />
+
+          {/* Grid Size Slider */}
+          <label className="form-label d-block mb-1"> Set Grid Size : </label>
+          <input type="range" step=".2" min=".6" max="3.2" defaultValue={nodeSize} className="form-range"
+            onChange={(e) => {
+              nodeSize = e.target.value;
+              resizeGrid();
+            }} />
+
+          {/* Animation Speed Slider */}
+          <label className="form-label d-block mb-1">Animation Speed : </label>
+          <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range"
+            onChange={(e) => {
+              clearVisualization(true);
+              animationSpeed = parseInt(e.target.value);
+            }} />
+        </div>
       </div>
 
       {/* Graph Algorithm Grid */}
@@ -525,7 +516,7 @@ export const GraphPage = () => {
         
       {/* Webcam Popup Window */}
       <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
-        <div className="modal-dialog modal-lg">
+        <div className="modal-dialog">
           <div className="modal-content bg-dark">
             <div className="modal-header">
               <h5 className="modal-title text-white" id="modal-label">Webcam Terrain Generator</h5>
