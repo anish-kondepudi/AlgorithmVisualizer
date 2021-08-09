@@ -509,6 +509,7 @@ export const GraphPage = () => {
               animationSpeed = parseInt(e.target.value);
             }} />
         </div>
+        <li type="button" data-bs-toggle="modal" data-bs-target="#tutorial">Tutorial</li>
       </div>
 
       {/* Graph Algorithm Grid */}
@@ -531,6 +532,25 @@ export const GraphPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Tutorial Popup Window */}
+      <div className="modal fade" id="tutorial" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content camera-modal">
+            <div className="modal-header">
+              <h5 className="modal-title text-white" id="modal-label">Tutorial</h5>
+              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body p-0">
+              <h5> HIII </h5>
+            </div>
+            <div className="modal-footer">
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>
   );
   
