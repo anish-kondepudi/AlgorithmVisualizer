@@ -476,10 +476,10 @@ export const GraphPage = () => {
           </ul>
         </div>
 
-        <button className="btn btn-toggle align-items-center rounded my-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
+        <button className="btn btn-toggle align-items-center rounded my-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="true">
           Options
         </button>
-        <div className="collapse settings-menu" id="settings-collapse">
+        <div className="collapse show settings-menu" id="settings-collapse">
           {/* Wall Weight Slider */}
           <div className="mb-1 gap-2 d-flex justify-content-start align-items-center flex-wrap">
             <label className="form-label m-0"> Set Wall Weight : </label>
