@@ -3,16 +3,17 @@ import "./GraphPage.css";
 import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSearch, breadthFirstSearch, getNodesInShortestPathOrder } from "./graph_components/graphAlgorithms";
 import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze, terrainMap, fileReaderTerrain } from "./graph_components/mazeAlgorithms";
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react";
 
 import {Node} from './graph_components/Node';
 import Webcam from "react-webcam";
 
-const VISIT_DELAY = 10;
-const PATH_DELAY = 40;
-const GRID_HEIGHT = 70;
+import tutorialGif1 from './graph_components/tutorial/tutorial_page_1.gif';
+import tutorialGif2 from './graph_components/tutorial/tutorial_page_2.gif';
+import tutorialGif3 from './graph_components/tutorial/tutorial_page_3.gif';
+import tutorialGif4 from './graph_components/tutorial/tutorial_page_4.gif';
 
-let nodeSize = 1.5;
+let nodeSize = 1.6;
 let prevTimeout = 0;
 let mouseButton = -1;
 let startRow, startCol, endRow, endCol = null;
@@ -38,6 +39,9 @@ export const GraphPage = () => {
   const webCamRef = useRef();
   const [webcamEnabled, setWebcamState] = useState(false);
 
+  // tutorial states
+  const [tutorialPage, setTutorialPage] = useState(1);
+
   // INITIALIZATION
 
   useEffect(() => {
@@ -46,7 +50,7 @@ export const GraphPage = () => {
       [endRow, endCol] = [grid.length-3, grid[0].length-3];
       resetGrid();
     })
-  
+
     resizeGrid();
     window.addEventListener('resize', resizeGrid);
     document.addEventListener("mousedown", handleMouseDown);
@@ -256,7 +260,7 @@ export const GraphPage = () => {
     resetGrid();
     const walls = mazeFunction(grid);
 
-    const delay = 1500 / walls.length;
+    const delay = 3000 / walls.length;
     const wallsPerIteration = delay > 2 ? 1 : Math.ceil(2 / delay);
 
     for (let i = 0; i < walls.length; i += wallsPerIteration) {
@@ -389,7 +393,7 @@ export const GraphPage = () => {
     grid.length = 0;
 
     return (
-      <div className="grid d-flex flex-column mb-3" id="grid" ref={gridRef} style={{width: '100%', height: `${GRID_HEIGHT}vh`}}>
+      <div className="grid d-flex flex-column flex-grow-1" ref={gridRef}>
         { dimensions &&
           [...Array(dimensions.rows)].map((e1,r) => {
             const currentRow = [];
@@ -419,84 +423,158 @@ export const GraphPage = () => {
   }
 
   return (
-    <div className="graphPage container-fluid">
+    <div className="graphPage">
+      {/* SIDEBAR */}
+      <div className="sidebar d-flex flex-column bg-black">
 
-      {/* Title */}
-      <h1 className="my-4"> Graph Algorithms </h1>
+        <h5 className="pb-3 mb-3 border-bottom"><a href="/"><i className="fas fa-arrow-circle-left fa-lg me-3"></i></a>Graph Algorithms</h5>
+
+        <div className="mb-3 gap-2 d-flex flex-row justify-content-start flex-wrap">
+          <button className="btn btn-sm btn-warning" onClick={resetGrid}>Reset Board</button>
+          <button className="btn btn-sm btn-info" onClick={() => {clearVisualization(true);}}>Clear Visualization</button>
+        </div>
+
+        <div className="scrollarea flex-grow-1">
+          <ul className="list-unstyled mb-0 ps-0 bg-dark rounded">
+            <li>
+              <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+                Unweighted Pathfinding
+              </button>
+              <div className="collapse" id="home-collapse">
+                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                  <li onClick={()=> {runAlgorithm(breadthFirstSearch)}}><i className="fas fa-search-location fa-sm"></i>Breadth First Search</li>
+                  <li onClick={()=> {runAlgorithm(depthFirstSearch)}}><i className="fas fa-layer-group fa-sm"></i>Depth First Search</li>
+                </ul>
+              </div>
+            </li>
+            <li>
+              <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                Weighted Pathfinding
+              </button>
+              <div className="collapse" id="dashboard-collapse">
+                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                  <li onClick={()=> {runAlgorithm(dijkstra)}}><i className="fas fa-project-diagram fa-sm"></i>Dijkstra</li>
+                  <li onClick={()=> {runAlgorithm(aStarManhattan)}}><i className="far fa-star fa-sm"></i>A* (Manhattan)</li>
+                  <li onClick={()=> {runAlgorithm(aStarDiagonal)}}><i className="far fa-star fa-sm"></i>A* (Diagonal)</li>
+                  <li onClick={()=> {runAlgorithm(aStarEuclidean)}}><i className="far fa-star fa-sm"></i>A* (Euclidean)</li>
+                </ul>
+              </div>
+            </li>
+            <li>
+              <button className="btn btn-toggle align-items-center rounded mb-1" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                Mazes
+              </button>
+              <div className="collapse" id="orders-collapse">
+                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                  <li onClick={() => {generateMaze(recursiveDivision)}}><i className="fas fa-sync-alt fa-sm"></i>Recursive Maze</li>
+                  <li onClick={() => {generateMaze(prims)}}><i className="fab fa-pagelines fa-sm"></i>Prims Maze</li>
+                  <li onClick={() => {generateMaze(dfsMaze)}}><i className="fas fa-layer-group fa-sm"></i>DFS Maze</li>
+                  <li onClick={() => {generateMaze(binaryTreeMaze)}}><i className="fas fa-code-branch fa-sm"></i>Binary Tree Maze</li>
+                  <li onClick={() => {generateMaze(randomMaze)}}><i className="fas fa-random fa-sm"></i>Random Maze</li>
+                  <li onClick={() => {generateMaze(randomWeightedMaze)}}><i className="fas fa-weight-hanging fa-sm"></i>Random Weighted Maze</li>
+                  <li onClick={() => {generateMaze(terrainMap)}}><i className="fas fa-mountain fa-sm"></i>Natural Terrain</li>
+                  <label className="w-100"><li>
+                    <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/>
+                    <i className="far fa-image fa-sm"></i>Image Terrain
+                  </li></label>
+
+                  <li type="button" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}><i className="fas fa-camera fa-sm"></i>Webcam Terrain</li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <button className="btn btn-toggle align-items-center rounded my-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
+          Options
+        </button>
+        <div className="collapse show settings-menu" id="settings-collapse">
+          {/* Wall Weight Slider */}
+          <div className="mb-1 gap-2 d-flex justify-content-start align-items-center flex-wrap">
+            <label className="form-label m-0"> Set Wall Weight : </label>
+            <div ref={exampleWeightRef} id="example-weight" className="node-wall"></div>
+          </div>
+          <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range"
+            onChange={(e) => {
+              const value = parseInt(e.target.value);
+              if (value === 31) placeableNode = 'node-wall';
+              else if (value >= 2 || value <= 30) placeableNode = `node-weight-${Math.floor(value)}`
+              exampleWeightRef.current.className = placeableNode;
+            }} />
+
+          {/* Grid Size Slider */}
+          <label className="form-label d-block mb-1"> Set Grid Size : </label>
+          <input type="range" step=".2" min=".6" max="3.2" defaultValue={nodeSize} className="form-range"
+            onChange={(e) => {
+              nodeSize = e.target.value;
+              resizeGrid();
+            }} />
+
+          {/* Animation Speed Slider */}
+          <label className="form-label d-block mb-1">Animation Speed : </label>
+          <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range"
+            onChange={(e) => {
+              clearVisualization(true);
+              animationSpeed = parseInt(e.target.value);
+            }} />
+        </div>
+        <li type="button" data-bs-toggle="modal" data-bs-target="#tutorial" onClick={()=>{setTutorialPage(1)}}>Tutorial</li>
+      </div>
 
       {/* Graph Algorithm Grid */}
       {makeGridElement()}
-
-
-      {/* Graph Buttons */}
-      <div className="mb-3 gap-2 d-flex justify-content-start flex-wrap">
-        <button className="btn btn-info" onClick={resetGrid}>Reset Board</button>
-        <button className="btn btn-info" onClick={() => {clearVisualization(true);}}>Clear Visualization</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(dijkstra)}}>Dijkstra</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarManhattan)}}>A* (Manhattan)</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarDiagonal)}}>A* (Diagonal)</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(aStarEuclidean)}}>A* (Euclidean)</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(depthFirstSearch)}}>Depth First Search</button>
-        <button className="btn btn-outline-light" onClick={()=> {runAlgorithm(breadthFirstSearch)}}>Breadth First Search</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(recursiveDivision)}}>Recursive Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(prims)}}>Prims Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(dfsMaze)}}>DFS Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(binaryTreeMaze)}}>Binary Tree Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(randomMaze)}}>Random Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(randomWeightedMaze)}}>Random Weighted Maze</button>
-        <button className="btn btn-outline-light" onClick={() => {generateMaze(terrainMap)}}>Terrain Map</button>
-        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modal" onClick={()=>{setWebcamState(true)}}>Webcam Terrain</button>
-        <label class="btn btn-outline-light">
-          <input type="file" onChange={(e) => {fileReaderTerrain(grid, readImageInput(e)).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)})}} accept=".jpg, .jpeg, .png"/>
-          Image Terrain
-        </label>
-      </div>
-
-      {/* Grid Size Slider */}
-      <label className="form-label d-block"> Set Grid Size : </label>
-      <input type="range" step=".1" min=".7" max="3" defaultValue={nodeSize} className="form-range w-50 d-block"
-        onChange={(e) => {
-          nodeSize = e.target.value;
-          resizeGrid();
-        }} />
-
-      {/* Wall Weight Slider */}
-      <label className="form-label d-block"> Set Wall Weight : </label>
-      <input type="range" step="1" min="2" max="31" defaultValue={31} className="form-range w-50 d-block"
-        onChange={(e) => {
-          const value = parseInt(e.target.value);
-          if (value === 31) placeableNode = 'node-wall';
-          else if (value >= 2 || value <= 30) placeableNode = `node-weight-${Math.floor(value)}`
-          exampleWeightRef.current.className = placeableNode;
-        }} />
-      <div ref={exampleWeightRef} className="node-wall" style={{width: '2rem', height: '2rem'}}></div>
-
-      {/* Animation Speed Slider */}
-      <label className="form-label d-block">Animation Speed : </label>
-      <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range w-50 d-block"
-        onChange={(e) => {
-          clearVisualization(true);
-          animationSpeed = parseInt(e.target.value);
-        }} />
         
       {/* Webcam Popup Window */}
       <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
-        <div className="modal-dialog modal-lg">
-          <div className="modal-content bg-dark">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content camera-modal">
             <div className="modal-header">
               <h5 className="modal-title text-white" id="modal-label">Webcam Terrain Generator</h5>
-              <button type="button" className="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
+              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={()=>{setWebcamState(false)}}></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-0">
               {webcamEnabled && <Webcam className="w-100" ref={webCamRef} screenshotFormat="image/jpeg" audio={false}/>}
             </div>
             <div className="modal-footer">
-              <button className="btn btn-info" data-bs-dismiss="modal" onClick={(e) => {fileReaderTerrain(grid, readWebcam()).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)}); setWebcamState(false)}}>Capture Image</button>
+              <button className="btn btn-outline-light" data-bs-dismiss="modal" onClick={(e) => {fileReaderTerrain(grid, readWebcam()).then(walls => generateMaze(() => walls)).catch((err) => {console.log(err)}); setWebcamState(false)}}>Capture Image</button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Tutorial Popup Window */}
+      <div className="modal show fade" id="tutorial" tabindex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-lg">
+          <div className="modal-content camera-modal">
+            <div className="modal-header">
+              <h5 className="col-12 modal-title text-white" id="modal-label"><b>Tutorial - {
+                (tutorialPage == 1) ? 'Graph Algorithms'
+                : (tutorialPage == 2) ? 'Weighted/Unweighted'
+                : (tutorialPage == 3) ? 'Mazes/Terrain'
+                : 'Options'
+              }</b></h5>
+            </div>
+            <div className="modal-body p-0">{
+              (tutorialPage == 1) ? <p>Pathfinding is closely related to the shortest path problem, within graph theory, which examines how to identify the path that best meets some criteria (shortest, cheapest, fastest, etc) between two points in a large network. This site is a tool to visualize these different graph pathfinding algorithms to better understand them.</p>
+              : (tutorialPage == 2) ? <p>All of the algorithms on this application are adapted for a 2D grid, movement through a node has a "cost" of 1. Different weights can be added by utilizing the Wall Weight Slider under the options menu. Weighted algorithms will take into consideration of these different weights on the grid whereas unweighted algorithms will ignore them entirely.</p>
+              : (tutorialPage == 3) ? <p>You can generate a maze using the algorithms within the maze dropdown. Weighted mazes are referred to as terrains. These can be created via image upload, webcam picture, or created within the application.</p>
+              : <p>The option menu allows the user to adapt the grid to their liking. This includes features such as setting wall weights, adjusting the grid size, and changing the animation speed.</p>
+            }{
+              (tutorialPage == 1) ? <img src={tutorialGif1} alt="loading..." />
+              : (tutorialPage == 2) ? <img src={tutorialGif2} alt="loading..." />
+              : (tutorialPage == 3) ? <img src={tutorialGif3} alt="loading..." />
+              : <img src={tutorialGif4  } alt="loading..." />
+            }</div>
+            <div className="modal-footer">
+              {(tutorialPage == 1) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Skip</button> : ''}
+              {(tutorialPage > 1) ? <button className="btn btn-outline-light" id="skip-button" onClick={()=>setTutorialPage(x=>x-1)}>Previous</button> : ''}
+              {(tutorialPage<4) ? <button className="btn btn-outline-light" id="skip-button" onClick={()=>setTutorialPage(x=>x+1)}>Next</button> : ''}
+              {(tutorialPage == 4) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Finish</button> : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>
   );
   
