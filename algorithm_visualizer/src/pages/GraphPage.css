@@ -112,3 +112,7 @@ li > input {
   background-color: black;
   border: 1px solid white
 }
+
+.skip-button {
+  margin-left: 1.25rem;
+}

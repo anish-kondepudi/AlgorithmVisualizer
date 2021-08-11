@@ -34,6 +34,9 @@ export const GraphPage = () => {
   const webCamRef = useRef();
   const [webcamEnabled, setWebcamState] = useState(false);
 
+  // tutorial states
+  const [tutorialPage, setTutorialPage] = useState(1);
+
   // INITIALIZATION
 
   useEffect(() => {
@@ -479,7 +482,7 @@ export const GraphPage = () => {
         <button className="btn btn-toggle align-items-center rounded my-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
           Options
         </button>
-        <div className="collapse settings-menu" id="settings-collapse">
+        <div className="collapse show settings-menu" id="settings-collapse">
           {/* Wall Weight Slider */}
           <div className="mb-1 gap-2 d-flex justify-content-start align-items-center flex-wrap">
             <label className="form-label m-0"> Set Wall Weight : </label>
@@ -538,14 +541,25 @@ export const GraphPage = () => {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content camera-modal">
             <div className="modal-header">
-              <h5 className="modal-title text-white" id="modal-label">Tutorial</h5>
+              <h5 className="modal-title text-white" id="modal-label"><b>Tutorial - {
+                (tutorialPage == 1) ? 'Graph Algorithms'
+                : (tutorialPage == 2) ? 'Weighted/Unweighted'
+                : (tutorialPage == 3) ? 'Mazes/Terrain'
+                : 'Options'
+              }</b></h5>
               <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div className="modal-body p-0">
-              <h5> HIII </h5>
-            </div>
+            <div className="modal-body p-0">{
+              (tutorialPage == 1) ? <p>Pathfinding is closely related to the shortest path problem, within graph theory, which examines how to identify the path that best meets some criteria (shortest, cheapest, fastest, etc) between two points in a large network. This site is a tool to visualize these different graph pathfinding algorithms to better understand them.</p>
+              : (tutorialPage == 2) ? <p>All of the algorithms on this application are adapted for a 2D grid, movement through a node has a "cost" of 1. Different weights can be added by utilizing the Wall Weight Slider under the options menu. Weighted algorithms will take into consideration of these different weights on the grid whereas unweighted algorithms will ignore them entirely.</p>
+              : (tutorialPage == 3) ? <p>You can generate a maze using the algorithms within the maze dropdown. Weighted mazes are referred to as terrains. These can be created via image upload, webcam picture, or created within the application.</p>
+              : <p>The option menu allows the user to adapt the grid to their liking. This includes features such as setting wall weights, adjusting the grid size, and changing the animation speed.</p>
+            }</div>
             <div className="modal-footer">
-              
+              {(tutorialPage == 1) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Skip</button> : ''}
+              {(tutorialPage > 1) ? <button className="btn btn-outline-light" id="skip-button" onClick={()=>setTutorialPage(x=>x-1)}>Previous</button> : ''}
+              {(tutorialPage<4) ? <button className="btn btn-outline-light" id="skip-button" onClick={()=>setTutorialPage(x=>x+1)}>Next</button> : ''}
+              {(tutorialPage == 4) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Finish</button> : ''}
             </div>
           </div>
         </div>
