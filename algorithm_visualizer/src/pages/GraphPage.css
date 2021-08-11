@@ -116,3 +116,20 @@ li > input {
 .skip-button {
   margin-left: 1.25rem;
 }
+
+.modal-dialog,
+.modal-content {
+    height: 80%;
+}
+
+#tutorial p {
+  padding-top: 1.25rem;
+  margin-right: 1.25rem;
+  margin-left: 1.25rem;
+  text-align: center;
+}
+
+.modal-header {
+  text-align: center;
+}
+

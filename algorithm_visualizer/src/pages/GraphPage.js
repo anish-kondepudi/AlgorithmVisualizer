@@ -541,13 +541,13 @@ export const GraphPage = () => {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content camera-modal">
             <div className="modal-header">
-              <h5 className="modal-title text-white" id="modal-label"><b>Tutorial - {
+              {/*<button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>*/}
+              <h5 className="col-12 modal-title text-white" id="modal-label"><b>Tutorial - {
                 (tutorialPage == 1) ? 'Graph Algorithms'
                 : (tutorialPage == 2) ? 'Weighted/Unweighted'
                 : (tutorialPage == 3) ? 'Mazes/Terrain'
                 : 'Options'
               }</b></h5>
-              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body p-0">{
               (tutorialPage == 1) ? <p>Pathfinding is closely related to the shortest path problem, within graph theory, which examines how to identify the path that best meets some criteria (shortest, cheapest, fastest, etc) between two points in a large network. This site is a tool to visualize these different graph pathfinding algorithms to better understand them.</p>
