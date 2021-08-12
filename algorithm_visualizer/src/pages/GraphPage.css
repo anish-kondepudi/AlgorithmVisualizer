@@ -96,19 +96,38 @@ li > input {
   display: block;
 }
 
-.settings-menu {
+.graphPage .settings-menu {
   padding-top: .5rem;
 }
 
-.settings-menu label {
+.graphPage .settings-menu label {
   font-size: .85rem;
 }
 
-.sidebar i {
+.graphPage .sidebar i {
   margin-right: .5rem;
 }
 
-.camera-modal {
+.graphPage .camera-modal {
   background-color: black;
   border: 1px solid white
+}
+
+.graphPage .skip-button {
+  margin-left: 1.25rem;
+}
+
+.graphPage #tutorial p {
+  padding-top: 1.25rem;
+  margin-right: 1.25rem;
+  margin-left: 1.25rem;
+  text-align: center;
+}
+
+.graphPage .modal-header {
+  text-align: center;
+}
+
+.graphPage .modal-body img {
+    width:100%;
 }
