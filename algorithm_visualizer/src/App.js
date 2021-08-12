@@ -8,8 +8,8 @@ const App = () => {
     <Router>
       <Switch>
         <Route exact path="/" component={LandingPage}/>
-        <Route path="/AlgorithmVisualizer/#/sorting" component={SortingPage}/>
-        <Route path="/AlgorithmVisualizer/#/graph" component={GraphPage}/>
+        <Route path="/sorting" component={SortingPage}/>
+        <Route path="/graph" component={GraphPage}/>
       </Switch>
     </Router>
   );
