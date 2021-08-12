@@ -5,11 +5,11 @@ import {GraphPage} from "./pages/GraphPage.js";
 
 const App = () => {
   return (
-    <Router basename="/AlgorithmVisualizer">
+    <Router>
       <Switch>
         <Route exact path="/" component={LandingPage}/>
-        <Route path="/sorting" component={SortingPage}/>
-        <Route path="/graph" component={GraphPage}/>
+        <Route path="/AlgorithmVisualizer/#/sorting" component={SortingPage}/>
+        <Route path="/AlgorithmVisualizer/#/graph" component={GraphPage}/>
       </Switch>
     </Router>
   );
