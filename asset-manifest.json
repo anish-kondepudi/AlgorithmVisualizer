@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/AlgorithmVisualizer/static/css/main.2c22e0c8.chunk.css",
+    "main.js": "/AlgorithmVisualizer/static/js/main.f466bcc3.chunk.js",
+    "main.js.map": "/AlgorithmVisualizer/static/js/main.f466bcc3.chunk.js.map",
+    "runtime-main.js": "/AlgorithmVisualizer/static/js/runtime-main.bb3925fc.js",
+    "runtime-main.js.map": "/AlgorithmVisualizer/static/js/runtime-main.bb3925fc.js.map",
+    "static/js/2.b9abf560.chunk.js": "/AlgorithmVisualizer/static/js/2.b9abf560.chunk.js",
+    "static/js/2.b9abf560.chunk.js.map": "/AlgorithmVisualizer/static/js/2.b9abf560.chunk.js.map",
+    "static/js/3.0204ed8b.chunk.js": "/AlgorithmVisualizer/static/js/3.0204ed8b.chunk.js",
+    "static/js/3.0204ed8b.chunk.js.map": "/AlgorithmVisualizer/static/js/3.0204ed8b.chunk.js.map",
+    "index.html": "/AlgorithmVisualizer/index.html",
+    "static/css/main.2c22e0c8.chunk.css.map": "/AlgorithmVisualizer/static/css/main.2c22e0c8.chunk.css.map",
+    "static/js/2.b9abf560.chunk.js.LICENSE.txt": "/AlgorithmVisualizer/static/js/2.b9abf560.chunk.js.LICENSE.txt",
+    "static/media/tutorial_page_1.5de78eab.gif": "/AlgorithmVisualizer/static/media/tutorial_page_1.5de78eab.gif",
+    "static/media/tutorial_page_2.a22faa6b.gif": "/AlgorithmVisualizer/static/media/tutorial_page_2.a22faa6b.gif",
+    "static/media/tutorial_page_3.58e0ed19.gif": "/AlgorithmVisualizer/static/media/tutorial_page_3.58e0ed19.gif",
+    "static/media/tutorial_page_4.0eed5ae8.gif": "/AlgorithmVisualizer/static/media/tutorial_page_4.0eed5ae8.gif"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.bb3925fc.js",
+    "static/js/2.b9abf560.chunk.js",
+    "static/css/main.2c22e0c8.chunk.css",
+    "static/js/main.f466bcc3.chunk.js"
+  ]
+}
