@@ -7,8 +7,8 @@ export const LandingPage = () => {
     <div className="landingPage bubbles">
         {/* Navigation Buttons to Algorithms Visualizers */}
         <div id="navigation">
-          <button className="btn" onClick={event =>  window.location.href+='sorting'}>Sorting</button>
-          <button className="btn" onClick={event =>  window.location.href+='graph'}>Graphs</button>
+          <button className="btn" onClick={event =>  window.location.href='/sorting'}>Sorting</button>
+          <button className="btn" onClick={event =>  window.location.href='/graph'}>Graphs</button>
         </div>
 
         {/* Title*/}

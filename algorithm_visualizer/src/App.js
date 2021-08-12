@@ -1,4 +1,4 @@
-import {Switch, Route, HashRouter as Router} from "react-router-dom";
+import {Switch, Route, BrowserRouter as Router} from "react-router-dom";
 import {LandingPage} from "./pages/LandingPage.js";
 import {SortingPage} from "./pages/SortingPage.js";
 import {GraphPage} from "./pages/GraphPage.js";

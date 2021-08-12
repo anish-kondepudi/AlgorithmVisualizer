@@ -427,7 +427,7 @@ export const GraphPage = () => {
       {/* SIDEBAR */}
       <div className="sidebar d-flex flex-column bg-black">
 
-        <h5 className="pb-3 mb-3 border-bottom"><a href="/AlgorithmVisualizer/#/"><i className="fas fa-arrow-circle-left fa-lg me-3"></i></a>Graph Algorithms</h5>
+        <h5 className="pb-3 mb-3 border-bottom"><a href="/"><i className="fas fa-arrow-circle-left fa-lg me-3"></i></a>Graph Algorithms</h5>
 
         <div className="mb-3 gap-2 d-flex flex-row justify-content-start flex-wrap">
           <button className="btn btn-sm btn-warning" onClick={resetGrid}>Reset Board</button>
@@ -485,7 +485,7 @@ export const GraphPage = () => {
           </ul>
         </div>
 
-        <button className="btn btn-toggle align-items-center rounded my-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="true">
+        <button className="btn btn-toggle align-items-center rounded my-1" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
           Options
         </button>
         <div className="collapse show settings-menu" id="settings-collapse">
