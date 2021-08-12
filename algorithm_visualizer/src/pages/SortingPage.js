@@ -178,7 +178,7 @@ export const SortingPage = () => {
   return (
     <div className="container sortingPage">
       
-      <h1 className="title"> <a href="/"><i class="fas fa-arrow-circle-left fa-lg me-3" aria-hidden="true"></i></a>Sorting Algorithms</h1>
+      <h1 className="title"> <a href="/AlgorithmVisualizer/#/"><i class="fas fa-arrow-circle-left fa-lg me-3" aria-hidden="true"></i></a>Sorting Algorithms</h1>
 
       {/* Dynamically sets bar heights */}
       <div className="bars-container mb-3" style={{'height': `${HEIGHT}vh`}}>
