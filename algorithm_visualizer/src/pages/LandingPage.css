@@ -20,10 +20,12 @@
   width: 40%;
   text-align: center;
   cursor: pointer;
-  transition: transform .2s;
+  opacity: .8;
+  transition: transform .2s, opacity .2s;
 }
 
 .landingPage .algo:hover {
-  transform: scale(1.1)
+  transform: scale(1.1);
+  opacity: 1;
 }
 
