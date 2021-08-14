@@ -14,6 +14,7 @@ import tutorialGif2 from './graph_components/tutorial/tutorial_page_2.gif';
 import tutorialGif3 from './graph_components/tutorial/tutorial_page_3.gif';
 import tutorialGif4 from './graph_components/tutorial/tutorial_page_4.gif';
 
+// decided to not use states since they were too slow
 let nodeSize = 1.6;
 let prevTimeout = 0;
 let mouseButton = -1;
@@ -46,6 +47,11 @@ export const GraphPage = () => {
   // INITIALIZATION
 
   useEffect(() => {
+
+    animationSpeed = 50;
+    nodeSize = 1.6;
+    placeableNode = 'node-wall';
+
     requestAnimationFrame(() => {
       [startRow, startCol] = [2,2];
       [endRow, endCol] = [grid.length-3, grid[0].length-3];
@@ -506,7 +512,7 @@ export const GraphPage = () => {
 
           {/* Grid Size Slider */}
           <label className="form-label d-block mb-1"> Set Grid Size : </label>
-          <input type="range" step=".2" min=".6" max="3.2" defaultValue={nodeSize} className="form-range"
+          <input type="range" step=".2" min=".6" max="3.2" defaultValue={1.6} className="form-range"
             onChange={(e) => {
               nodeSize = e.target.value;
               resizeGrid();
