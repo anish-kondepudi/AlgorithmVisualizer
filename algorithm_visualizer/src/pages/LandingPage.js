@@ -1,25 +1,25 @@
 import "./LandingPage.css";
+import { useHistory, Link } from "react-router-dom";
 
 export const LandingPage = () => {
 
+  const history = useHistory()
+
   return (
-    
-    <div className="landingPage bubbles">
-        {/* Navigation Buttons to Algorithms Visualizers */}
-        <div id="navigation">
-          <button className="btn" onClick={event =>  window.location.href='/sorting'}>Sorting</button>
-          <button className="btn" onClick={event =>  window.location.href='/graph'}>Graphs</button>
-        </div>
+    <div className="landingPage d-flex align-items-center justify-content-center p-3">
+      <div className="w-100 d-flex justify-content-around flex-wrap gap-4 m-auto">
+          <div onClick={() =>  history.push('/sorting')} className="algo">
+            <h2 className="mb-4">Sorting Algorithms</h2>
+            <img src={process.env.PUBLIC_URL + "/sorting_example.PNG"} />
+            
+          </div>
 
-        {/* Title*/}
-        <div id="title">
-          <span><b>ALGORITHM</b></span><br/>
-          <span><b>VISUALIZER</b></span>
+          <div onClick={() =>  history.push('/graph')} className="algo">
+            <h2 className="mb-4">Graph Algorithms</h2>
+            <img src={process.env.PUBLIC_URL + "/graph_example.PNG"} />
+            
+          </div>
         </div>
-
-        {/* Bubbles*/}
-        {[...Array(10)].map((e, i) => <div className="bubble" key={i}></div>)}
-        
     </div>
   );
 }
