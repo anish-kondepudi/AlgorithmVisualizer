@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react"
 import { bubbleSortAnimation, insertionSortAnimation, quickSortAnimation, shellSortAnimation, mergeSortAnimation } from "./sort_components/sortingAlgorithms.js"
+import { Link } from "react-router-dom";
 import "./SortingPage.css";
 
 const DEFAULT_COLOR = "#0dcaf0";
 const SORTED_COLOR = "#28a745";
 const SWAP_COLOR = "#dc3545";
-const HEIGHT = 50;
+const HEIGHT = 60;
 
 export const SortingPage = () => {
 
@@ -178,7 +179,7 @@ export const SortingPage = () => {
   return (
     <div className="container sortingPage">
       
-      <h1 className="title"> <a href="/"><i class="fas fa-arrow-circle-left fa-lg me-3" aria-hidden="true"></i></a>Sorting Algorithms</h1>
+      <h1 className="title"> <Link to="/"><i class="fas fa-arrow-circle-left fa-lg me-3 link-info" aria-hidden="true"></i></Link>Sorting Algorithms</h1>
 
       {/* Dynamically sets bar heights */}
       <div className="bars-container mb-3" style={{'height': `${HEIGHT}vh`}}>

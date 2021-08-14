@@ -4,6 +4,7 @@ import { dijkstra, aStarManhattan, aStarDiagonal, aStarEuclidean, depthFirstSear
 import { recursiveDivision, randomMaze, randomWeightedMaze, prims, dfsMaze, binaryTreeMaze, terrainMap, fileReaderTerrain } from "./graph_components/mazeAlgorithms";
 
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 import {Node} from './graph_components/Node';
 import Webcam from "react-webcam";
@@ -27,19 +28,19 @@ let animationSpeed = 50;
 const pxToNode = px => Math.floor(px / parseFloat(getComputedStyle(document.documentElement).fontSize) / nodeSize);
   
 export const GraphPage = () => {
-  // grid states
+  // grid
   const grid = useRef([]).current;
   const gridRef = useRef();
   const [dimensions, setDimensions] = useState(null);
 
-  // slider states
+  // slider
   const exampleWeightRef = useRef();
 
-  // webcam states
+  // webcam
   const webCamRef = useRef();
   const [webcamEnabled, setWebcamState] = useState(false);
 
-  // tutorial states
+  // tutorial
   const [tutorialPage, setTutorialPage] = useState(1);
 
   // INITIALIZATION
@@ -63,9 +64,10 @@ export const GraphPage = () => {
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      gridRef.current.removeEventListener("contextmenu", e => e.preventDefault());
     };
   }, []);
+
+  // READ IMAGES
 
   const readWebcam = () => {
     // https://github.com/mozmorris/react-webcam/issues/65#issuecomment-385126201
@@ -260,7 +262,7 @@ export const GraphPage = () => {
     resetGrid();
     const walls = mazeFunction(grid);
 
-    const delay = 3000 / walls.length;
+    const delay = 2250 / walls.length;
     const wallsPerIteration = delay > 2 ? 1 : Math.ceil(2 / delay);
 
     for (let i = 0; i < walls.length; i += wallsPerIteration) {
@@ -317,7 +319,7 @@ export const GraphPage = () => {
     }
   }
 
-  const resizeGrid = () => {
+  const resizeGrid = async () => {
     clearAllTimeouts();
 
     let rows = pxToNode(gridRef.current.offsetHeight);
@@ -326,7 +328,7 @@ export const GraphPage = () => {
     if (rows > 1 && rows % 2 === 0) rows--;
     if (cols > 1 && cols % 2 === 0) cols--;
 
-    setDimensions({
+    await setDimensions({
       rows: rows, 
       cols: cols
     });
@@ -427,7 +429,7 @@ export const GraphPage = () => {
       {/* SIDEBAR */}
       <div className="sidebar d-flex flex-column bg-black">
 
-        <h5 className="pb-3 mb-3 border-bottom"><a href="/"><i className="fas fa-arrow-circle-left fa-lg me-3"></i></a>Graph Algorithms</h5>
+        <h5 className="pb-3 mb-3 border-bottom"><Link to="/"><i className="fas link-info fa-arrow-circle-left fa-lg me-3"></i></Link>Graph Algorithms</h5>
 
         <div className="mb-3 gap-2 d-flex flex-row justify-content-start flex-wrap">
           <button className="btn btn-sm btn-warning" onClick={resetGrid}>Reset Board</button>
@@ -512,21 +514,25 @@ export const GraphPage = () => {
 
           {/* Animation Speed Slider */}
           <label className="form-label d-block mb-1">Animation Speed : </label>
-          <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range"
+          <input type="range" step="1" min="1" max="100" defaultValue={50} className="form-range mb-2"
             onChange={(e) => {
               clearVisualization(true);
               animationSpeed = parseInt(e.target.value);
             }} />
+
+          <button className="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#tutorial" onClick={()=>{setTutorialPage(1)}}>
+            <i class="fas fa-question-circle"></i>
+            Tutorial
+          </button>
         </div>
-        <li type="button" data-bs-toggle="modal" data-bs-target="#tutorial" onClick={()=>{setTutorialPage(1)}}>Tutorial</li>
       </div>
 
       {/* Graph Algorithm Grid */}
       {makeGridElement()}
         
       {/* Webcam Popup Window */}
-      <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
-        <div className="modal-dialog modal-dialog-centered">
+      <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="false">
+        <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content camera-modal">
             <div className="modal-header">
               <h5 className="modal-title text-white" id="modal-label">Webcam Terrain Generator</h5>
@@ -543,7 +549,7 @@ export const GraphPage = () => {
       </div>
 
       {/* Tutorial Popup Window */}
-      <div className="modal show fade" id="tutorial" tabindex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div className="modal fade" id="tutorial" tabindex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content camera-modal">
             <div className="modal-header">
