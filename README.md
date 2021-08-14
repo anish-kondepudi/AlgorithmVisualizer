@@ -7,7 +7,7 @@ Try out the app here: https://ian-chuang.github.io/AlgorithmVisualizer/
 ## Sorting!
 ![](GIFs/sorting-readme.gif)
 
-## Graphs!
+## Graphs and Mazes!
 ![](GIFs/graph-readme.gif)
 
 ## Extra Features!
