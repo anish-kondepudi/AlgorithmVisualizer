@@ -71,7 +71,7 @@ export const GraphPage = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // READ IMAGES
 
@@ -526,8 +526,8 @@ export const GraphPage = () => {
               animationSpeed = parseInt(e.target.value);
             }} />
 
-          <button className="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#tutorial" onClick={()=>{setTutorialPage(1)}}>
-            <i class="fas fa-question-circle"></i>
+          <button className="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#tutorial">
+            <i className="fas fa-question-circle"></i>
             Tutorial
           </button>
         </div>
@@ -537,7 +537,7 @@ export const GraphPage = () => {
       {makeGridElement()}
         
       {/* Webcam Popup Window */}
-      <div className="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="false">
+      <div className="modal fade" id="modal" tabIndex="-1" aria-labelledby="modal-label" aria-hidden="false">
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content camera-modal">
             <div className="modal-header">
@@ -555,33 +555,33 @@ export const GraphPage = () => {
       </div>
 
       {/* Tutorial Popup Window */}
-      <div className="modal fade" id="tutorial" tabindex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div className="modal fade" id="tutorial" tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content camera-modal">
             <div className="modal-header">
               <h5 className="col-12 modal-title text-white" id="modal-label"><b>Tutorial - {
-                (tutorialPage == 1) ? 'Graph Algorithms'
-                : (tutorialPage == 2) ? 'Weighted/Unweighted'
-                : (tutorialPage == 3) ? 'Mazes/Terrain'
+                (tutorialPage === 1) ? 'Graph Algorithms'
+                : (tutorialPage === 2) ? 'Weighted/Unweighted'
+                : (tutorialPage === 3) ? 'Mazes/Terrain'
                 : 'Options'
               }</b></h5>
             </div>
             <div className="modal-body p-0">{
-              (tutorialPage == 1) ? <p>Pathfinding is closely related to the shortest path problem, within graph theory, which examines how to identify the path that best meets some criteria (shortest, cheapest, fastest, etc) between two points in a large network. This site is a tool to visualize these different graph pathfinding algorithms to better understand them.</p>
-              : (tutorialPage == 2) ? <p>All of the algorithms on this application are adapted for a 2D grid, movement through a node has a "cost" of 1. Different weights can be added by utilizing the Wall Weight Slider under the options menu. Weighted algorithms will take into consideration of these different weights on the grid whereas unweighted algorithms will ignore them entirely.</p>
-              : (tutorialPage == 3) ? <p>You can generate a maze using the algorithms within the maze dropdown. Weighted mazes are referred to as terrains. These can be created via image upload, webcam picture, or created within the application.</p>
+              (tutorialPage === 1) ? <p>Pathfinding is closely related to the shortest path problem, within graph theory, which examines how to identify the path that best meets some criteria (shortest, cheapest, fastest, etc) between two points in a large network. This site is a tool to visualize these different graph pathfinding algorithms to better understand them.</p>
+              : (tutorialPage === 2) ? <p>All of the algorithms on this application are adapted for a 2D grid, movement through a node has a "cost" of 1. Different weights can be added by utilizing the Wall Weight Slider under the options menu. Weighted algorithms will take into consideration of these different weights on the grid whereas unweighted algorithms will ignore them entirely.</p>
+              : (tutorialPage === 3) ? <p>You can generate a maze using the algorithms within the maze dropdown. Weighted mazes are referred to as terrains. These can be created via image upload, webcam picture, or created within the application.</p>
               : <p>The option menu allows the user to adapt the grid to their liking. This includes features such as setting wall weights, adjusting the grid size, and changing the animation speed.</p>
             }{
-              (tutorialPage == 1) ? <img src={tutorialGif1} alt="loading..." />
-              : (tutorialPage == 2) ? <img src={tutorialGif2} alt="loading..." />
-              : (tutorialPage == 3) ? <img src={tutorialGif3} alt="loading..." />
+              (tutorialPage === 1) ? <img src={tutorialGif1} alt="loading..." />
+              : (tutorialPage === 2) ? <img src={tutorialGif2} alt="loading..." />
+              : (tutorialPage === 3) ? <img src={tutorialGif3} alt="loading..." />
               : <img src={tutorialGif4  } alt="loading..." />
             }</div>
             <div className="modal-footer">
-              {(tutorialPage == 1) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Skip</button> : ''}
+              {(tutorialPage === 1) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Skip</button> : ''}
               {(tutorialPage > 1) ? <button className="btn btn-outline-light" id="skip-button" onClick={()=>setTutorialPage(x=>x-1)}>Previous</button> : ''}
               {(tutorialPage<4) ? <button className="btn btn-outline-light" id="skip-button" onClick={()=>setTutorialPage(x=>x+1)}>Next</button> : ''}
-              {(tutorialPage == 4) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Finish</button> : ''}
+              {(tutorialPage === 4) ? <button className="btn btn-outline-light" id="skip-button" data-bs-dismiss="modal">Finish</button> : ''}
             </div>
           </div>
         </div>
